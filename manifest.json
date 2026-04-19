@@ -1,0 +1,27 @@
+{
+  "name": "Tiếng Hàn HDV - Học 5 lần/ngày",
+  "short_name": "한국어 HDV",
+  "description": "App học tiếng Hàn cho hướng dẫn viên du lịch. 150 cụm từ thực chiến với phân tích Hán-Hàn, Quiz và Ôn tập thông minh.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#c8102e",
+  "theme_color": "#003478",
+  "lang": "vi",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "productivity"],
+  "prefer_related_applications": false
+}
