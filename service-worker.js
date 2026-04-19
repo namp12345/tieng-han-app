@@ -1,6 +1,6 @@
 // Service Worker cho app Tiếng Hàn HDV
 // Tên cache - đổi khi có update lớn
-const CACHE_NAME = 'tieng-han-hdv-v1';
+const CACHE_NAME = 'tieng-han-hdv-v3';
 
 // Các file cần cache để chạy offline
 const urlsToCache = [
