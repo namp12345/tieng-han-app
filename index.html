@@ -3,1452 +3,1790 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#003478">
+<meta name="theme-color" content="#c8102e">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="한국어 HDV">
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="manifest" href="manifest.json">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>Tiếng Hàn HDV - Học 5 lần/ngày</title>
+<title>한국어 HDV v3</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: -apple-system, 'Segoe UI', sans-serif;
-    background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf3 100%);
-    min-height: 100vh;
-    padding: 16px;
-    color: #222;
-  }
-  .app { max-width: 760px; margin: 0 auto; }
-  header {
-    background: linear-gradient(135deg, #c8102e, #003478);
-    color: white;
-    padding: 20px 24px;
-    border-radius: 16px;
-    margin-bottom: 16px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  }
-  header h1 { font-size: 20px; margin-bottom: 4px; }
-  header p { font-size: 12px; opacity: 0.92; }
-  .day-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 14px;
-    padding-top: 14px;
-    border-top: 1px solid rgba(255,255,255,0.25);
-    font-size: 12px;
-  }
-  .current-time {
-    background: rgba(255,255,255,0.2);
-    padding: 5px 12px;
-    border-radius: 20px;
-    font-weight: 500;
-  }
+:root {
+  --bg: #0d0d14;
+  --bg2: #13131f;
+  --bg3: #1a1a2e;
+  --card: #16213e;
+  --card2: #1a1a35;
+  --red: #e8112d;
+  --red2: #ff2d48;
+  --blue: #0047ab;
+  --blue2: #1a6eff;
+  --gold: #ffd700;
+  --gold2: #ffec6e;
+  --green: #00c896;
+  --orange: #ff7c2e;
+  --text: #f0f0f8;
+  --text2: #9898b8;
+  --text3: #5c5c78;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.14);
+  --radius: 14px;
+  --radius-sm: 8px;
+  --known: #1a2e1a;
+  --known-border: #00c896;
+  --done: #1a1a2e;
+  --done-border: #1a6eff;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html { font-size: 16px; }
+body {
+  font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', -apple-system, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overscroll-behavior: none;
+}
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
 
-  /* Tab bar */
-  .tabs {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 6px;
-    background: white;
-    padding: 6px;
-    border-radius: 12px;
-    margin-bottom: 16px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  }
-  .tab {
-    padding: 10px 6px;
-    text-align: center;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 12px;
-    color: #666;
-    transition: all 0.2s;
-  }
-  .tab.active {
-    background: #003478;
-    color: white;
-    font-weight: 600;
-  }
-  .tab .icon { font-size: 16px; display: block; margin-bottom: 2px; }
+/* ── Header ── */
+.app-header {
+  background: linear-gradient(135deg, #1a0008 0%, #000824 100%);
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  safe-area-inset-top: env(safe-area-inset-top);
+}
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.logo { display: flex; align-items: center; gap: 10px; }
+.logo-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--red), #6b0016);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; font-weight: 900; color: var(--gold);
+  font-family: 'Apple SD Gothic Neo', sans-serif;
+}
+.logo-text { font-size: 15px; font-weight: 700; color: var(--text); }
+.logo-sub { font-size: 10px; color: var(--text2); }
+.header-right { display: flex; align-items: center; gap: 10px; }
+.clock {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gold);
+  font-variant-numeric: tabular-nums;
+}
 
-  /* Slots */
-  .slots {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 6px;
-    margin-bottom: 16px;
-  }
-  .slot {
-    background: white;
-    border-radius: 10px;
-    padding: 10px 4px;
-    text-align: center;
-    cursor: pointer;
-    border: 2px solid transparent;
-    transition: all 0.2s;
-    font-size: 10px;
-  }
-  .slot:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
-  .slot.active { border-color: #c8102e; background: #fff5f5; }
-  .slot.locked { opacity: 0.45; cursor: not-allowed; }
-  .slot.done { background: #e8f5e9; border-color: #4caf50; }
-  .slot .time { font-size: 12px; font-weight: 600; color: #003478; }
-  .slot .label { font-size: 9px; color: #666; margin-top: 2px; }
-  .slot .status { font-size: 16px; margin-top: 3px; }
+/* ── Tab Bar ── */
+.tab-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 4px;
+  gap: 3px;
+}
+.tab-item {
+  padding: 8px 4px;
+  text-align: center;
+  border-radius: 9px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 11px;
+  color: var(--text2);
+  user-select: none;
+}
+.tab-item.active {
+  background: linear-gradient(135deg, var(--red), #7a000e);
+  color: white;
+  font-weight: 600;
+}
+.tab-icon { font-size: 18px; display: block; margin-bottom: 2px; }
 
-  /* Main card */
-  .main-card {
-    background: white;
-    border-radius: 16px;
-    padding: 20px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
-    margin-bottom: 16px;
-  }
+/* ── Main content ── */
+.main { padding: 12px 14px; max-width: 600px; margin: 0 auto; }
 
-  .session-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid #eee;
-  }
-  .session-header h2 { font-size: 16px; color: #003478; }
-  .phrase-counter {
-    background: #003478;
-    color: white;
-    padding: 4px 12px;
-    border-radius: 14px;
-    font-size: 11px;
-    font-weight: 500;
-  }
+/* ── Slot bar ── */
+.slot-bar {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.slot-chip {
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 3px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 10px;
+  color: var(--text2);
+}
+.slot-chip:hover { border-color: var(--border2); }
+.slot-chip.active { border-color: var(--red); background: rgba(232,17,45,0.1); color: white; }
+.slot-chip.done { border-color: var(--green); background: rgba(0,200,150,0.08); }
+.slot-chip.locked { opacity: 0.4; cursor: not-allowed; }
+.slot-time { font-size: 13px; font-weight: 700; color: var(--text); display: block; }
+.slot-label { font-size: 9px; margin-top: 2px; display: block; }
+.slot-status { font-size: 15px; margin-top: 3px; display: block; }
 
-  /* Flashcard */
-  .flashcard-wrap { perspective: 1200px; margin-bottom: 14px; }
-  .flashcard {
-    position: relative;
-    width: 100%;
-    min-height: 300px;
-    transition: transform 0.6s;
-    transform-style: preserve-3d;
-    cursor: pointer;
-  }
-  .flashcard.flipped { transform: rotateY(180deg); }
-  .face {
-    position: absolute;
-    width: 100%;
-    min-height: 300px;
-    backface-visibility: hidden;
-    border-radius: 14px;
-    padding: 20px 16px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-  }
-  .face-front {
-    background: linear-gradient(135deg, #fff 0%, #ffe4e8 100%);
-    border: 2px solid #c8102e;
-  }
-  .face-back {
-    background: linear-gradient(135deg, #fff 0%, #e0ebf5 100%);
-    border: 2px solid #003478;
-    transform: rotateY(180deg);
-    justify-content: flex-start;
-    padding-top: 18px;
-  }
-  .face-front .korean-big {
-    font-size: 38px;
-    font-weight: 700;
-    color: #c8102e;
-    line-height: 1.2;
-    margin: 6px 0;
-  }
-  .face-front .roman {
-    font-size: 16px;
-    color: #666;
-    font-style: italic;
-    margin-bottom: 12px;
-  }
-  .face-front .hint {
-    font-size: 11px;
-    color: #999;
-    margin-top: 12px;
-  }
-  .face-back .vi-text {
-    font-size: 20px;
-    font-weight: 600;
-    color: #003478;
-    margin-bottom: 12px;
-    text-align: center;
-  }
+/* ── Day row ── */
+.day-scroll {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 2px 0 8px;
+  scrollbar-width: none;
+}
+.day-scroll::-webkit-scrollbar { display: none; }
+.day-chip {
+  min-width: 58px;
+  padding: 6px 10px;
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  font-size: 11px;
+  text-align: center;
+  cursor: pointer;
+  white-space: nowrap;
+  color: var(--text2);
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.day-chip.active { border-color: var(--red); color: white; background: rgba(232,17,45,0.12); font-weight: 600; }
+.day-chip.complete { border-color: var(--green); color: var(--green); }
 
-  /* Analysis */
-  .analysis {
-    width: 100%;
-    text-align: left;
-    background: #f9f9f9;
-    padding: 10px 12px;
-    border-radius: 8px;
-    margin: 6px 0;
-    font-size: 12px;
-  }
-  .analysis-title {
-    font-size: 10px;
-    color: #c8102e;
-    font-weight: 700;
-    margin-bottom: 5px;
-    letter-spacing: 0.5px;
-  }
-  .syllable {
-    display: inline-block;
-    background: white;
-    padding: 3px 7px;
-    border-radius: 5px;
-    margin: 2px 3px;
-    font-size: 12px;
-    border: 1px solid #ddd;
-  }
-  .syllable b { color: #c8102e; }
-  .hanja { color: #003478; font-weight: 600; font-size: 12px; }
-  .example-box {
-    background: white;
-    border-left: 3px solid #003478;
-    padding: 7px 10px;
-    margin: 6px 0;
-    border-radius: 4px;
-    font-size: 12px;
-    text-align: left;
-    width: 100%;
-  }
-  .tip-box {
-    background: #fff8dc;
-    border-left: 3px solid #daa520;
-    padding: 7px 10px;
-    margin: 6px 0;
-    font-size: 11.5px;
-    border-radius: 4px;
-    text-align: left;
-    width: 100%;
-  }
+/* ── Phrase card (học) ── */
+.phrase-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 10px;
+  transition: all 0.3s;
+  position: relative;
+}
+.phrase-card.known {
+  background: var(--known);
+  border-color: var(--known-border);
+  opacity: 0.55;
+}
+.phrase-card.mastered {
+  background: var(--done);
+  border-color: var(--done-border);
+  opacity: 0.45;
+}
+.phrase-card.known .card-body,
+.phrase-card.mastered .card-body {
+  display: none;
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px 10px;
+  cursor: pointer;
+}
+.card-num {
+  width: 26px; height: 26px;
+  background: rgba(232,17,45,0.2);
+  border: 1px solid rgba(232,17,45,0.4);
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--red2);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.card-ko { font-size: 20px; font-weight: 700; color: var(--gold); flex: 1; line-height: 1.2; }
+.card-roman { font-size: 11px; color: var(--text2); font-style: italic; }
+.card-status-badge {
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.badge-known { background: rgba(0,200,150,0.15); color: var(--green); border: 1px solid rgba(0,200,150,0.3); }
+.badge-mastered { background: rgba(26,110,255,0.15); color: var(--blue2); border: 1px solid rgba(26,110,255,0.3); }
+.badge-new { background: rgba(232,17,45,0.12); color: var(--red2); border: 1px solid rgba(232,17,45,0.25); }
 
-  /* Buttons */
-  .btn-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 6px;
-    margin-bottom: 8px;
-  }
-  button {
-    background: #003478;
-    color: white;
-    border: none;
-    padding: 11px 6px;
-    border-radius: 8px;
-    font-size: 12px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: all 0.15s;
-  }
-  button:hover { background: #002a5c; transform: translateY(-1px); }
-  button.secondary { background: #888; }
-  button.success { background: #4caf50; }
-  button.danger { background: #e53e3e; }
-  button.big { padding: 12px; font-size: 13px; }
-  .btn-row-2 { grid-template-columns: 1fr 2fr 1fr; }
+.card-body { padding: 0 14px 14px; }
+.vi-text { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 10px; }
 
-  /* Quiz */
-  .quiz-question {
-    text-align: center;
-    padding: 30px 20px;
-    background: linear-gradient(135deg, #fff 0%, #fff5f5 100%);
-    border-radius: 14px;
-    border: 2px solid #c8102e;
-    margin-bottom: 16px;
-  }
-  .quiz-question .prompt {
-    font-size: 12px;
-    color: #666;
-    margin-bottom: 10px;
-  }
-  .quiz-question .korean-audio {
-    font-size: 36px;
-    font-weight: 700;
-    color: #c8102e;
-    margin: 8px 0;
-  }
-  .quiz-question .roman-hint {
-    font-size: 13px;
-    color: #888;
-    font-style: italic;
-  }
-  .quiz-question .audio-only {
-    font-size: 48px;
-    padding: 30px;
-  }
-  .quiz-options {
-    display: grid;
-    gap: 8px;
-  }
-  .quiz-option {
-    background: white;
-    padding: 14px 16px;
-    border: 2px solid #ddd;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 14px;
-    text-align: left;
-    transition: all 0.2s;
-  }
-  .quiz-option:hover {
-    border-color: #003478;
-    background: #f0f5ff;
-  }
-  .quiz-option.correct {
-    background: #e8f5e9;
-    border-color: #4caf50;
-    color: #1b5e20;
-    font-weight: 600;
-  }
-  .quiz-option.wrong {
-    background: #ffebee;
-    border-color: #e53e3e;
-    color: #c62828;
-  }
-  .quiz-stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin-bottom: 16px;
-  }
-  .quiz-stat {
-    background: white;
-    padding: 12px;
-    border-radius: 10px;
-    text-align: center;
-  }
-  .quiz-stat .num {
-    font-size: 22px;
-    font-weight: 700;
-    color: #003478;
-  }
-  .quiz-stat .label {
-    font-size: 11px;
-    color: #666;
-    margin-top: 4px;
-  }
+/* Syllable */
+.syllable-row { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
+.syllable-pill {
+  display: inline-flex; flex-direction: column; align-items: center;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 5px 9px;
+  font-size: 12px;
+}
+.syllable-pill .syl { font-size: 16px; font-weight: 700; color: var(--red2); }
+.syllable-pill .syl-mean { font-size: 10px; color: var(--text2); margin-top: 2px; text-align: center; }
 
-  /* Stats */
-  .stats-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 16px;
-  }
-  .stat-card {
-    background: white;
-    border-radius: 12px;
-    padding: 16px;
-    text-align: center;
-  }
-  .stat-card .big-num {
-    font-size: 32px;
-    font-weight: 700;
-    color: #c8102e;
-  }
-  .stat-card .sub-label {
-    font-size: 11px;
-    color: #888;
-    margin-top: 4px;
-  }
-  .stat-card .main-label {
-    font-size: 13px;
-    color: #003478;
-    font-weight: 600;
-    margin-top: 4px;
-  }
+/* Hanja box */
+.hanja-box {
+  background: rgba(0,71,171,0.12);
+  border: 1px solid rgba(0,71,171,0.3);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font-size: 12px;
+  color: #7eb3ff;
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+.hanja-label { font-size: 10px; color: var(--text3); font-weight: 700; margin-bottom: 3px; letter-spacing: 0.5px; }
 
-  .progress-bar {
-    background: #eee;
-    height: 8px;
-    border-radius: 4px;
-    overflow: hidden;
-    margin: 8px 0;
-  }
-  .progress-fill {
-    background: linear-gradient(90deg, #c8102e, #003478);
-    height: 100%;
-    transition: width 0.3s;
-  }
+/* Example box */
+.example-box {
+  background: var(--bg3);
+  border-left: 3px solid var(--gold);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 8px 12px;
+  margin-bottom: 10px;
+  font-size: 13px;
+}
+.example-ko { color: var(--gold2); font-weight: 600; margin-bottom: 3px; }
+.example-vi { color: var(--text2); font-size: 12px; }
 
-  /* Review */
-  .review-intro {
-    text-align: center;
-    padding: 30px 20px;
-  }
-  .review-intro .icon { font-size: 48px; margin-bottom: 12px; }
-  .review-intro h3 { color: #003478; margin-bottom: 10px; }
-  .review-intro p { color: #666; font-size: 13px; line-height: 1.6; }
+/* Tip */
+.tip-box {
+  background: rgba(255,200,0,0.06);
+  border: 1px solid rgba(255,200,0,0.18);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font-size: 12px;
+  color: #ffd060;
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
 
-  .difficulty-buttons {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 6px;
-    margin-top: 12px;
-  }
-  .diff-btn {
-    padding: 12px 6px;
-    font-size: 12px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    color: white;
-    font-weight: 600;
-  }
-  .diff-hard { background: #e53e3e; }
-  .diff-medium { background: #f59e0b; }
-  .diff-easy { background: #10b981; }
+/* Action buttons row */
+.card-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.audio-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.btn {
+  padding: 9px 6px;
+  border: 1.5px solid var(--border2);
+  border-radius: var(--radius-sm);
+  background: var(--bg3);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+  -webkit-appearance: none;
+}
+.btn:active { transform: scale(0.97); }
+.btn-audio { border-color: rgba(232,17,45,0.3); color: var(--red2); background: rgba(232,17,45,0.06); }
+.btn-audio:active { background: rgba(232,17,45,0.15); }
+.btn-known { border-color: rgba(0,200,150,0.4); color: var(--green); background: rgba(0,200,150,0.06); }
+.btn-known.active { background: rgba(0,200,150,0.18); border-color: var(--green); }
+.btn-master { border-color: rgba(26,110,255,0.4); color: var(--blue2); background: rgba(26,110,255,0.06); }
+.btn-master.active { background: rgba(26,110,255,0.18); border-color: var(--blue2); }
+.btn-restore { border-color: rgba(255,124,46,0.4); color: var(--orange); background: rgba(255,124,46,0.06); font-size: 11px; }
 
-  /* Status */
-  .status-bar {
-    background: #e3f2fd;
-    color: #0d47a1;
-    padding: 10px 14px;
-    border-radius: 8px;
-    font-size: 12px;
-    text-align: center;
-    margin-top: 12px;
-  }
-  .status-bar.warn { background: #fff8dc; color: #856404; }
-  .status-bar.ok { background: #e8f5e9; color: #1b5e20; }
+/* Collapsed known/mastered card header */
+.phrase-card.known .card-header,
+.phrase-card.mastered .card-header {
+  padding: 8px 14px;
+}
+.phrase-card.known .card-ko,
+.phrase-card.mastered .card-ko { font-size: 15px; }
 
-  /* Settings */
-  .settings {
-    background: white;
-    border-radius: 12px;
-    padding: 14px;
-    margin-bottom: 14px;
-    font-size: 12px;
-  }
-  .settings h3 { font-size: 13px; color: #003478; margin-bottom: 8px; }
-  .setting-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 6px 0;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-  .toggle-group { display: flex; gap: 5px; flex-wrap: wrap; }
-  .toggle-btn {
-    padding: 5px 10px;
-    background: #eee;
-    color: #333;
-    border-radius: 16px;
-    font-size: 11px;
-  }
-  .toggle-btn.on { background: #4caf50; color: white; }
+/* ── Session header ── */
+.session-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.session-title { font-size: 16px; font-weight: 700; }
+.session-stats { display: flex; gap: 8px; }
+.stat-pill {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.stat-new { color: var(--red2); border-color: rgba(232,17,45,0.3); }
+.stat-known { color: var(--green); border-color: rgba(0,200,150,0.3); }
+.stat-done { color: var(--blue2); border-color: rgba(26,110,255,0.3); }
 
-  .locked-view {
-    text-align: center;
-    padding: 40px 20px;
-  }
-  .locked-view .icon { font-size: 44px; margin-bottom: 10px; }
-  .locked-view h3 { color: #003478; margin-bottom: 8px; font-size: 16px; }
-  .locked-view p { color: #666; font-size: 13px; line-height: 1.6; }
-  .locked-view .countdown {
-    background: #003478;
-    color: white;
-    padding: 8px 18px;
-    border-radius: 20px;
-    display: inline-block;
-    margin-top: 14px;
-    font-size: 14px;
-    font-weight: 600;
-  }
+/* ── Locked / empty states ── */
+.state-box {
+  text-align: center;
+  padding: 50px 24px;
+}
+.state-icon { font-size: 52px; margin-bottom: 14px; }
+.state-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+.state-desc { font-size: 13px; color: var(--text2); line-height: 1.7; }
+.countdown-badge {
+  display: inline-block;
+  background: var(--card);
+  border: 1px solid var(--border2);
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--gold);
+  margin-top: 16px;
+}
 
-  .method-box {
-    background: #f9f9f9;
-    border-radius: 10px;
-    padding: 12px 14px;
-    margin-top: 14px;
-    font-size: 12px;
-  }
-  .method-box h4 { font-size: 12px; color: #003478; margin-bottom: 6px; }
-  .method-box ol { padding-left: 16px; }
-  .method-box li { margin: 3px 0; color: #444; }
+/* ── Filter bar ── */
+.filter-bar {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.filter-btn {
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1.5px solid var(--border2);
+  background: var(--card);
+  color: var(--text2);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-weight: 500;
+}
+.filter-btn.on { background: rgba(232,17,45,0.14); border-color: var(--red2); color: white; }
+.filter-btn.on-green { background: rgba(0,200,150,0.12); border-color: var(--green); color: var(--green); }
+.filter-btn.on-blue { background: rgba(26,110,255,0.12); border-color: var(--blue2); color: var(--blue2); }
 
-  footer {
-    text-align: center;
-    padding: 16px;
-    color: #999;
-    font-size: 11px;
-  }
+/* ── Quiz ── */
+.quiz-wrap { }
+.quiz-stat-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.q-stat {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px;
+  text-align: center;
+}
+.q-stat-num { font-size: 22px; font-weight: 800; }
+.q-stat-label { font-size: 10px; color: var(--text2); margin-top: 2px; }
 
-  .day-selector {
-    display: flex;
-    gap: 4px;
-    overflow-x: auto;
-    padding: 4px 0;
-    margin-bottom: 10px;
-  }
-  .day-chip {
-    min-width: 60px;
-    padding: 6px 10px;
-    background: white;
-    border-radius: 16px;
-    font-size: 11px;
-    text-align: center;
-    cursor: pointer;
-    border: 2px solid transparent;
-    white-space: nowrap;
-  }
-  .day-chip.active {
-    border-color: #c8102e;
-    background: #fff5f5;
-    color: #c8102e;
-    font-weight: 600;
-  }
-  .day-chip.done { background: #e8f5e9; }
+.quiz-q-card {
+  background: var(--card);
+  border: 2px solid var(--border2);
+  border-radius: var(--radius);
+  padding: 24px 18px;
+  text-align: center;
+  margin-bottom: 14px;
+  min-height: 160px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.quiz-prompt { font-size: 11px; color: var(--text3); margin-bottom: 12px; letter-spacing: 0.5px; text-transform: uppercase; }
+.quiz-ko { font-size: 34px; font-weight: 800; color: var(--gold); margin-bottom: 6px; line-height: 1.2; }
+.quiz-roman { font-size: 14px; color: var(--text2); font-style: italic; }
+.quiz-audio-icon { font-size: 52px; padding: 16px 0; }
 
-  .hidden { display: none !important; }
+.quiz-options { display: grid; gap: 8px; }
+.quiz-opt {
+  background: var(--card2);
+  border: 2px solid var(--border2);
+  border-radius: var(--radius-sm);
+  padding: 13px 16px;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+  color: var(--text);
+  transition: all 0.15s;
+  -webkit-appearance: none;
+}
+.quiz-opt:active { transform: scale(0.99); }
+.quiz-opt.correct { background: rgba(0,200,150,0.15); border-color: var(--green); color: var(--green); font-weight: 700; }
+.quiz-opt.wrong { background: rgba(232,17,45,0.12); border-color: var(--red); color: #ff6680; }
+.quiz-opt.reveal { background: rgba(0,200,150,0.08); border-color: rgba(0,200,150,0.4); color: var(--green); }
 
-  .empty-state {
-    text-align: center;
-    padding: 40px 20px;
-    color: #999;
-  }
-  .empty-state .icon { font-size: 48px; margin-bottom: 10px; }
+.quiz-next-btn {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  padding: 14px;
+  background: linear-gradient(135deg, var(--red), #7a000e);
+  border: none;
+  border-radius: var(--radius-sm);
+  color: white;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  border-radius: 12px;
+}
+
+/* ── Review (SRS) ── */
+.review-card {
+  background: var(--card);
+  border: 1.5px solid var(--border2);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+.flip-wrap { perspective: 1200px; margin: 0; }
+.flip-inner {
+  position: relative;
+  min-height: 260px;
+  transition: transform 0.55s;
+  transform-style: preserve-3d;
+  cursor: pointer;
+}
+.flip-inner.flipped { transform: rotateY(180deg); }
+.flip-face {
+  position: absolute;
+  width: 100%;
+  min-height: 260px;
+  backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 20px;
+  text-align: center;
+}
+.flip-front { background: var(--card); }
+.flip-back {
+  background: var(--card2);
+  transform: rotateY(180deg);
+  justify-content: flex-start;
+  padding-top: 20px;
+}
+.flip-ko { font-size: 36px; font-weight: 800; color: var(--gold); margin-bottom: 8px; }
+.flip-roman { font-size: 15px; color: var(--text2); font-style: italic; margin-bottom: 16px; }
+.flip-hint { font-size: 12px; color: var(--text3); }
+.flip-vi { font-size: 20px; font-weight: 700; margin-bottom: 10px; text-align: center; width: 100%; }
+
+.srs-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.srs-btn { padding: 12px 6px; border: none; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; color: white; transition: all 0.15s; }
+.srs-btn:active { transform: scale(0.97); }
+.srs-hard { background: #c0392b; }
+.srs-mid { background: #e67e22; }
+.srs-easy { background: #27ae60; }
+
+/* ── Stats ── */
+.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+.stat-card-big {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  text-align: center;
+}
+.stat-big-num { font-size: 34px; font-weight: 800; color: var(--red2); }
+.stat-big-label { font-size: 12px; color: var(--text2); margin-top: 4px; }
+.stat-big-sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
+.progress-bar { background: var(--bg3); height: 6px; border-radius: 3px; overflow: hidden; margin: 8px 0; }
+.progress-fill { background: linear-gradient(90deg, var(--red), var(--blue2)); height: 100%; transition: width 0.4s; border-radius: 3px; }
+
+/* ── Settings ── */
+.settings-section { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; margin-bottom: 12px; }
+.settings-title { font-size: 13px; font-weight: 700; margin-bottom: 12px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; }
+.setting-row { display: flex; justify-content: space-between; align-items: center; margin: 8px 0; flex-wrap: wrap; gap: 8px; }
+.setting-label { font-size: 13px; color: var(--text); }
+.tog-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.tog-btn { padding: 6px 12px; border-radius: 16px; border: 1.5px solid var(--border2); background: transparent; color: var(--text2); font-size: 12px; cursor: pointer; font-weight: 500; transition: all 0.15s; }
+.tog-btn.on { background: rgba(232,17,45,0.14); border-color: var(--red2); color: white; }
+.tog-btn.on-green { background: rgba(0,200,150,0.12); border-color: var(--green); color: var(--green); }
+
+/* ── Install banner ── */
+#install-banner {
+  position: fixed; bottom: 16px; left: 14px; right: 14px;
+  background: linear-gradient(135deg, #1a0008, #000824);
+  border: 1px solid rgba(232,17,45,0.4);
+  border-radius: 16px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 1000;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  animation: slideUp 0.3s ease;
+}
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.install-text { flex: 1; }
+.install-title { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+.install-sub { font-size: 11px; color: var(--text2); }
+.btn-install { background: var(--red); color: white; padding: 8px 16px; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; flex-shrink: 0; }
+.btn-dismiss { background: transparent; color: var(--text2); padding: 6px; border: none; font-size: 20px; cursor: pointer; flex-shrink: 0; }
+
+/* ── Section label ── */
+.section-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text3);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin: 14px 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-label::after { content:''; flex:1; height:1px; background: var(--border); }
+
+/* ── Restore hidden section ── */
+.restore-section {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  margin-bottom: 12px;
+}
+.restore-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+.restore-title { font-size: 13px; font-weight: 600; color: var(--text2); }
+.restore-count { font-size: 11px; padding: 2px 8px; background: rgba(255,124,46,0.15); color: var(--orange); border-radius: 10px; }
+.restore-body { margin-top: 10px; display: none; }
+.restore-body.open { display: block; }
+.restore-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.restore-item:last-child { border-bottom: none; }
+.restore-ko { color: var(--gold); font-weight: 600; }
+.restore-type { font-size: 10px; color: var(--text3); }
+
+.hidden { display: none !important; }
+.divider { height: 1px; background: var(--border); margin: 16px 0; }
 </style>
 </head>
 <body>
 
-<div class="app">
-
-<header>
-  <h1>🇰🇷 Tiếng Hàn HDV · v2.0</h1>
-  <p>Lịch 5 lần/ngày · Quiz · Ôn tập thông minh · 150 cụm từ</p>
-  <div class="day-info">
-    <span id="day-label">Ngày 1</span>
-    <span class="current-time" id="current-time">--:--</span>
-  </div>
-</header>
-
-<div class="tabs">
-  <div class="tab active" data-tab="learn" onclick="switchTab('learn')">
-    <span class="icon">📖</span>Học
-  </div>
-  <div class="tab" data-tab="quiz" onclick="switchTab('quiz')">
-    <span class="icon">🎯</span>Quiz
-  </div>
-  <div class="tab" data-tab="review" onclick="switchTab('review')">
-    <span class="icon">🔁</span>Ôn tập
-  </div>
-  <div class="tab" data-tab="stats" onclick="switchTab('stats')">
-    <span class="icon">📊</span>Thống kê
-  </div>
-</div>
-
-<!-- TAB: Học -->
-<div id="tab-learn">
-
-<div class="slots" id="slots"></div>
-
-<div class="settings">
-  <h3>⚙️ Cài đặt</h3>
-  <div class="setting-row">
-    <span>Thông báo</span>
-    <button class="toggle-btn" id="notif-btn" onclick="toggleNotif()">Bật</button>
-  </div>
-  <div class="setting-row">
-    <span>Chế độ</span>
-    <div class="toggle-group">
-      <button class="toggle-btn on" id="strict-btn" onclick="setMode('strict')">Theo giờ</button>
-      <button class="toggle-btn" id="free-btn" onclick="setMode('free')">Mở hết</button>
+<div class="app-header">
+  <div class="header-top">
+    <div class="logo">
+      <div class="logo-icon">한</div>
+      <div>
+        <div class="logo-text">한국어 HDV v3</div>
+        <div class="logo-sub">150+ cụm · Quiz · Ôn tập SRS</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="clock" id="clock">--:--</div>
     </div>
   </div>
-  <div class="setting-row">
-    <span>Ngày</span>
+  <div class="tab-bar">
+    <div class="tab-item active" data-tab="learn" onclick="switchTab('learn')">
+      <span class="tab-icon">📖</span>Học
+    </div>
+    <div class="tab-item" data-tab="quiz" onclick="switchTab('quiz')">
+      <span class="tab-icon">🎯</span>Quiz
+    </div>
+    <div class="tab-item" data-tab="review" onclick="switchTab('review')">
+      <span class="tab-icon">🔁</span>Ôn tập
+    </div>
+    <div class="tab-item" data-tab="stats" onclick="switchTab('stats')">
+      <span class="tab-icon">📊</span>Thống kê
+    </div>
   </div>
-  <div class="day-selector" id="day-selector"></div>
 </div>
 
-<div class="main-card" id="main-card"></div>
-
-</div>
-
-<!-- TAB: Quiz -->
-<div id="tab-quiz" class="hidden">
-  <div class="main-card" id="quiz-card"></div>
-</div>
-
-<!-- TAB: Ôn tập -->
-<div id="tab-review" class="hidden">
-  <div class="main-card" id="review-card"></div>
-</div>
-
-<!-- TAB: Thống kê -->
-<div id="tab-stats" class="hidden">
-  <div class="main-card" id="stats-card"></div>
-</div>
-
-<footer>
-  💡 Bookmark · Tiến độ lưu tự động · Học 2 năm rồi - lên TOPIK 4 với 150 cụm này!
-</footer>
-
+<div class="main">
+  <div id="tab-learn"></div>
+  <div id="tab-quiz" class="hidden"></div>
+  <div id="tab-review" class="hidden"></div>
+  <div id="tab-stats" class="hidden"></div>
 </div>
 
 <script>
+/* ================================================================
+   DỮ LIỆU: Rút từ transcript thật - cụm từ dài & phức tạp hơn v2
+   Nguồn: 15 file ghi âm HDV tại Đà Nẵng - Hội An - Bà Nà
+   ================================================================ */
 
-/* ==================== DỮ LIỆU - 10 NGÀY x 5 SLOT x 3 CỤM = 150 CỤM ==================== */
-
-const SLOTS = [
-  { hour: 7, label: 'Sáng sớm' },
-  { hour: 10, label: 'Sáng muộn' },
-  { hour: 15, label: 'Chiều' },
-  { hour: 17, label: 'Chiều muộn' },
-  { hour: 21, label: 'Tối' }
+const SLOTS_CFG = [
+  { hour:7, label:'Sáng sớm' },
+  { hour:10, label:'Sáng muộn' },
+  { hour:15, label:'Chiều' },
+  { hour:17, label:'Chiều muộn' },
+  { hour:21, label:'Tối' }
 ];
 
-const LESSONS = [
-/* NGÀY 1: Kính ngữ HDV cơ bản */
+const DB = [
+/* ═══════════════════════════════════════════════════
+   NGÀY 1 - Chào hỏi & Kính ngữ HDV
+═══════════════════════════════════════════════════ */
 [
-[
-{ko:'선생님',roman:'seon-saeng-nim',vi:'Quý khách',syllables:[{text:'선',mean:'先 tiên'},{text:'생',mean:'生 sinh'},{text:'님',mean:'đuôi kính'}],hanja:'先生님 — "Tiên sinh" + đuôi kính',example:{ko:'선생님들, 안녕하세요!',vi:'Kính chào quý khách!'},tip:'Gọi khách luôn dùng 선생님들 (có 들 = số nhiều)'},
-{ko:'감사합니다',roman:'gam-sa-ham-ni-da',vi:'Cảm ơn (trang trọng)',syllables:[{text:'감사',mean:'感謝 cảm tạ'},{text:'합니다',mean:'làm (kính)'}],hanja:'感謝합니다 = "Cảm tạ làm"',example:{ko:'협조해 주셔서 감사합니다.',vi:'Cảm ơn vì đã hợp tác.'},tip:'感謝 = "cảm tạ" — cùng gốc Hán với tiếng Việt'},
-{ko:'안녕하세요',roman:'an-nyeong-ha-se-yo',vi:'Xin chào',syllables:[{text:'안',mean:'安 an'},{text:'녕',mean:'寧 ninh'},{text:'하세요',mean:'hãy làm'}],hanja:'安寧하세요 = "Mong ngài an ninh"',example:{ko:'안녕하세요, 오늘 날씨가 좋네요.',vi:'Xin chào, hôm nay đẹp trời.'},tip:'安寧 = "an ninh" — chào nhau = chúc bình an'}
+/* 7h */ [
+{ko:'안녕하세요, 저희 가이드 정민수입니다',roman:'an-nyeong-ha-se-yo, jeo-hui ga-i-deu jeong-min-su-im-ni-da',vi:'Xin chào, tôi là hướng dẫn viên Chung Min-su',
+syllables:[{t:'안녕하세요',m:'安寧하세요 - Xin chào'},{t:'저희',m:'chúng tôi (khiêm)'},{t:'가이드',m:'guide'},{t:'정민수',m:'tên HDV'}],
+hanja:'安寧하세요 = "Mong ngài an ninh"',
+ex:{ko:'안녕하세요, 저희 가이드 정민수입니다. 잘 부탁드립니다.',vi:'Xin chào, tôi là HDV Chung Min-su. Mong được giúp đỡ.'},
+tip:'Câu giới thiệu mở đầu tour - quan trọng nhất!'},
+{ko:'선생님들 조식 식사 다 드셨죠?',roman:'seon-saeng-nim-deul jo-sik sik-sa da deu-syeot-jyo?',vi:'Quý khách đã dùng bữa sáng xong chưa?',
+syllables:[{t:'선생님들',m:'Quý khách (số nhiều)'},{t:'조식',m:'朝食 - bữa sáng'},{t:'다 드셨죠',m:'đã xong rồi đúng không'}],
+hanja:'朝食 = "Triêu thực" = bữa ăn buổi sáng',
+ex:{ko:'선생님들 조식 식사 지금 다 드셨죠?',vi:'Quý khách đã dùng xong bữa sáng rồi đúng ạ?'},
+tip:'Câu check-in đầu tour từ file bana_20.05 - nguyên văn!'},
+{ko:'잘 부탁드립니다',roman:'jal bu-tak-deu-rim-ni-da',vi:'Mong được giúp đỡ / Nhờ quý khách nhiều',
+syllables:[{t:'잘',m:'tốt'},{t:'부탁',m:'付託 phó thác'},{t:'드립니다',m:'kính dâng'}],
+hanja:'付託드립니다 = "Phó thác kính dâng"',
+ex:{ko:'오늘 하루 잘 부탁드립니다.',vi:'Hôm nay mong quý khách nhiều ạ.'},
+tip:'Câu kết mở đầu tour - dùng sau khi giới thiệu tên'}
 ],
-[
-{ko:'이동하겠습니다',roman:'i-dong-ha-get-seum-ni-da',vi:'Sẽ di chuyển',syllables:[{text:'이동',mean:'移動 di động'},{text:'하겠',mean:'sẽ làm'},{text:'습니다',mean:'đuôi kính'}],hanja:'移動하겠습니다 = "Di động sẽ làm"',example:{ko:'지금부터 바나힐로 이동하겠습니다.',vi:'Bây giờ di chuyển đến Bà Nà.'},tip:'移動 = "di động" tiếng Việt — dùng đầu mỗi điểm'},
-{ko:'도착했습니다',roman:'do-chak-haet-seum-ni-da',vi:'Đã tới nơi',syllables:[{text:'도착',mean:'到着 đáo trước'},{text:'했습니다',mean:'đã làm'}],hanja:'到着했습니다 = "Đáo trước đã"',example:{ko:'호이안에 도착했습니다.',vi:'Đã tới Hội An rồi ạ.'},tip:'到 (đáo) + 着 (trước) = "đến chạm" = tới nơi'},
-{ko:'따라오세요',roman:'tta-ra-o-se-yo',vi:'Xin đi theo tôi',syllables:[{text:'따라',mean:'theo'},{text:'오',mean:'đến'},{text:'세요',mean:'đuôi mời'}],hanja:'Thuần Hàn',example:{ko:'일행 잃지 마시고 따라오세요.',vi:'Đừng rời đoàn, đi theo em.'},tip:'따라오다 khác 따라가다 — 오 = hướng về tôi!'}
+/* 10h */ [
+{ko:'오늘 일정에 대해 말씀드리도록 하겠습니다',roman:'o-neul il-jeong-e dae-hae mal-sseum-deu-ri-do-rok ha-get-seum-ni-da',vi:'Em xin phép trình bày về lịch trình hôm nay',
+syllables:[{t:'오늘',m:'hôm nay'},{t:'일정',m:'日程 lịch trình'},{t:'에 대해',m:'về'},{t:'말씀드리',m:'xin thưa'},{t:'도록 하겠습니다',m:'em sẽ cố để'}],
+hanja:'日程 = "Nhật trình" + 말씀드리다 (khiêm nhường)',
+ex:{ko:'지금부터 오늘 일정에 대해 말씀드리도록 하겠습니다.',vi:'Từ bây giờ em xin trình bày lịch trình hôm nay.'},
+tip:'Câu VÀNG mở đầu mỗi ngày tour. Thuộc lòng ngay!'},
+{ko:'가이드와 동행하지 않으시면 찾을 수가 없습니다',roman:'ga-i-deu-wa dong-haeng-ha-ji a-neu-si-myeon cha-jeul su-ga eop-seum-ni-da',vi:'Nếu không đi cùng hướng dẫn viên sẽ không tìm thấy được',
+syllables:[{t:'가이드와',m:'cùng HDV'},{t:'동행하지 않으시면',m:'nếu không đồng hành'},{t:'찾을 수가 없습니다',m:'không thể tìm thấy'}],
+hanja:'同行 (đồng hành) + kính ngữ',
+ex:{ko:'케이블카는 가이드와 동행하지 않으시면 찾을 수가 없습니다.',vi:'Cáp treo mà không đi cùng HDV thì không tìm được.'},
+tip:'Từ file KS-bana - nguyên văn thật! Kết hợp 3 cấu trúc cao cấp.'},
+{ko:'저희가 이제 이동을 할 건데요',roman:'jeo-hui-ga i-je i-dong-eul hal kken-de-yo',vi:'Bây giờ chúng ta sẽ di chuyển đây',
+syllables:[{t:'저희가',m:'chúng tôi'},{t:'이제',m:'bây giờ'},{t:'이동을 할 건데요',m:'sẽ di chuyển + ngữ khí'}],
+hanja:'移動 = "Di động"',
+ex:{ko:'자, 저희가 이제 바나힐로 이동을 할 건데요.',vi:'Nào, giờ chúng ta di chuyển đến Bà Nà nhé.'},
+tip:'-ㄹ 건데요 = sắp làm + báo trước cho người nghe'}
 ],
-[
-{ko:'유명합니다',roman:'yu-myeong-ham-ni-da',vi:'Nổi tiếng',syllables:[{text:'유',mean:'有 hữu'},{text:'명',mean:'名 danh'},{text:'합니다',mean:'là'}],hanja:'有名 = "Hữu danh" = có tên',example:{ko:'이곳은 골든 브릿지로 유명합니다.',vi:'Nơi này nổi tiếng Cầu Vàng.'},tip:'有名 = "hữu danh" — người có tên = nổi tiếng'},
-{ko:'세계 문화 유산',roman:'se-gye mun-hwa yu-san',vi:'Di sản văn hóa thế giới',syllables:[{text:'세계',mean:'世界'},{text:'문화',mean:'文化'},{text:'유산',mean:'遺産'}],hanja:'世界文化遺産 — 3 từ đều trùng Hán Việt',example:{ko:'호이안은 유네스코 세계 문화 유산입니다.',vi:'Hội An là di sản UNESCO.'},tip:'Người Việt học cái này cực nhanh!'},
-{ko:'보존되어 있습니다',roman:'bo-jon-doe-eo it-seum-ni-da',vi:'Được bảo tồn',syllables:[{text:'보존',mean:'保存 bảo tồn'},{text:'되어',mean:'bị động'},{text:'있습니다',mean:'đang có'}],hanja:'保存되어 있다 = "Bảo tồn" trạng thái',example:{ko:'잘 보존되어 있습니다.',vi:'Được bảo tồn tốt.'},tip:'-되다 = biến động từ thành bị động'}
+/* 15h */ [
+{ko:'이 자리를 빌려 말씀드리고 싶은 것이 있습니다',roman:'i ja-ri-reul bil-lyeo mal-sseum-deu-ri-go sip-eun geo-si it-seum-ni-da',vi:'Nhân dịp này em muốn thưa với quý khách một điều',
+syllables:[{t:'이 자리를 빌려',m:'nhân dịp/mượn vị trí này'},{t:'말씀드리고 싶은',m:'muốn thưa'},{t:'것이 있습니다',m:'có điều'}],
+hanja:'Thuần Hàn - cụm diễn văn đặc trưng',
+ex:{ko:'이 자리를 빌려 감사의 말씀을 드리고 싶습니다.',vi:'Nhân dịp này em muốn nói lời cảm ơn.'},
+tip:'Cụm mở đầu bài phát biểu - rất trang trọng, ấn tượng'},
+{ko:'제가 살면서 제일 잘한 일이 있어요',roman:'je-ga sal-myeon-seo je-il jal-han il-i it-seo-yo',vi:'Có một điều tốt nhất mà tôi đã làm trong đời',
+syllables:[{t:'제가 살면서',m:'trong suốt cuộc đời'},{t:'제일 잘한',m:'làm tốt nhất'},{t:'일이 있어요',m:'có việc'}],
+hanja:'Thuần Hàn - câu kể chuyện đời tư',
+ex:{ko:'제가 살면서 제일 잘한 일이 있어요. 바로 저희 와이프를 만난 것이에요.',vi:'Có một điều tốt nhất tôi làm trong đời - là gặp vợ tôi.'},
+tip:'Từ file bana_20.05 - nguyên văn! Câu mở đầu câu chuyện cá nhân'},
+{ko:'그러면서 이제 같이 베트남 생활을 하시다가',roman:'geu-reo-myeon-seo i-je ga-chi be-teu-nam saeng-hwal-eul ha-si-da-ga',vi:'Và rồi đang cùng sống ở Việt Nam thì...',
+syllables:[{t:'그러면서',m:'và rồi/trong khi đó'},{t:'이제',m:'bây giờ'},{t:'같이',m:'cùng nhau'},{t:'생활을 하시다가',m:'đang sống thì'}],
+hanja:'生活 = "Sinh hoạt"',
+ex:{ko:'그래서 이제 같이 베트남 생활을 하시다가 지금은 잠깐 한국에 가 계십니다.',vi:'Và rồi đang cùng sống ở Việt Nam, giờ tạm về Hàn.'},
+tip:'-시다가 = đang đang làm thì (bị ngắt). Cấu trúc kể chuyện chuyên nghiệp'}
 ],
-[
-{ko:'식사하세요',roman:'sik-sa-ha-se-yo',vi:'Xin mời dùng bữa',syllables:[{text:'식',mean:'食 thực'},{text:'사',mean:'事 sự'},{text:'하세요',mean:'hãy làm'}],hanja:'食事하세요 = "Thực sự hãy làm"',example:{ko:'맛있게 식사하세요.',vi:'Chúc ăn ngon miệng.'},tip:'食事 = "việc ăn" - tiếng Nhật cũng dùng'},
-{ko:'맛있어요',roman:'ma-si-sseo-yo',vi:'Ngon quá',syllables:[{text:'맛',mean:'vị'},{text:'있어요',mean:'có'}],hanja:'Thuần Hàn - "có vị" = ngon',example:{ko:'쌀국수가 정말 맛있어요.',vi:'Phở thật sự rất ngon.'},tip:'Trái nghĩa: 맛없어요 (không có vị)'},
-{ko:'배불러요',roman:'bae-bul-leo-yo',vi:'No rồi',syllables:[{text:'배',mean:'bụng'},{text:'불러요',mean:'đầy'}],hanja:'Thuần Hàn - "bụng đầy"',example:{ko:'너무 배불러서 더 못 먹겠어요.',vi:'No quá không ăn được nữa.'},tip:'Trái nghĩa: 배고파요 (bụng đói)'}
+/* 17h */ [
+{ko:'점심 식사는 현지식 뷔페 식당을 예약해 놓았습니다',roman:'jeom-sim sik-sa-neun hyeon-ji-sik bwi-pe sik-dang-eul ye-yak-hae no-at-seum-ni-da',vi:'Bữa trưa em đã đặt trước nhà hàng buffet đồ địa phương',
+syllables:[{t:'점심 식사는',m:'về bữa trưa'},{t:'현지식',m:'đồ ăn địa phương'},{t:'뷔페 식당을',m:'nhà hàng buffet'},{t:'예약해 놓았습니다',m:'đã đặt sẵn'}],
+hanja:'食事 = "Thực sự" | 豫約 = "Dự ước"',
+ex:{ko:'점심 식사는 바나힐에서 내려와서 현지식 뷔페 식당을 예약해 놓았습니다.',vi:'Bữa trưa sau khi xuống Bà Nà em đã đặt buffet địa phương.'},
+tip:'Từ file bana_20.05 - nguyên văn! -아/어 놓다 = đã làm sẵn'},
+{ko:'현지식도 드실 수 있고 한식도 준비가 되어 있어요',roman:'hyeon-ji-sik-do deu-sil su it-go han-sik-do jun-bi-ga doe-eo it-seo-yo',vi:'Có thể dùng đồ địa phương và đồ Hàn cũng đã sẵn sàng',
+syllables:[{t:'현지식도',m:'đồ địa phương cũng'},{t:'드실 수 있고',m:'có thể dùng và'},{t:'한식도',m:'đồ Hàn cũng'},{t:'준비가 되어 있어요',m:'đã chuẩn bị rồi'}],
+hanja:'韓食 = "Hàn thực"',
+ex:{ko:'현지식도 드실 수 있고 어른들을 위한 한식 비빔밥도 준비가 되어 있어요.',vi:'Có đồ địa phương và cả cơm trộn Hàn cho người lớn.'},
+tip:'Từ file bana - nguyên văn! Dùng -도...도 = "cả... lẫn..."'},
+{ko:'우리 어머님 아버님들을 위해서 준비해 드렸습니다',roman:'u-ri eo-meo-nim a-beo-nim-deul-eul wi-hae-seo jun-bi-hae deu-ryeot-seum-ni-da',vi:'Em đã chuẩn bị cho các cô chú (khách lớn tuổi)',
+syllables:[{t:'어머님 아버님들',m:'các cô chú'},{t:'을 위해서',m:'vì / cho'},{t:'준비해 드렸습니다',m:'đã chuẩn bị giúp'}],
+hanja:'Kính ngữ + 준비해 드리다 (khiêm nhường)',
+ex:{ko:'날씨가 더우실 것 같아서 부채를 우리 어머님 아버님들을 위해서 준비해 드렸습니다.',vi:'Thấy trời nóng nên em chuẩn bị quạt cho các cô chú.'},
+tip:'Kết hợp kính ngữ 3 lớp - HDV chuyên nghiệp mới dùng'}
 ],
-[
-{ko:'수고하셨습니다',roman:'su-go-ha-syeot-seum-ni-da',vi:'Quý khách đã vất vả',syllables:[{text:'수고',mean:'受苦 thụ khổ'},{text:'하셨',mean:'đã làm'},{text:'습니다',mean:'kính'}],hanja:'受苦하셨습니다 = "Thụ khổ đã làm"',example:{ko:'오늘 하루 수고하셨습니다.',vi:'Một ngày dài vất vả rồi.'},tip:'Câu vàng cuối tour! Người Hàn dùng cuối ngày làm việc.'},
-{ko:'내일 뵙겠습니다',roman:'nae-il boep-get-seum-ni-da',vi:'Hẹn gặp lại ngày mai',syllables:[{text:'내일',mean:'來日 lai nhật'},{text:'뵙겠',mean:'sẽ gặp (kính)'},{text:'습니다',mean:'kính'}],hanja:'來日뵙겠습니다',example:{ko:'푹 쉬시고 내일 뵙겠습니다.',vi:'Nghỉ ngơi, mai gặp lại.'},tip:'뵙다 là kính ngữ của 만나다 — chỉ dùng với người trên!'},
-{ko:'안녕히 주무세요',roman:'an-nyeong-hi ju-mu-se-yo',vi:'Chúc ngủ ngon',syllables:[{text:'안녕히',mean:'安寧히'},{text:'주무세요',mean:'xin nghỉ (kính)'}],hanja:'安寧히 주무세요',example:{ko:'좋은 꿈 꾸시고 안녕히 주무세요.',vi:'Mơ đẹp, ngủ ngon.'},tip:'주무시다 = kính ngữ của 자다 (ngủ)'}
+/* 21h */ [
+{ko:'오늘 하루 동안 함께해 주셔서 진심으로 감사드립니다',roman:'o-neul ha-ru dong-an ham-kke-hae ju-syeo-seo jin-sim-eu-ro gam-sa-deu-rim-ni-da',vi:'Chân thành cảm ơn quý khách đã đồng hành suốt hôm nay',
+syllables:[{t:'오늘 하루 동안',m:'suốt ngày hôm nay'},{t:'함께해 주셔서',m:'vì đã cùng'},{t:'진심으로',m:'真心으로 - chân thành'},{t:'감사드립니다',m:'kính cảm ơn'}],
+hanja:'眞心 = "Chân tâm" | 感謝드립니다 (khiêm nhường)',
+ex:{ko:'오늘 하루 동안 함께해 주셔서 진심으로 감사드립니다. 내일 또 뵙겠습니다.',vi:'Cảm ơn đã đồng hành hôm nay. Mai gặp lại ạ.'},
+tip:'Câu kết tour chuẩn - thuộc lòng. 감사드리다 > 감사합니다'},
+{ko:'불편하신 점은 없으셨나요?',roman:'bul-pyeon-ha-sin jeom-eun eop-seu-syeot-na-yo?',vi:'Có điều gì bất tiện không ạ?',
+syllables:[{t:'불편하신',m:'bất tiện (kính)'},{t:'점은',m:'điều/chỗ'},{t:'없으셨나요',m:'không có ạ?'}],
+hanja:'不便하신 점 = "Bất tiện hạng"',
+ex:{ko:'오늘 여행 중에 불편하신 점은 없으셨나요?',vi:'Trong chuyến đi hôm nay có điều bất tiện gì không?'},
+tip:'Hỏi feedback khách - rất quan trọng cuối tour'},
+{ko:'좋은 꿈 꾸시고 내일 또 뵙겠습니다',roman:'jo-eun kkum kku-si-go nae-il tto boep-get-seum-ni-da',vi:'Chúc mơ đẹp và ngày mai gặp lại',
+syllables:[{t:'좋은 꿈 꾸시고',m:'mơ giấc đẹp và'},{t:'내일',m:'來日 ngày mai'},{t:'또 뵙겠습니다',m:'sẽ lại gặp (kính)'}],
+hanja:'來日 = "Lai nhật" | 뵙겠습니다 = kính ngữ gặp mặt',
+ex:{ko:'오늘 수고 많으셨습니다. 좋은 꿈 꾸시고 내일 또 뵙겠습니다.',vi:'Hôm nay vất vả rồi. Chúc ngủ ngon, mai gặp lại.'},
+tip:'Câu chào tạm biệt tối - ấm áp và chuyên nghiệp'}
 ]
 ],
-/* NGÀY 2: Giới thiệu tour */
+/* ═══════════════════════════════════════════════════
+   NGÀY 2 - Bà Nà Hills: cáp treo, Golden Bridge
+═══════════════════════════════════════════════════ */
 [
-[
-{ko:'일정',roman:'il-jeong',vi:'Lịch trình',syllables:[{text:'일',mean:'日 nhật'},{text:'정',mean:'程 trình'}],hanja:'日程 = "Nhật trình"',example:{ko:'오늘 일정을 말씀드리겠습니다.',vi:'Em xin thông báo lịch trình.'},tip:'Nhật (ngày) + Trình (đường) = Lịch trình!'},
-{ko:'출발',roman:'chul-bal',vi:'Xuất phát',syllables:[{text:'출',mean:'出 xuất'},{text:'발',mean:'發 phát'}],hanja:'出發 - trùng hoàn toàn!',example:{ko:'아침 8시에 출발합니다.',vi:'8h sáng xuất phát.'},tip:'Y hệt tiếng Việt'},
-{ko:'예정',roman:'ye-jeong',vi:'Dự định/dự kiến',syllables:[{text:'예',mean:'豫 dự'},{text:'정',mean:'定 định'}],hanja:'豫定 = "Dự định"',example:{ko:'12시에 도착할 예정입니다.',vi:'Dự kiến 12h đến.'},tip:'-할 예정이다 = "dự định sẽ ~"'}
+/* 7h */ [
+{ko:'케이블카는 반드시 가이드와 함께 탑승하셔야 됩니다',roman:'ke-i-beul-ka-neun ban-deu-si ga-i-deu-wa ham-kke tap-seung-ha-syeo-ya doem-ni-da',vi:'Cáp treo bắt buộc phải lên cùng hướng dẫn viên',
+syllables:[{t:'케이블카는',m:'cáp treo thì'},{t:'반드시',m:'bắt buộc'},{t:'가이드와 함께',m:'cùng HDV'},{t:'탑승하셔야 됩니다',m:'phải lên (kính)'}],
+hanja:'搭乘 = "Đáp thừa" = lên phương tiện',
+ex:{ko:'케이블카는 반드시 가이드와 함께 탑승하셔야 됩니다. 혼자 타시면 안 됩니다.',vi:'Cáp treo bắt buộc đi cùng HDV. Không được đi một mình.'},
+tip:'Từ file KS-bana - nguyên văn! 반드시 = bắt buộc (mạnh hơn 꼭)'},
+{ko:'케이블카 길이가 5,800미터 약 6킬로 정도 됩니다',roman:'ke-i-beul-ka gil-i-ga o-cheon-pal-baek mi-teo yak yuk-kil-lo jeong-do doem-ni-da',vi:'Chiều dài cáp treo khoảng 5.800m, xấp xỉ 6km',
+syllables:[{t:'길이가',m:'chiều dài'},{t:'5800미터',m:'5800 mét'},{t:'약 6킬로',m:'khoảng 6km'},{t:'정도 됩니다',m:'khoảng'}],
+hanja:'Thuần Hàn + số đo',
+ex:{ko:'우리 케이블카 길이가 5,800미터 약 6킬로 정도 됩니다.',vi:'Cáp treo dài 5.800m, khoảng 6km đấy ạ.'},
+tip:'Nguyên văn từ file! Cách nói số đo chuyên nghiệp'},
+{ko:'해발 고도 1,487미터로 올라가게 됩니다',roman:'hae-bal go-do cheon-sa-baek-pal-sip-chil mi-teo-ro ol-la-ga-ge doem-ni-da',vi:'Chúng ta sẽ lên tới độ cao 1.487m so với mực nước biển',
+syllables:[{t:'해발 고도',m:'海拔 해발 - cao so với biển'},{t:'1487미터로',m:'1487 mét'},{t:'올라가게 됩니다',m:'sẽ đi lên'}],
+hanja:'海拔 = "Hải bạt" = cao so với mặt biển',
+ex:{ko:'지금부터 해발 고도 1,487미터로 올라가게 됩니다.',vi:'Bây giờ chúng ta lên tới độ cao 1.487m so biển.'},
+tip:'해발 = 海拔 = "hải bạt" - tiếng Việt cũng có từ này!'}
 ],
-[
-{ko:'관광',roman:'gwan-gwang',vi:'Tham quan',syllables:[{text:'관',mean:'觀 quan'},{text:'광',mean:'光 quang'}],hanja:'觀光 = "Quan quang" = ngắm ánh sáng đẹp',example:{ko:'오행산을 관광하겠습니다.',vi:'Sẽ tham quan Ngũ Hành Sơn.'},tip:'관광지 = điểm tham quan, 관광객 = du khách'},
-{ko:'입장료',roman:'ip-jang-ryo',vi:'Vé vào cửa',syllables:[{text:'입',mean:'入 nhập'},{text:'장',mean:'場 trường'},{text:'료',mean:'料 liệu'}],hanja:'入場料 = "Nhập trường liệu"',example:{ko:'입장료는 포함되어 있습니다.',vi:'Phí vào cửa đã bao gồm.'},tip:'료 (料) = hậu tố "phí": 관람료, 수수료'},
-{ko:'포함',roman:'po-ham',vi:'Bao gồm',syllables:[{text:'포',mean:'包 bao'},{text:'함',mean:'含 hàm'}],hanja:'包含 = "Bao hàm"',example:{ko:'식사가 포함된 상품입니다.',vi:'Tour bao gồm bữa ăn.'},tip:'Trái nghĩa: 불포함 (bất bao hàm)'}
+/* 10h */ [
+{ko:'프랑스 식민지 때 베트남 사람들이 짓게 된 곳이에요',roman:'peu-rang-seu sing-min-ji ttae be-teu-nam sa-ram-deul-i jit-ge doen got-i-e-yo',vi:'Đây là nơi người Việt đã xây dựng thời Pháp thuộc',
+syllables:[{t:'프랑스 식민지 때',m:'thời thực dân Pháp'},{t:'베트남 사람들이',m:'người Việt Nam'},{t:'짓게 된',m:'đã bị bắt xây'},{t:'곳이에요',m:'nơi là'}],
+hanja:'植民地 = "Thực dân địa"',
+ex:{ko:'바나힐은 프랑스 식민지 때 베트남 사람들이 별장을 짓게 된 곳이에요.',vi:'Bà Nà Hills là nơi người Việt xây biệt thự cho Pháp thuộc địa.'},
+tip:'Từ file KS-bana - nguyên văn! -게 되다 = trở thành / bị dẫn đến'},
+{ko:'지금은 새롭게 1층은 중국풍으로 정상은 유럽풍으로 만들어 놓았습니다',roman:'ji-geum-eun sae-rop-ge il-cheung-eun jung-guk-pung-eu-ro jeong-sang-eun yu-reop-pung-eu-ro man-deul-eo no-at-seum-ni-da',vi:'Hiện nay tầng 1 làm theo phong cách Trung Hoa, đỉnh theo phong cách châu Âu',
+syllables:[{t:'새롭게',m:'mới mẻ'},{t:'중국풍으로',m:'theo phong cách TQ'},{t:'유럽풍으로',m:'theo phong cách Âu'},{t:'만들어 놓았습니다',m:'đã làm sẵn'}],
+hanja:'風 = "phong" - phong cách/phong trào',
+ex:{ko:'지금은 새롭게 1층은 중국풍으로 정상은 유럽풍으로 만들어 놓았습니다.',vi:'Tầng 1 phong Trung Hoa, đỉnh phong châu Âu.'},
+tip:'Nguyên văn file KS-bana! -풍 = "phong" - phong cách'},
+{ko:'케이블카 타고 올라가시면서 아래를 바라보시면',roman:'ke-i-beul-ka ta-go ol-la-ga-si-myeon-seo a-rae-reul ba-ra-bo-si-myeon',vi:'Trong lúc lên cáp treo mà nhìn xuống dưới thì...',
+syllables:[{t:'케이블카 타고',m:'lên cáp treo'},{t:'올라가시면서',m:'vừa đi lên vừa'},{t:'아래를 바라보시면',m:'nếu nhìn xuống dưới'}],
+hanja:'Thuần Hàn - cấu trúc kép -시면서 + -시면',
+ex:{ko:'케이블카 타고 올라가시면서 아래를 바라보시면 정글이 펼쳐집니다.',vi:'Vừa lên cáp vừa nhìn xuống là thấy rừng rậm mở ra.'},
+tip:'-면서 = vừa...vừa. Cấu trúc kép rất hay cho mô tả cảnh'}
 ],
-[
-{ko:'주의',roman:'ju-ui',vi:'Chú ý',syllables:[{text:'주',mean:'注 chú'},{text:'의',mean:'意 ý'}],hanja:'注意 = "Chú ý"',example:{ko:'주의 사항을 잘 들어 주세요.',vi:'Xin chú ý lắng nghe.'},tip:'주의 사항 = điều cần chú ý'},
-{ko:'안전',roman:'an-jeon',vi:'An toàn',syllables:[{text:'안',mean:'安 an'},{text:'전',mean:'全 toàn'}],hanja:'安全 = "An toàn"',example:{ko:'안전 벨트를 착용해 주세요.',vi:'Xin thắt dây an toàn.'},tip:'안전 벨트 = dây an toàn'},
-{ko:'위험',roman:'wi-heom',vi:'Nguy hiểm',syllables:[{text:'위',mean:'危 nguy'},{text:'험',mean:'險 hiểm'}],hanja:'危險 = "Nguy hiểm"',example:{ko:'여기는 위험하니까 조심하세요.',vi:'Đây nguy hiểm, xin cẩn thận.'},tip:'Đọc y hệt tiếng Việt!'}
+/* 15h */ [
+{ko:'골든 브릿지는 홈쇼핑에서 광고 많이 보셨을 거예요',roman:'gol-deun beu-rit-ji-neun hom-syo-ping-e-seo gwang-go ma-ni bo-syeot-eul kkeo-ye-yo',vi:'Cầu Vàng chắc quý khách đã thấy quảng cáo nhiều trên home-shopping',
+syllables:[{t:'골든 브릿지는',m:'Cầu Vàng thì'},{t:'홈쇼핑에서',m:'trên home-shopping'},{t:'광고 많이',m:'quảng cáo nhiều'},{t:'보셨을 거예요',m:'chắc đã thấy'}],
+hanja:'廣告 = "Quảng cáo"',
+ex:{ko:'골든 브릿지는 홈쇼핑에서 광고 많이 보셨을 거예요.',vi:'Cầu Vàng chắc thấy quảng cáo nhiều trên TV rồi.'},
+tip:'Nguyên văn file Bana! -셨을 거예요 = chắc là đã (phỏng đoán quá khứ)'},
+{ko:'거기서 사진도 찍으시고 저 시간을 조금 드릴게요',roman:'geo-gi-seo sa-jin-do jji-geu-si-go jeo si-gan-eul jo-geum deu-ril-ge-yo',vi:'Ở đó chụp ảnh rồi em sẽ cho chút thời gian',
+syllables:[{t:'거기서',m:'ở đó'},{t:'사진도 찍으시고',m:'chụp ảnh và'},{t:'저 시간을',m:'thời gian đó'},{t:'조금 드릴게요',m:'em sẽ cho chút'}],
+hanja:'Thuần Hàn - 드리다 khiêm nhường',
+ex:{ko:'골든 브릿지에서 사진도 찍으시고 저 시간을 조금 드릴게요.',vi:'Ở Cầu Vàng chụp ảnh và em cho một chút thời gian.'},
+tip:'드릴게요 = em sẽ cho (khiêm nhường) - lịch sự hơn 줄게요'},
+{ko:'정상에 올라가시면 점심 식사 후에 바로 자율 시간을 드립니다',roman:'jeong-sang-e ol-la-ga-si-myeon jeom-sim sik-sa hu-e ba-ro ja-yul si-gan-eul deu-rim-ni-da',vi:'Lên tới đỉnh, sau bữa trưa em cho thời gian tự do',
+syllables:[{t:'정상에 올라가시면',m:'khi lên tới đỉnh'},{t:'점심 식사 후에',m:'sau bữa trưa'},{t:'바로',m:'ngay lập tức'},{t:'자율 시간을 드립니다',m:'cho TG tự do'}],
+hanja:'自律時間 = "Tự luật thời gian"',
+ex:{ko:'정상에 올라가시면 점심 식사 후에 바로 자율 시간을 드립니다.',vi:'Lên đỉnh xong, sau trưa em cho tự do liền.'},
+tip:'Nguyên văn file KS-bana! -시면 = nếu quý khách'}
 ],
-[
-{ko:'사진',roman:'sa-jin',vi:'Ảnh',syllables:[{text:'사',mean:'寫 tả'},{text:'진',mean:'眞 chân'}],hanja:'寫眞 = "Tả chân" = chép lại sự thật',example:{ko:'여기서 사진 찍으셔도 됩니다.',vi:'Có thể chụp ảnh ở đây.'},tip:'"Tả chân" nghĩa đen là "vẽ đúng sự thật" - rất thơ!'},
-{ko:'기념',roman:'gi-nyeom',vi:'Kỷ niệm',syllables:[{text:'기',mean:'紀 kỷ'},{text:'념',mean:'念 niệm'}],hanja:'紀念 = "Kỷ niệm"',example:{ko:'기념 사진을 찍읍시다.',vi:'Cùng chụp ảnh kỷ niệm nào!'},tip:'기념품 = quà lưu niệm'},
-{ko:'풍경',roman:'pung-gyeong',vi:'Phong cảnh',syllables:[{text:'풍',mean:'風 phong'},{text:'경',mean:'景 cảnh'}],hanja:'風景 = "Phong cảnh"',example:{ko:'풍경이 정말 아름답네요.',vi:'Phong cảnh đẹp thật.'},tip:'경치 (景致) = nghĩa tương tự'}
+/* 17h */ [
+{ko:'아버님들은 케이블카가 중국산이냐고 많이 물어보세요',roman:'a-beo-nim-deul-eun ke-i-beul-ka-ga jung-guk-san-i-nya-go ma-ni mul-eo-bo-se-yo',vi:'Các chú hay hỏi cáp treo có phải hàng Trung Quốc không',
+syllables:[{t:'아버님들은',m:'các chú'},{t:'케이블카가',m:'cáp treo'},{t:'중국산이냐고',m:'có phải TQ không'},{t:'많이 물어보세요',m:'hay hỏi lắm'}],
+hanja:'中國産 = "Trung Quốc sản"',
+ex:{ko:'우리 아버님들은 케이블카가 중국산이냐고 많이 물어보세요. 중국산 아닙니다, 뉴질랜드산입니다.',vi:'Các chú hay hỏi cáp có phải TQ không. Không phải, New Zealand đấy.'},
+tip:'Nguyên văn file Bana - rất thực tế và hài hước!'},
+{ko:'어머님들은 단풍은 언제 들어요 라고 물어보시더라고요',roman:'eo-meo-nim-deul-eun dan-pung-eun eon-je deu-reo-yo ra-go mul-eo-bo-si-deo-ra-go-yo',vi:'Các cô hay hỏi "lá đỏ (mùa thu) bao giờ xuất hiện"',
+syllables:[{t:'어머님들은',m:'các cô'},{t:'단풍은',m:'lá đỏ mùa thu'},{t:'언제 들어요',m:'bao giờ có'},{t:'라고 물어보시더라고요',m:'thì hay hỏi'}],
+hanja:'Thuần Hàn - -더라고요 = em thấy là',
+ex:{ko:'어머님들은 단풍은 언제 들어요 라고 물어보시더라고요. 베트남은 단풍이 없습니다.',vi:'Các cô hay hỏi lá đỏ bao giờ có. VN không có mùa thu.'},
+tip:'Nguyên văn file Bana! -더라고요 = phát hiện/trải nghiệm bản thân'},
+{ko:'케이블카는 헬기가 올렸다고 합니다',roman:'ke-i-beul-ka-neun hel-gi-ga ol-lyeot-da-go ham-ni-da',vi:'Nghe nói cáp treo được trực thăng đưa lên',
+syllables:[{t:'케이블카는',m:'cáp treo thì'},{t:'헬기가',m:'bằng trực thăng'},{t:'올렸다고',m:'đã kéo lên'},{t:'합니다',m:'nghe nói'}],
+hanja:'Thuần Hàn - -다고 합니다 = nghe nói',
+ex:{ko:'궁금해하시길래 말씀드리는데, 케이블카는 헬기가 올렸다고 합니다.',vi:'Vì quý khách tò mò nên thưa: cáp được trực thăng đưa lên.'},
+tip:'Nguyên văn file Bana! -다고 합니다 = truyền đạt thông tin'}
 ],
-[
-{ko:'피곤',roman:'pi-gon',vi:'Mệt mỏi',syllables:[{text:'피',mean:'疲 bì'},{text:'곤',mean:'困 khốn'}],hanja:'疲困 = "Bì khốn"',example:{ko:'많이 피곤하시죠?',vi:'Mệt nhiều đúng không?'},tip:'힘들다 cũng = mệt (nhấn "vất vả")'},
-{ko:'휴식',roman:'hyu-sik',vi:'Nghỉ ngơi',syllables:[{text:'휴',mean:'休 hưu'},{text:'식',mean:'息 tức'}],hanja:'休息 = "Hưu tức"',example:{ko:'잠시 휴식 시간을 드리겠습니다.',vi:'Em cho nghỉ một chút.'},tip:'휴가 = kỳ nghỉ, 휴게실 = phòng nghỉ'},
-{ko:'편안',roman:'pyeon-an',vi:'Thoải mái, bình an',syllables:[{text:'편',mean:'便 tiện'},{text:'안',mean:'安 an'}],hanja:'便安 = "Tiện an"',example:{ko:'편안한 여행 되세요.',vi:'Chúc chuyến đi thoải mái.'},tip:'편하다 + 안전하다 = thoải mái!'}
+/* 21h */ [
+{ko:'박항서 감독님 덕분에 저도 혜택을 많이 받았습니다',roman:'bak-hang-seo gam-dok-nim deok-bun-e jeo-do hye-taek-eul ma-ni bat-seum-ni-da',vi:'Nhờ HLV Park Hang-seo em cũng nhận được nhiều ưu đãi',
+syllables:[{t:'박항서 감독님',m:'HLV Park Hang-seo'},{t:'덕분에',m:'nhờ có'},{t:'저도',m:'em cũng'},{t:'혜택을 많이 받았습니다',m:'nhận nhiều ưu đãi'}],
+hanja:'德分에 = "Đức phần" | 惠澤 = "Huệ trạch"',
+ex:{ko:'박항서 감독님 덕분에 저도 택시비를 안 내는 혜택을 많이 받았습니다.',vi:'Nhờ HLV Park em cũng được nhiều ưu đãi như miễn tiền taxi.'},
+tip:'Nguyên văn file Bana! 덕분에 = nhờ có. Câu cực hay và tự nhiên'},
+{ko:'베트남이 이기는 날에는 모든 다리가 막힙니다',roman:'be-teu-nam-i i-gi-neun nal-e-neun mo-deun da-ri-ga mak-him-ni-da',vi:'Những ngày Việt Nam thắng tất cả cây cầu đều tắc',
+syllables:[{t:'이기는 날에는',m:'ngày thắng thì'},{t:'모든 다리가',m:'tất cả cầu'},{t:'막힙니다',m:'bị chặn/tắc'}],
+hanja:'Thuần Hàn hoàn toàn',
+ex:{ko:'베트남이 이기는 날에는 모든 다리가 막힙니다. 오토바이들이 다 나와요.',vi:'Ngày VN thắng tắc tất cả cầu. Xe máy ra hết.'},
+tip:'Nguyên văn file! -는 날에는 = vào những ngày (định ngữ thời gian)'},
+{ko:'기분파들이 아주 많이 있었습니다',roman:'gi-bun-pa-deul-i a-ju ma-ni it-seot-seum-ni-da',vi:'Có rất nhiều người hào phóng vì vui',
+syllables:[{t:'기분파들이',m:'người sống theo tâm trạng'},{t:'아주 많이',m:'rất nhiều'},{t:'있었습니다',m:'đã có'}],
+hanja:'氣分派 = "Khí phận phái" - người sống theo cảm xúc',
+ex:{ko:'맥주를 그냥 쏜다, 택시비를 안 받겠다... 기분파들이 아주 많이 있었습니다.',vi:'Tặng bia, miễn tiền taxi... Rất nhiều người hào phóng vì vui.'},
+tip:'Nguyên văn! 기분파 = người hành động theo cảm xúc - từ thú vị'}
 ]
 ],
-/* NGÀY 3: Văn hóa & Lịch sử */
+/* ═══════════════════════════════════════════════════
+   NGÀY 3 - Hội An: thuyền thúng, làng gốm, phố cổ
+═══════════════════════════════════════════════════ */
 [
-[
-{ko:'역사',roman:'yeok-sa',vi:'Lịch sử',syllables:[{text:'역',mean:'歷 lịch'},{text:'사',mean:'史 sử'}],hanja:'歷史 = "Lịch sử"',example:{ko:'베트남의 역사는 매우 깊습니다.',vi:'Lịch sử Việt Nam sâu đậm.'},tip:'역사적 = lịch sử (tính từ)'},
-{ko:'전통',roman:'jeon-tong',vi:'Truyền thống',syllables:[{text:'전',mean:'傳 truyền'},{text:'통',mean:'統 thống'}],hanja:'傳統 = "Truyền thống"',example:{ko:'베트남 전통 음식입니다.',vi:'Món ăn truyền thống Việt Nam.'},tip:'전통적 = tính từ'},
-{ko:'문화',roman:'mun-hwa',vi:'Văn hóa',syllables:[{text:'문',mean:'文 văn'},{text:'화',mean:'化 hóa'}],hanja:'文化 = "Văn hóa"',example:{ko:'문화가 비슷합니다.',vi:'Văn hóa tương tự.'},tip:'문화재 = di sản VH'}
+/* 7h */ [
+{ko:'호이안은 유네스코 세계 문화 유산으로 등재된 곳입니다',roman:'ho-i-an-eun yu-ne-seu-ko se-gye mun-hwa yu-san-eu-ro deung-jae-doen got-im-ni-da',vi:'Hội An là nơi được công nhận Di sản Văn hóa Thế giới UNESCO',
+syllables:[{t:'호이안은',m:'Hội An thì'},{t:'유네스코',m:'UNESCO'},{t:'세계 문화 유산으로',m:'là DSVHTG'},{t:'등재된 곳입니다',m:'được đăng ký'}],
+hanja:'世界文化遺産 = 4 chữ trùng HV',
+ex:{ko:'호이안은 유네스코 세계 문화 유산으로 등재된 곳입니다.',vi:'Hội An được UNESCO công nhận Di sản Văn hóa Thế giới.'},
+tip:'Câu giới thiệu chuẩn. 登載 = "đăng tải" = được đăng ký'},
+{ko:'전쟁의 피해 없이 잘 보존되어 있기 때문에 가는 것입니다',roman:'jeon-jaeng-ui pi-hae eop-si jal bo-jon-doe-eo it-gi ttae-mun-e ga-neun geo-sim-ni-da',vi:'Chúng ta đến vì được bảo tồn tốt không bị chiến tranh tàn phá',
+syllables:[{t:'전쟁의 피해 없이',m:'không có thiệt hại chiến tranh'},{t:'잘 보존되어 있기 때문에',m:'vì được bảo tồn tốt'},{t:'가는 것입니다',m:'là đến'}],
+hanja:'戰爭 + 保存 + -기 때문에',
+ex:{ko:'호이안은 전쟁의 피해 없이 잘 보존되어 있기 때문에 가는 것입니다.',vi:'Vì Hội An không bị chiến tranh phá và bảo tồn tốt nên chúng ta đến.'},
+tip:'Nguyên văn! Câu giải thích lý do - cấu trúc phức hoàn chỉnh'},
+{ko:'핸드폰이 강으로 풍당 빠지면 못 찾아요',roman:'haen-deu-pon-i gang-eu-ro pung-dang ppa-ji-myeon mot cha-ja-yo',vi:'Điện thoại mà rơi xuống sông thì không tìm được đâu',
+syllables:[{t:'핸드폰이',m:'điện thoại'},{t:'강으로',m:'xuống sông'},{t:'풍당 빠지면',m:'nếu rơi tõm'},{t:'못 찾아요',m:'không tìm được'}],
+hanja:'Thuần Hàn - 풍당 là từ tượng thanh',
+ex:{ko:'셀카봉을 바깥으로 내밀면 핸드폰이 강으로 풍당 빠지면 못 찾아요.',vi:'Duỗi gậy selfie ra ngoài, điện thoại rơi tõm xuống sông không tìm được.'},
+tip:'Nguyên văn file thuyền thúng! 풍당 = tiếng nước (tượng thanh)'}
 ],
-[
-{ko:'독립',roman:'dong-nip',vi:'Độc lập',syllables:[{text:'독',mean:'獨 độc'},{text:'립',mean:'立 lập'}],hanja:'獨立 = "Độc lập"',example:{ko:'1945년에 독립했습니다.',vi:'Độc lập năm 1945.'},tip:'Đọc là [dong-nip] chứ không [dok-rip]!'},
-{ko:'전쟁',roman:'jeon-jaeng',vi:'Chiến tranh',syllables:[{text:'전',mean:'戰 chiến'},{text:'쟁',mean:'爭 tranh'}],hanja:'戰爭 = "Chiến tranh"',example:{ko:'월남 전쟁은 오래 지속되었습니다.',vi:'Chiến tranh VN kéo dài.'},tip:'월남 = "Việt Nam" (kiểu Hán)'},
-{ko:'평화',roman:'pyeong-hwa',vi:'Hòa bình',syllables:[{text:'평',mean:'平 bình'},{text:'화',mean:'和 hòa'}],hanja:'平和 = "Bình hòa"',example:{ko:'평화가 가장 소중합니다.',vi:'Hòa bình là quý giá nhất.'},tip:'Hàn nói "bình hòa" - Việt ngược lại "hòa bình"!'}
+/* 10h */ [
+{ko:'우리 바구니 배는 두 분씩 짝을 지어서 타실 거예요',roman:'u-ri ba-gu-ni bae-neun du bun-ssik jjak-eul ji-eo-seo ta-sil kkeo-ye-yo',vi:'Thuyền thúng sẽ lên 2 người một cặp',
+syllables:[{t:'바구니 배는',m:'thuyền thúng thì'},{t:'두 분씩',m:'từng 2 người'},{t:'짝을 지어서',m:'ghép cặp và'},{t:'타실 거예요',m:'sẽ lên'}],
+hanja:'Thuần Hàn hoàn toàn',
+ex:{ko:'우리 바구니 배는 두 분씩 짝을 지어서 타실 거예요.',vi:'Thuyền thúng lên 2 người một cặp nhé.'},
+tip:'Nguyên văn file thuyền thúng! 짝을 짓다 = ghép thành cặp'},
+{ko:'소쿠리 모서리를 밟으면 뒤집어질 수 있습니다',roman:'so-ku-ri mo-seo-ri-reul bal-bu-myeon dwi-jip-eo-jil su it-seum-ni-da',vi:'Nếu giẫm lên mép thuyền thúng có thể bị lật',
+syllables:[{t:'소쿠리',m:'thuyền thúng'},{t:'모서리를 밟으면',m:'nếu giẫm lên mép'},{t:'뒤집어질 수 있습니다',m:'có thể bị lật'}],
+hanja:'Thuần Hàn - 뒤집어지다 = bị lật úp',
+ex:{ko:'소쿠리 모서리를 밟으면 뒤집어질 수 있습니다. 조심하세요.',vi:'Giẫm mép thuyền có thể lật. Cẩn thận nhé.'},
+tip:'Nguyên văn! 뒤집어지다 = lật úp hoàn toàn'},
+{ko:'악어가 산다고 제가 말씀드렸는데 사실 다른 소쿠리와 부딪힌다는 뜻이에요',roman:'ak-eo-ga san-da-go je-ga mal-sseum-deu-ryeot-neun-de sa-sil da-reun so-ku-ri-wa bu-dit-hin-da-neun ddeu-si-e-yo',vi:'Em nói có cá sấu thật ra là ý muốn nói thuyền sẽ va nhau',
+syllables:[{t:'악어가 산다고',m:'nói có cá sấu'},{t:'사실',m:'thật ra'},{t:'다른 소쿠리와 부딪힌다는',m:'va vào thuyền khác'},{t:'뜻이에요',m:'là ý muốn nói'}],
+hanja:'Thuần Hàn - câu giải thích sau joke',
+ex:{ko:'"악어가 산다"고 했는데 사실 다른 소쿠리와 부딪힌다는 뜻이에요.',vi:'Nói "có cá sấu" thật ra ý là thuyền va nhau thôi.'},
+tip:'Nguyên văn! Cách giải thích joke tiếng Hàn - rất tự nhiên'}
 ],
-[
-{ko:'사원',roman:'sa-won',vi:'Đền/Chùa',syllables:[{text:'사',mean:'寺 tự'},{text:'원',mean:'院 viện'}],hanja:'寺院 = "Tự viện"',example:{ko:'천 년이 넘었습니다.',vi:'Hơn 1000 năm tuổi.'},tip:'절 là thuần Hàn, cũng = chùa'},
-{ko:'성당',roman:'seong-dang',vi:'Nhà thờ',syllables:[{text:'성',mean:'聖 thánh'},{text:'당',mean:'堂 đường'}],hanja:'聖堂 = "Thánh đường"',example:{ko:'핑크 성당이 유명합니다.',vi:'Nhà thờ Hồng nổi tiếng.'},tip:'Tiếng Việt cũng dùng "Thánh đường"'},
-{ko:'동굴',roman:'dong-gul',vi:'Hang động',syllables:[{text:'동',mean:'洞 động'},{text:'굴',mean:'窟 quật'}],hanja:'洞窟 = "Động quật"',example:{ko:'오행산에는 큰 동굴이 있습니다.',vi:'NHS có hang lớn.'},tip:'洞 = "động" trong "động Phong Nha"'}
+/* 15h */ [
+{ko:'라이따이한이라는 말이 있어요, 한국 잡종이라는 뜻입니다',roman:'la-i-tta-i-han-i-ra-neun mal-i it-seo-yo, han-guk jap-jong-i-ra-neun ddeu-sim-ni-da',vi:'Có từ "Lai Đại Hàn" nghĩa là người lai Hàn Quốc',
+syllables:[{t:'라이따이한이라는',m:'gọi là Lai Đại Hàn'},{t:'말이 있어요',m:'có từ/cụm đó'},{t:'한국 잡종이라는 뜻입니다',m:'nghĩa là người lai HQ'}],
+hanja:'雜種 = "Tạp chủng" = người lai',
+ex:{ko:'그 사람들을 라이따이한이라고 부르는데, 한국 잡종이라는 뜻입니다.',vi:'Họ được gọi là Lai Đại Hàn - nghĩa là người lai Hàn.'},
+tip:'Nguyên văn file thuyền thúng! Lịch sử nhạy cảm - kể khéo léo'},
+{ko:'그 바구니 배를 관광객들이 한번 타봤더니 재미있는 거예요',roman:'geu ba-gu-ni bae-reul gwan-gwang-gaek-deul-i han beon ta-bot-deo-ni jae-mi-it-neun geo-ye-yo',vi:'Khách du lịch thử lên thuyền thúng thì thấy thú vị',
+syllables:[{t:'관광객들이',m:'du khách'},{t:'한번 타봤더니',m:'thử một lần thì'},{t:'재미있는 거예요',m:'là thú vị đấy'}],
+hanja:'觀光客 = "Quan quang khách"',
+ex:{ko:'바구니 배를 관광청에서 한번 타봤더니 재미있는 거예요. 그래서 관광 상품이 됐어요.',vi:'Quan du lịch thử thuyền thúng thấy vui. Thế là thành sản phẩm tour.'},
+tip:'Nguyên văn! -봤더니 = thử làm thì phát hiện ra'},
+{ko:'우리가 간 다음에는 시간을 드릴 테니 자유롭게 구경하세요',roman:'u-ri-ga gan da-eum-e-neun si-gan-eul deu-ril te-ni ja-yu-rop-ge gu-gyeong-ha-se-yo',vi:'Sau khi chúng ta đến em sẽ cho thời gian, xem tự do nhé',
+syllables:[{t:'간 다음에는',m:'sau khi đến'},{t:'시간을 드릴 테니',m:'em sẽ cho thời gian nên'},{t:'자유롭게',m:'tự do'},{t:'구경하세요',m:'xin xem ngắm'}],
+hanja:'自由롭게 = "Tự do" + cách',
+ex:{ko:'고택에 간 다음에는 시간을 드릴 테니 자유롭게 구경하세요.',vi:'Đến nhà cổ rồi em cho thời gian, xem tự do.'},
+tip:'-ㄹ 테니 = em sẽ... nên (giải thích hậu quả)'}
 ],
-[
-{ko:'조심',roman:'jo-sim',vi:'Cẩn thận',syllables:[{text:'조',mean:'操 tháo'},{text:'심',mean:'心 tâm'}],hanja:'操心 = "Tháo tâm" = nắm giữ lòng',example:{ko:'계단을 오를 때 조심하세요.',vi:'Khi lên thang xin cẩn thận.'},tip:'"Nắm giữ lòng" - đừng để phân tán - rất thơ!'},
-{ko:'잃어버리다',roman:'il-eo-beo-ri-da',vi:'Đánh mất',syllables:[{text:'잃어',mean:'mất'},{text:'버리다',mean:'vứt (nhấn)'}],hanja:'Thuần Hàn',example:{ko:'일행을 잃어버리지 마세요.',vi:'Đừng lạc đoàn nhé.'},tip:'어/아 버리다 = hoàn toàn hết'},
-{ko:'소매치기',roman:'so-mae-chi-gi',vi:'Móc túi',syllables:[{text:'소매',mean:'tay áo'},{text:'치기',mean:'đánh'}],hanja:'Thuần Hàn - "đánh tay áo"',example:{ko:'소매치기 조심하세요.',vi:'Cẩn thận móc túi.'},tip:'Cổ xưa trộm móc từ tay áo - rất hình tượng!'}
+/* 17h */ [
+{ko:'여기서 잃어버리시면 가이드도 찾으러 들어갈 수가 없습니다',roman:'yeo-gi-seo il-eo-beo-ri-si-myeon ga-i-deu-do cha-jeu-reo deul-eo-gal su-ga eop-seum-ni-da',vi:'Lạc ở đây thì HDV cũng không thể vào tìm được',
+syllables:[{t:'잃어버리시면',m:'nếu lạc'},{t:'가이드도',m:'HDV cũng'},{t:'찾으러',m:'để tìm'},{t:'들어갈 수가 없습니다',m:'không thể vào'}],
+hanja:'Thuần Hàn + -수가 없다 (nhấn mạnh)',
+ex:{ko:'인원이 너무 많기 때문에 여기서 잃어버리시면 가이드도 찾으러 들어갈 수가 없습니다.',vi:'Đông quá nên lạc thì HDV cũng không vào tìm được.'},
+tip:'Nguyên văn! -수가 없다 (nhấn mạnh hơn -수 없다)'},
+{ko:'이 다리를 기점으로 여기는 로컬 지역이고 건너가면 관광지입니다',roman:'i da-ri-reul gi-jeom-eu-ro yeo-gi-neun ro-keol ji-yeok-i-go geon-neo-ga-myeon gwan-gwang-ji-im-ni-da',vi:'Lấy cầu này làm mốc, đây là khu dân cư, qua cầu là khu du lịch',
+syllables:[{t:'이 다리를 기점으로',m:'lấy cầu này làm mốc'},{t:'여기는 로컬 지역이고',m:'đây là khu dân cư và'},{t:'건너가면 관광지입니다',m:'qua là khu du lịch'}],
+hanja:'起點 = "Khởi điểm" | 觀光地 = "Quan quang địa"',
+ex:{ko:'이 다리를 기점으로 여기는 로컬 지역이고 건너가면 관광지입니다.',vi:'Cầu này là mốc: đây khu dân, qua cầu là khu du lịch.'},
+tip:'Nguyên văn file! 기점으로 = lấy làm mốc - cụm địa lý hay'},
+{ko:'소매치기를 조심하시고 귀중품은 꼭 챙겨 주세요',roman:'so-mae-chi-gi-reul jo-sim-ha-si-go gwi-jung-pum-eun kkok chaeng-gyeo ju-se-yo',vi:'Cẩn thận móc túi và nhớ giữ đồ vật quý giá',
+syllables:[{t:'소매치기를 조심하시고',m:'cẩn thận móc túi'},{t:'귀중품은',m:'貴重品 đồ quý'},{t:'꼭 챙겨 주세요',m:'nhất định giữ'}],
+hanja:'貴重品 = "Quý trọng phẩm"',
+ex:{ko:'호이안은 관광지니까 소매치기를 조심하시고 귀중품은 꼭 챙겨 주세요.',vi:'Hội An là KDL nên cẩn thận móc túi, giữ đồ quý nhé.'},
+tip:'귀중품 (貴重品) = "quý trọng phẩm" - tiếng Việt cùng gốc!'}
 ],
-[
-{ko:'감동',roman:'gam-dong',vi:'Cảm động',syllables:[{text:'감',mean:'感 cảm'},{text:'동',mean:'動 động'}],hanja:'感動 = "Cảm động"',example:{ko:'이 이야기는 정말 감동적이에요.',vi:'Câu chuyện thật cảm động.'},tip:'감격 = cảm khích (mạnh hơn)'},
-{ko:'자부심',roman:'ja-bu-sim',vi:'Lòng tự hào',syllables:[{text:'자부',mean:'自負 tự phụ'},{text:'심',mean:'心 tâm'}],hanja:'自負心 = "Tự phụ tâm"',example:{ko:'자부심이 강합니다.',vi:'Lòng tự hào mạnh.'},tip:'Khác 자만심 (tự mãn) - tự hào ≠ kiêu ngạo'},
-{ko:'마음',roman:'ma-eum',vi:'Tấm lòng, tâm hồn',syllables:[{text:'마음',mean:'tâm'}],hanja:'Thuần Hàn - tương đương 心',example:{ko:'마음이 따뜻해집니다.',vi:'Lòng ấm áp.'},tip:'Từ thuần Hàn cực quan trọng - dùng hàng nghìn cụm'}
+/* 21h */ [
+{ko:'오늘 호이안 야시장에서 즐거운 시간 보내셨길 바랍니다',roman:'o-neul ho-i-an ya-si-jang-e-seo jeul-geo-un si-gan bo-nae-syeot-gil ba-ram-ni-da',vi:'Mong quý khách đã có thời gian vui vẻ ở chợ đêm Hội An hôm nay',
+syllables:[{t:'호이안 야시장에서',m:'ở chợ đêm Hội An'},{t:'즐거운 시간',m:'thời gian vui vẻ'},{t:'보내셨길 바랍니다',m:'mong đã trải qua'}],
+hanja:'Thuần Hàn - -셨길 바랍니다 (kính ngữ quá khứ)',
+ex:{ko:'오늘 호이안 야시장에서 즐거운 시간 보내셨길 바랍니다.',vi:'Mong quý khách đã vui ở chợ đêm Hội An hôm nay.'},
+tip:'-셨길 바랍니다 = mong đã (cầu chúc quá khứ) - trang trọng'},
+{ko:'더 싸게 사실 수 있었을 텐데 아쉽네요',roman:'deo ssa-ge sa-sil su it-seot-eul ten-de a-swip-ne-yo',vi:'Đáng lẽ có thể mua rẻ hơn, tiếc nhỉ',
+syllables:[{t:'더 싸게',m:'rẻ hơn'},{t:'사실 수 있었을 텐데',m:'đáng lẽ có thể mua được'},{t:'아쉽네요',m:'tiếc quá'}],
+hanja:'Thuần Hàn - cấu trúc phán đoán quá khứ',
+ex:{ko:'아, 거기서 더 싸게 사실 수 있었을 텐데 아쉽네요.',vi:'Ôi, ở đó đáng lẽ mua rẻ hơn được, tiếc quá.'},
+tip:'-었을 텐데 = đáng lẽ đã... (tiếc nuối). Rất bản xứ!'},
+{ko:'쇼핑하느라 많이 피곤하셨죠? 버스에서 잠깐 쉬세요',roman:'syo-ping-ha-neu-ra ma-ni pi-gon-ha-syeot-jyo? beo-seu-e-seo jam-kkan swi-se-yo',vi:'Mua sắm mệt nhiều đúng không? Nghỉ chút trên xe nhé',
+syllables:[{t:'쇼핑하느라',m:'vì bận mua sắm'},{t:'많이 피곤하셨죠?',m:'mệt nhiều đúng không'},{t:'잠깐 쉬세요',m:'nghỉ chút'}],
+hanja:'疲困 = "Bì khốn"',
+ex:{ko:'쇼핑하느라 많이 피곤하셨죠? 버스에서 잠깐 쉬세요.',vi:'Mua sắm mệt rồi đúng không? Nghỉ chút trên xe.'},
+tip:'-느라 = vì bận làm (lý do bất tiện). Khác -아서/어서'}
 ]
 ],
-/* NGÀY 4: Thương mại */
+/* ═══════════════════════════════════════════════════
+   NGÀY 4 - Ngũ Hành Sơn & Linh Ứng
+═══════════════════════════════════════════════════ */
 [
-[
-{ko:'가격',roman:'ga-gyeok',vi:'Giá cả',syllables:[{text:'가',mean:'價 giá'},{text:'격',mean:'格 cách'}],hanja:'價格 = "Giá cách"',example:{ko:'가격이 얼마예요?',vi:'Giá bao nhiêu?'},tip:'Trang trọng hơn 값 (thuần Hàn)'},
-{ko:'할인',roman:'ha-rin',vi:'Giảm giá',syllables:[{text:'할',mean:'割 cát'},{text:'인',mean:'引 dẫn'}],hanja:'割引 = "Cát dẫn" = cắt kéo xuống',example:{ko:'10% 할인해 드리겠습니다.',vi:'Em giảm 10%.'},tip:'Tiếng Nhật cũng đọc tương tự (わりびき)'},
-{ko:'결제',roman:'gyeol-je',vi:'Thanh toán',syllables:[{text:'결',mean:'決 quyết'},{text:'제',mean:'濟 tế'}],hanja:'決濟 = "Quyết tế"',example:{ko:'카드로 결제하시겠어요?',vi:'Thanh toán bằng thẻ chứ?'},tip:'Khác 지불 (chi phất = trả tiền)'}
+/* 7h */ [
+{ko:'오행산은 화산 수산 목산 금산 토산 이렇게 불립니다',roman:'o-haeng-san-eun hwa-san su-san mok-san geum-san to-san i-reo-ke bul-lim-ni-da',vi:'Ngũ Hành Sơn gồm: Hỏa Sơn, Thủy Sơn, Mộc Sơn, Kim Sơn, Thổ Sơn',
+syllables:[{t:'화산',m:'火山 Hỏa'},{t:'수산',m:'水山 Thủy'},{t:'목산',m:'木山 Mộc'},{t:'금산',m:'金山 Kim'},{t:'토산',m:'土山 Thổ'}],
+hanja:'火水木金土山 = Ngũ Hành Sơn - 5 yếu tố',
+ex:{ko:'오행산은 화산 수산 목산 금산 토산 이렇게 다섯 봉우리로 이루어져 있어요.',vi:'NHS gồm 5 núi: Hỏa, Thủy, Mộc, Kim, Thổ.'},
+tip:'Cả 5 tên đều trùng âm Hán Việt hoàn toàn! Rất dễ nhớ'},
+{ko:'오늘 저희가 가는 곳은 수산입니다, 산 전체가 대리석으로 이루어져 있어요',roman:'o-neul jeo-hui-ga ga-neun got-eun su-san-im-ni-da, san jeon-che-ga dae-ri-seok-eu-ro i-ru-eo-jyeo it-seo-yo',vi:'Hôm nay chúng ta đến Thủy Sơn, toàn bộ núi làm từ đá cẩm thạch',
+syllables:[{t:'저희가 가는 곳은',m:'nơi chúng ta đến'},{t:'수산입니다',m:'là Thủy Sơn'},{t:'산 전체가',m:'toàn bộ núi'},{t:'대리석으로',m:'bằng đá cẩm thạch'},{t:'이루어져 있어요',m:'được cấu tạo'}],
+hanja:'大理石 = "Đại lý thạch" = đá cẩm thạch',
+ex:{ko:'오늘 저희가 가는 곳은 수산입니다. 산 전체가 대리석으로 이루어져 있어요.',vi:'Hôm nay đến Thủy Sơn, núi làm hoàn toàn từ đá hoa cương.'},
+tip:'이루어지다 = được cấu thành/tạo nên'},
+{ko:'동굴 안에 천국과 지옥이 재현되어 있습니다',roman:'dong-gul an-e cheon-guk-gwa ji-ok-i jae-hyeon-doe-eo it-seum-ni-da',vi:'Bên trong hang động thiên đường và địa ngục được tái hiện',
+syllables:[{t:'동굴 안에',m:'bên trong hang'},{t:'천국과 지옥이',m:'thiên đường và địa ngục'},{t:'재현되어 있습니다',m:'được tái hiện'}],
+hanja:'天國 = "Thiên quốc" | 地獄 = "Địa ngục" | 再現 = "Tái hiện"',
+ex:{ko:'동굴 안에 천국과 지옥이 재현되어 있습니다. 굉장히 인상적입니다.',vi:'Trong hang có thiên đường và địa ngục tái hiện. Rất ấn tượng.'},
+tip:'再現 = "Tái hiện" - 3 từ đều trùng Hán Việt!'}
 ],
-[
-{ko:'환전',roman:'hwan-jeon',vi:'Đổi tiền',syllables:[{text:'환',mean:'換 hoán'},{text:'전',mean:'錢 tiền'}],hanja:'換錢 = "Hoán tiền"',example:{ko:'환전소가 어디에 있어요?',vi:'Quầy đổi tiền ở đâu?'},tip:'환율 = tỷ giá'},
-{ko:'현금',roman:'hyeon-geum',vi:'Tiền mặt',syllables:[{text:'현',mean:'現 hiện'},{text:'금',mean:'金 kim'}],hanja:'現金 = "Hiện kim"',example:{ko:'현금만 받습니다.',vi:'Chỉ nhận tiền mặt.'},tip:'Kim = cả vàng lẫn tiền'},
-{ko:'영수증',roman:'yeong-su-jeung',vi:'Hóa đơn',syllables:[{text:'영',mean:'領 lĩnh'},{text:'수',mean:'收 thu'},{text:'증',mean:'證 chứng'}],hanja:'領收證 = "Lĩnh thu chứng"',example:{ko:'영수증 드릴까요?',vi:'Em đưa hóa đơn không?'},tip:'증 = hậu tố "chứng": 학생증, 신분증'}
+/* 10h */ [
+{ko:'해수 관음상은 높이가 68미터로 베트남에서 가장 큰 관음상입니다',roman:'hae-su gwan-eum-sang-eun nop-i-ga yuk-sip-pal mi-teo-ro be-teu-nam-e-seo ga-jang keun gwan-eum-sang-im-ni-da',vi:'Tượng Quán Âm cao 68m là tượng Quán Âm lớn nhất Việt Nam',
+syllables:[{t:'해수 관음상은',m:'tượng Quán Âm'},{t:'높이가 68미터로',m:'cao 68m'},{t:'베트남에서 가장 큰',m:'lớn nhất ở VN'}],
+hanja:'海水觀音像 = "Hải thủy Quán Âm Tượng"',
+ex:{ko:'해수 관음상은 높이가 68미터로 베트남에서 가장 큰 관음상입니다.',vi:'Tượng Quán Âm cao 68m - lớn nhất Việt Nam.'},
+tip:'觀音 = "Quán Âm" - Phật Giáo. 3 chữ đầu trùng HV'},
+{ko:'바다를 바라보고 계신 이유가 있습니다',roman:'ba-da-reul ba-ra-bo-go gye-sin i-yu-ga it-seum-ni-da',vi:'Có lý do ngài đang nhìn ra biển',
+syllables:[{t:'바다를 바라보고 계신',m:'đang nhìn ra biển (kính)'},{t:'이유가 있습니다',m:'có lý do'}],
+hanja:'理由 = "Lý do"',
+ex:{ko:'저 관음상이 바다를 바라보고 계신 이유가 있습니다. 보트피플의 넋을 기리기 위해서입니다.',vi:'Tượng nhìn biển là có lý do - để tưởng nhớ thuyền nhân.'},
+tip:'Cách mở đầu câu chuyện gây tò mò - rất hiệu quả!'},
+{ko:'보트피플들의 넋을 기리고자 비밀리에 돈을 모아 세웠습니다',roman:'bo-teu-pi-peul-deul-ui neok-eul gi-ri-go-ja bi-mil-li-e don-eul mo-a se-wot-seum-ni-da',vi:'Để tưởng nhớ linh hồn thuyền nhân, bí mật góp tiền dựng nên',
+syllables:[{t:'넋을 기리고자',m:'để tưởng nhớ linh hồn'},{t:'비밀리에',m:'bí mật'},{t:'돈을 모아',m:'góp tiền'},{t:'세웠습니다',m:'đã dựng nên'}],
+hanja:'秘密裡에 = "Bí mật lý" | -고자 = để (mục đích trang trọng)',
+ex:{ko:'보트피플들의 넋을 기리고자 비밀리에 돈을 모아 해수관음상을 세웠습니다.',vi:'Để tưởng nhớ thuyền nhân, họ bí mật góp tiền dựng tượng Quán Âm.'},
+tip:'Nguyên văn file! -고자 (trang trọng hơn -려고, -기 위해서)'}
 ],
-[
-{ko:'특산품',roman:'teuk-san-pum',vi:'Đặc sản',syllables:[{text:'특',mean:'特 đặc'},{text:'산',mean:'産 sản'},{text:'품',mean:'品 phẩm'}],hanja:'特産品 - trùng hoàn toàn!',example:{ko:'커피가 베트남 특산품입니다.',vi:'Cà phê là đặc sản VN.'},tip:'Cả 3 âm đều trùng Hán Việt!'},
-{ko:'선물',roman:'seon-mul',vi:'Quà',syllables:[{text:'선',mean:'膳 thiện'},{text:'물',mean:'物 vật'}],hanja:'膳物 = "Thiện vật"',example:{ko:'가족 선물을 사고 싶어요.',vi:'Muốn mua quà cho gia đình.'},tip:'선물하다 = tặng quà'},
-{ko:'추천',roman:'chu-cheon',vi:'Khuyến nghị, giới thiệu',syllables:[{text:'추',mean:'推 thôi'},{text:'천',mean:'薦 tiến'}],hanja:'推薦 = "Thôi tiến"',example:{ko:'이 제품을 추천해 드립니다.',vi:'Em giới thiệu sản phẩm này.'},tip:'Hay dùng khi bán hàng, review'}
+/* 15h */ [
+{ko:'전재용 선장님이 명령을 어기고 뱃머리를 돌렸습니다',roman:'jeon-jae-yong seon-jang-nim-i myeong-ryeong-eul eo-gi-go baen-meo-ri-reul dol-lyeot-seum-ni-da',vi:'Thuyền trưởng Jeon Jae-yong đã bất chấp lệnh và quay mũi thuyền',
+syllables:[{t:'명령을 어기고',m:'bất chấp lệnh'},{t:'뱃머리를',m:'mũi thuyền'},{t:'돌렸습니다',m:'đã quay lại'}],
+hanja:'命令 = "Mệnh lệnh"',
+ex:{ko:'전재용 선장님이 명령을 어기고 뱃머리를 돌려서 96명을 구하셨습니다.',vi:'Thuyền trưởng Jeon bất chấp lệnh, quay tàu cứu 96 người.'},
+tip:'Nguyên văn file Linh Ứng! 명령을 어기다 = trái lệnh'},
+{ko:'11년 만에 극적인 상봉을 하셨다고 합니다',roman:'sip-il-nyeon man-e geuk-jeok-in sang-bong-eul ha-syeot-da-go ham-ni-da',vi:'Nghe nói sau 11 năm đã có cuộc tái ngộ đầy kịch tính',
+syllables:[{t:'11년 만에',m:'sau 11 năm'},{t:'극적인',m:'kịch tính'},{t:'상봉을 하셨다고 합니다',m:'nghe nói đã gặp lại'}],
+hanja:'劇的 = "Kịch đích" | 相逢 = "Tương phùng"',
+ex:{ko:'무려 11년 만에 극적인 상봉을 하셨다고 합니다.',vi:'Sau tận 11 năm đã có cuộc tái ngộ kịch tính.'},
+tip:'相逢 = "Tương phùng" = gặp lại. 무려 = tận/đến'},
+{ko:'아직까지도 그때의 일을 후회하지 않는다고 하셨습니다',roman:'a-jik-kka-ji-do geu-ttae-ui il-eul hu-hoe-ha-ji an-neun-da-go ha-syeot-seum-ni-da',vi:'Ngài nói đến giờ vẫn không hối hận về việc hồi đó',
+syllables:[{t:'아직까지도',m:'đến giờ vẫn'},{t:'후회하지 않는다고',m:'nói là không hối hận'},{t:'하셨습니다',m:'đã nói (kính)'}],
+hanja:'後悔 = "Hậu hối"',
+ex:{ko:'"다시 그 상황이 오더라도 나는 너희를 구할 것이다." 아직까지도 후회하지 않는다고 하셨습니다.',vi:'"Nếu lại hoàn cảnh đó tôi vẫn cứu các bạn." Đến nay vẫn không hối hận.'},
+tip:'Nguyên văn! -다고 하셨습니다 = trích dẫn lời nói của người khác (kính)'}
 ],
-[
-{ko:'품질',roman:'pum-jil',vi:'Chất lượng',syllables:[{text:'품',mean:'品 phẩm'},{text:'질',mean:'質 chất'}],hanja:'品質 = "Phẩm chất"',example:{ko:'품질이 아주 좋습니다.',vi:'Chất lượng rất tốt.'},tip:'품질 보증 = bảo hành chất lượng'},
-{ko:'제품',roman:'je-pum',vi:'Sản phẩm',syllables:[{text:'제',mean:'製 chế'},{text:'품',mean:'品 phẩm'}],hanja:'製品 = "Chế phẩm"',example:{ko:'이 제품은 베트남제입니다.',vi:'SP này sản xuất tại VN.'},tip:'상품 thiên về thương mại, 제품 về chế tạo'},
-{ko:'보증',roman:'bo-jeung',vi:'Bảo hành',syllables:[{text:'보',mean:'保 bảo'},{text:'증',mean:'證 chứng'}],hanja:'保證 = "Bảo chứng"',example:{ko:'1년 보증됩니다.',vi:'Bảo hành 1 năm.'},tip:'보증서 = phiếu bảo hành'}
+/* 17h */ [
+{ko:'고엽제 피해자들이 모여 살던 마을이었습니다',roman:'go-yeop-je pi-hae-ja-deul-i mo-yeo sal-deon ma-eul-i-eot-seum-ni-da',vi:'Đây từng là ngôi làng nơi các nạn nhân chất độc da cam sống tập trung',
+syllables:[{t:'고엽제',m:'chất độc da cam'},{t:'피해자들이',m:'nạn nhân'},{t:'모여 살던',m:'sống tập trung'},{t:'마을이었습니다',m:'đã là ngôi làng'}],
+hanja:'枯葉劑 = "Cô diệp tễ" | 被害者 = "Bị hại giả"',
+ex:{ko:'여기는 원래 고엽제 피해자들이 모여 살던 마을이었습니다.',vi:'Nơi đây vốn là làng của nạn nhân chất độc da cam.'},
+tip:'枯葉劑 = "chất làm lá khô" = Agent Orange. 被害者 = nạn nhân'},
+{ko:'1대에서 끝나지 않고 2대 3대까지 영향을 미치고 있습니다',roman:'il-dae-e-seo kkeut-na-ji an-ko i-dae sam-dae-kka-ji yeong-hyang-eul mi-chi-go it-seum-ni-da',vi:'Không dừng ở thế hệ 1 mà ảnh hưởng đến tận thế hệ 2, 3',
+syllables:[{t:'1대에서 끝나지 않고',m:'không dừng ở đời 1'},{t:'2대 3대까지',m:'đến đời 2, 3'},{t:'영향을 미치고 있습니다',m:'đang ảnh hưởng'}],
+hanja:'影響 = "Ảnh hưởng" | 代 = "đại" = thế hệ',
+ex:{ko:'고엽제는 1대에서 끝나지 않고 2대 3대까지 영향을 미치고 있습니다.',vi:'Chất độc da cam không dừng đời 1 mà ảnh hưởng đến đời 2, 3.'},
+tip:'영향을 미치다 = ảnh hưởng tới. 影響 = "ảnh hưởng"'},
+{ko:'먹고 살아야 되니까 뜨거운 밭에서 흙을 퍼다가 도자기를 빚었습니다',roman:'meok-go sa-ra-ya doe-ni-kka ddeu-geo-un bat-e-seo heuk-eul peo-da-ga do-ja-gi-reul bit-seot-seum-ni-da',vi:'Phải kiếm ăn nên đã múc đất từ ruộng nóng để nặn gốm',
+syllables:[{t:'먹고 살아야 되니까',m:'vì phải kiếm ăn'},{t:'뜨거운 밭에서 흙을',m:'đất ruộng nóng'},{t:'퍼다가',m:'múc ra'},{t:'도자기를 빚었습니다',m:'đã nặn gốm'}],
+hanja:'陶磁器 = "Đào từ khí" = gốm sứ',
+ex:{ko:'먹고 살아야 되니까 뜨거운 밭에서 흙을 퍼다가 도자기를 빚었습니다.',vi:'Phải kiếm ăn nên múc đất nóng để nặn gốm.'},
+tip:'Nguyên văn file THUYEN_THUNG! 도자기를 빚다 = nặn gốm'}
 ],
-[
-{ko:'후회',roman:'hu-hoe',vi:'Hối hận',syllables:[{text:'후',mean:'後 hậu'},{text:'회',mean:'悔 hối'}],hanja:'後悔 = "Hậu hối"',example:{ko:'안 사시면 후회하실 거예요.',vi:'Không mua sẽ hối hận.'},tip:'Câu sales - dùng khéo'},
-{ko:'만족',roman:'man-jok',vi:'Hài lòng',syllables:[{text:'만',mean:'滿 mãn'},{text:'족',mean:'足 túc'}],hanja:'滿足 = "Mãn túc"',example:{ko:'만족하시나요?',vi:'Hài lòng chứ?'},tip:'만족도 = mức độ hài lòng'},
-{ko:'선택',roman:'seon-taek',vi:'Lựa chọn',syllables:[{text:'선',mean:'選 tuyển'},{text:'택',mean:'擇 trạch'}],hanja:'選擇 = "Tuyển trạch"',example:{ko:'좋은 선택이세요.',vi:'Lựa chọn tuyệt vời!'},tip:'Khen khéo sau khi khách mua'}
+/* 21h */ [
+{ko:'바다를 볼 때마다 그런 생각이 듭니다',roman:'ba-da-reul bol ttae-ma-da geu-reon saeng-gak-i deum-ni-da',vi:'Mỗi khi nhìn ra biển tôi lại nghĩ như vậy',
+syllables:[{t:'바다를 볼 때마다',m:'mỗi khi nhìn biển'},{t:'그런 생각이',m:'ý nghĩ đó'},{t:'듭니다',m:'nảy sinh'}],
+hanja:'Thuần Hàn - 들다 = nảy sinh (cảm xúc)',
+ex:{ko:'바다를 볼 때마다 그런 생각이 들어요. 얼마나 힘드셨을까.',vi:'Mỗi khi nhìn biển tôi lại nghĩ vậy. Khó khăn đến nhường nào.'},
+tip:'생각이 들다 = ý nghĩ nảy sinh. Rất thơ và tự nhiên'},
+{ko:'이제 바다가 조금 다르게 보이시지 않나요?',roman:'i-je ba-da-ga jo-geum da-reu-ge bo-i-si-ji an-na-yo?',vi:'Giờ quý khách thấy biển có hơi khác đi không?',
+syllables:[{t:'이제',m:'giờ'},{t:'바다가',m:'biển'},{t:'조금 다르게',m:'hơi khác'},{t:'보이시지 않나요?',m:'không thấy sao?'}],
+hanja:'Thuần Hàn hoàn toàn',
+ex:{ko:'이야기를 듣고 나니 이제 바다가 조금 다르게 보이시지 않나요?',vi:'Nghe xong câu chuyện, giờ biển có trông khác đi chút không?'},
+tip:'Nguyên văn file! Câu kết sau khi kể chuyện - rất hiệu quả'},
+{ko:'바다가 조금 다르게 보이면 오늘 제가 설명을 잘 한 것입니다',roman:'ba-da-ga jo-geum da-reu-ge bo-i-myeon o-neul je-ga seol-myeong-eul jal han geo-sim-ni-da',vi:'Nếu biển trông khác đi là hôm nay em đã giải thích tốt',
+syllables:[{t:'다르게 보이면',m:'nếu trông khác'},{t:'오늘 제가',m:'hôm nay em'},{t:'설명을 잘 한 것입니다',m:'là đã giải thích tốt'}],
+hanja:'說明 = "Thuyết minh"',
+ex:{ko:'바다가 조금 다르게 보이면 오늘 제가 설명을 잘 한 것입니다.',vi:'Thấy biển khác đi là em giải thích tốt hôm nay rồi.'},
+tip:'Câu joke-wisdom của HDV chuyên nghiệp - rất tự tin!'}
 ]
 ],
-/* NGÀY 5: Cảm xúc */
+/* ═══════════════════════════════════════════════════
+   NGÀY 5 - Xử lý tình huống thực tế
+═══════════════════════════════════════════════════ */
 [
-[
-{ko:'기쁘다',roman:'gi-ppeu-da',vi:'Vui mừng',syllables:[{text:'기쁘',mean:'vui'},{text:'다',mean:'đuôi'}],hanja:'Thuần Hàn',example:{ko:'만나서 기쁩니다.',vi:'Rất vui được gặp.'},tip:'기쁨 = niềm vui (danh từ)'},
-{ko:'슬프다',roman:'seul-peu-da',vi:'Buồn',syllables:[{text:'슬프',mean:'buồn'},{text:'다',mean:'đuôi'}],hanja:'Thuần Hàn',example:{ko:'그 이야기는 슬퍼요.',vi:'Câu chuyện buồn.'},tip:'슬픔 = nỗi buồn'},
-{ko:'놀라다',roman:'nol-la-da',vi:'Ngạc nhiên',syllables:[{text:'놀라',mean:'kinh ngạc'},{text:'다',mean:'đuôi'}],hanja:'Thuần Hàn',example:{ko:'정말 놀랐어요!',vi:'Thật ngạc nhiên!'},tip:'깜짝 놀라다 = giật mình nhảy dựng'}
+/* 7h */ [
+{ko:'제가 아는 부분에 한해서 답변해 드리도록 하겠습니다',roman:'je-ga a-neun bu-bun-e han-hae-seo dap-byeon-hae deu-ri-do-rok ha-get-seum-ni-da',vi:'Em sẽ trả lời trong phạm vi những gì em biết',
+syllables:[{t:'아는 부분에 한해서',m:'trong phạm vi biết'},{t:'답변해 드리도록',m:'để trả lời giúp'},{t:'하겠습니다',m:'sẽ làm'}],
+hanja:'答辯 = "Đáp biện" = trả lời',
+ex:{ko:'궁금하신 점이 있으시면 제가 아는 부분에 한해서 답변해 드리도록 하겠습니다.',vi:'Có gì thắc mắc em sẽ trả lời trong phạm vi em biết.'},
+tip:'Nguyên văn file KS-bana! -에 한해서 = trong phạm vi'},
+{ko:'죄송합니다만 그 부분은 제가 도와드리기 어려울 것 같습니다',roman:'joe-song-ham-ni-da-man geu bu-bun-eun je-ga do-wa-deu-ri-gi eo-ryeo-ul geot gat-seum-ni-da',vi:'Xin lỗi nhưng phần đó có vẻ em khó giúp được',
+syllables:[{t:'죄송합니다만',m:'xin lỗi nhưng'},{t:'그 부분은',m:'phần đó'},{t:'도와드리기 어려울 것 같습니다',m:'có vẻ khó giúp'}],
+hanja:'-만 = nhưng (sau câu xin lỗi)',
+ex:{ko:'죄송합니다만 그 부분은 제가 도와드리기 어려울 것 같습니다.',vi:'Xin lỗi nhưng phần đó em có vẻ khó giúp được.'},
+tip:'Cách từ chối LỊCH SỰ nhất - -ㄹ 것 같습니다 = "có vẻ như"'},
+{ko:'양해 부탁드립니다, 최선을 다하겠습니다',roman:'yang-hae bu-tak-deu-rim-ni-da, choe-seon-eul da-ha-get-seum-ni-da',vi:'Mong thông cảm, em sẽ cố gắng hết sức',
+syllables:[{t:'양해 부탁드립니다',m:'諒解 mong thông cảm'},{t:'최선을 다하겠습니다',m:'最善 cố hết sức'}],
+hanja:'諒解 = "Lượng giải" | 最善 = "Tối thiện"',
+ex:{ko:'불편을 드려서 죄송합니다. 양해 부탁드리며 최선을 다하겠습니다.',vi:'Xin lỗi vì sự bất tiện. Mong thông cảm và em cố hết sức.'},
+tip:'Câu xử lý phàn nàn chuyên nghiệp - 2 cụm Hán Việt!'}
 ],
-[
-{ko:'사랑',roman:'sa-rang',vi:'Tình yêu',syllables:[{text:'사랑',mean:'tình yêu'}],hanja:'Thuần Hàn',example:{ko:'베트남을 사랑합니다.',vi:'Tôi yêu Việt Nam.'},tip:'사랑해요 - nghe cả ngày trong drama!'},
-{ko:'우정',roman:'u-jeong',vi:'Tình bạn',syllables:[{text:'우',mean:'友 hữu'},{text:'정',mean:'情 tình'}],hanja:'友情 = "Hữu tình"',example:{ko:'한-베 우정은 깊습니다.',vi:'Tình hữu nghị Hàn-Việt sâu.'},tip:'Trang trọng hơn 친구 khi nói "tình bạn"'},
-{ko:'정',roman:'jeong',vi:'Tình cảm (khái niệm Hàn đặc biệt)',syllables:[{text:'정',mean:'情 tình'}],hanja:'情 = "Tình"',example:{ko:'우리 사이에 정이 생겼어요.',vi:'Chúng ta có tình cảm rồi.'},tip:'Khái niệm rất Hàn - khó dịch sang ngôn ngữ khác!'}
+/* 10h */ [
+{ko:'예상치 못한 상황이 발생했습니다',roman:'ye-sang-chi mo-tan sang-hwang-i bal-saeng-haet-seum-ni-da',vi:'Đã xảy ra tình huống ngoài dự kiến',
+syllables:[{t:'예상치 못한',m:'ngoài dự kiến'},{t:'상황이',m:'狀況 tình huống'},{t:'발생했습니다',m:'發生 phát sinh'}],
+hanja:'豫想 = "Dự tưởng" | 狀況 = "Trạng huống" | 發生 = "Phát sinh"',
+ex:{ko:'죄송합니다. 예상치 못한 상황이 발생해서 일정이 변경됩니다.',vi:'Xin lỗi. Tình huống ngoài dự kiến khiến lịch trình thay đổi.'},
+tip:'3 từ Hán Việt + câu thông báo bất ngờ chuyên nghiệp'},
+{ko:'불가피하게 일정을 변경해야 할 것 같습니다',roman:'bul-ga-pi-ha-ge il-jeong-eul byeon-gyeong-hae-ya hal geot gat-seum-ni-da',vi:'Có vẻ bắt buộc phải thay đổi lịch trình',
+syllables:[{t:'불가피하게',m:'不可避 bất khả kháng'},{t:'일정을 변경해야',m:'日程 biến canh'},{t:'할 것 같습니다',m:'có vẻ phải'}],
+hanja:'不可避 = "Bất khả kháng" | 變更 = "Biến canh"',
+ex:{ko:'날씨 문제로 불가피하게 일정을 변경해야 할 것 같습니다.',vi:'Do thời tiết bất khả kháng phải thay đổi lịch trình.'},
+tip:'不可避 = "bất khả kháng" - dùng tiếng Hán hoặc Việt đều hiểu!'},
+{ko:'이 점에 대해 진심으로 사과의 말씀을 드립니다',roman:'i jeom-e dae-hae jin-sim-eu-ro sa-gwa-ui mal-sseum-eul deu-rim-ni-da',vi:'Về điều này em chân thành xin lỗi',
+syllables:[{t:'이 점에 대해',m:'về điều này'},{t:'진심으로',m:'真心으로 chân thành'},{t:'사과의 말씀을 드립니다',m:'xin lỗi (trang trọng)'}],
+hanja:'眞心 = "Chân tâm" | 謝過 = "Tạ quá" = xin lỗi',
+ex:{ko:'이 점에 대해 진심으로 사과의 말씀을 드립니다.',vi:'Về điều này em chân thành xin lỗi ạ.'},
+tip:'사과의 말씀을 드리다 = cách xin lỗi trang trọng nhất'}
 ],
-[
-{ko:'행복',roman:'haeng-bok',vi:'Hạnh phúc',syllables:[{text:'행',mean:'幸 hạnh'},{text:'복',mean:'福 phúc'}],hanja:'幸福 = "Hạnh phúc"',example:{ko:'여러분의 행복을 빕니다.',vi:'Chúc mọi người hạnh phúc.'},tip:'불행 = không hạnh phúc'},
-{ko:'건강',roman:'geon-gang',vi:'Sức khỏe',syllables:[{text:'건',mean:'健 kiện'},{text:'강',mean:'康 khang'}],hanja:'健康 = "Kiện khang"',example:{ko:'건강 조심하세요.',vi:'Xin giữ gìn sức khỏe.'},tip:'Câu chúc siêu quan trọng!'},
-{ko:'성공',roman:'seong-gong',vi:'Thành công',syllables:[{text:'성',mean:'成 thành'},{text:'공',mean:'功 công'}],hanja:'成功 = "Thành công"',example:{ko:'사업이 성공하시길.',vi:'Chúc việc thành công.'},tip:'실패 (thất bại) là trái nghĩa'}
+/* 15h */ [
+{ko:'다시는 이런 일이 없도록 각별히 주의하겠습니다',roman:'da-si-neun i-reon il-i eop-do-rok gak-byeol-hi ju-ui-ha-get-seum-ni-da',vi:'Em sẽ đặc biệt chú ý để không xảy ra chuyện như vậy nữa',
+syllables:[{t:'다시는',m:'sẽ không bao giờ nữa'},{t:'이런 일이 없도록',m:'để không có chuyện này'},{t:'각별히 주의하겠습니다',m:'đặc biệt chú ý'}],
+hanja:'各別히 = "Các biệt" | 注意 = "Chú ý"',
+ex:{ko:'이번 일에 대해 사과드리며 다시는 이런 일이 없도록 각별히 주의하겠습니다.',vi:'Xin lỗi về lần này và sẽ đặc biệt chú ý không tái diễn.'},
+tip:'각별히 = đặc biệt (hơn 특별히). Câu cam kết sau khi xin lỗi'},
+{ko:'불편하게 해드린 점 다시 한번 사과드립니다',roman:'bul-pyeon-ha-ge hae-deu-rin jeom da-si han beon sa-gwa-deu-rim-ni-da',vi:'Một lần nữa xin lỗi vì đã làm phiền quý khách',
+syllables:[{t:'불편하게 해드린 점',m:'điều đã làm phiền'},{t:'다시 한번',m:'một lần nữa'},{t:'사과드립니다',m:'xin lỗi (khiêm)'}],
+hanja:'不便 = "Bất tiện" | 謝過드립니다 (khiêm)',
+ex:{ko:'불편하게 해드린 점 다시 한번 사과드립니다. 앞으로는 더 잘 해드리겠습니다.',vi:'Xin lỗi lần nữa. Sau này em sẽ phục vụ tốt hơn.'},
+tip:'사과드리다 = xin lỗi (khiêm nhường). 드리다 làm cho khiêm hơn'},
+{ko:'이해해 주셔서 진심으로 감사드립니다',roman:'i-hae-hae ju-syeo-seo jin-sim-eu-ro gam-sa-deu-rim-ni-da',vi:'Chân thành cảm ơn vì quý khách đã hiểu cho',
+syllables:[{t:'이해해 주셔서',m:'vì đã hiểu cho'},{t:'진심으로',m:'chân thành'},{t:'감사드립니다',m:'cảm ơn (khiêm)'}],
+hanja:'理解 = "Lý giải" | 眞心 = "Chân tâm"',
+ex:{ko:'이해해 주셔서 진심으로 감사드립니다. 덕분에 더 잘 해드릴 수 있게 되었습니다.',vi:'Cảm ơn chân thành vì đã hiểu. Nhờ vậy em sẽ phục vụ tốt hơn.'},
+tip:'Câu kết hoàn hảo sau khi giải quyết phàn nàn'}
 ],
-[
-{ko:'고민',roman:'go-min',vi:'Lo lắng',syllables:[{text:'고',mean:'苦 khổ'},{text:'민',mean:'悶 muộn'}],hanja:'苦悶 = "Khổ muộn"',example:{ko:'무슨 고민 있으세요?',vi:'Có gì lo lắng không?'},tip:'Nhẹ hơn 걱정 (lo sợ)'},
-{ko:'걱정',roman:'geok-jeong',vi:'Lo lắng',syllables:[{text:'걱정',mean:'lo lắng'}],hanja:'Thuần Hàn',example:{ko:'걱정하지 마세요.',vi:'Đừng lo.'},tip:'걱정거리 = nỗi lo'},
-{ko:'용기',roman:'yong-gi',vi:'Dũng cảm',syllables:[{text:'용',mean:'勇 dũng'},{text:'기',mean:'氣 khí'}],hanja:'勇氣 = "Dũng khí"',example:{ko:'용기를 내세요!',vi:'Lấy dũng khí lên!'},tip:'화이팅 = gần nghĩa "lấy dũng khí"'}
+/* 17h */ [
+{ko:'혹시 몸이 불편하신 분이 계시면 말씀해 주세요',roman:'hok-si mom-i bul-pyeon-ha-sin bun-i gye-si-myeon mal-sseum-hae ju-se-yo',vi:'Nếu có ai không khỏe xin nói với em',
+syllables:[{t:'혹시',m:'nếu có'},{t:'몸이 불편하신',m:'không khỏe (kính)'},{t:'분이 계시면',m:'ai đó nếu có'},{t:'말씀해 주세요',m:'xin nói'}],
+hanja:'不便 = "Bất tiện" = không thoải mái',
+ex:{ko:'여행 중에 혹시 몸이 불편하신 분이 계시면 언제든지 말씀해 주세요.',vi:'Trong chuyến đi ai không khỏe cứ nói với em bất cứ lúc nào.'},
+tip:'Câu quan tâm sức khỏe khách - nên nói mỗi ngày'},
+{ko:'저는 여러분의 안전이 최우선입니다',roman:'jeo-neun yeo-reo-bun-ui an-jeon-i choe-u-seon-im-ni-da',vi:'An toàn của quý khách là ưu tiên số 1 của em',
+syllables:[{t:'여러분의 안전이',m:'안전 an toàn'},{t:'최우선입니다',m:'最優先 ưu tiên nhất'}],
+hanja:'安全 = "An toàn" | 最優先 = "Tối ưu tiên"',
+ex:{ko:'저는 여러분의 안전이 최우선입니다. 무리하지 마시고 말씀해 주세요.',vi:'An toàn của mọi người là số 1. Đừng cố, cứ nói với em.'},
+tip:'最優先 = "tối ưu tiên" - câu tuyên ngôn HDV chuyên nghiệp'},
+{ko:'일행이 한 분이라도 없으시면 출발할 수 없습니다',roman:'il-haeng-i han bun-i-ra-do eop-eu-si-myeon chul-bal-hal su eop-seum-ni-da',vi:'Thiếu một người trong đoàn cũng không thể xuất phát',
+syllables:[{t:'일행이',m:'đoàn người'},{t:'한 분이라도',m:'dù chỉ 1 người'},{t:'없으시면',m:'nếu vắng'},{t:'출발할 수 없습니다',m:'không thể xuất phát'}],
+hanja:'一行 = "Nhất hành" | 出發 = "Xuất phát"',
+ex:{ko:'일행이 한 분이라도 없으시면 출발할 수 없습니다. 꼭 제 시간에 오세요.',vi:'Thiếu dù 1 người cũng không xuất phát. Nhớ đúng giờ.'},
+tip:'일행 = đoàn người (Nhất hành). 이라도 = dù chỉ là'}
 ],
-[
-{ko:'기억',roman:'gi-eok',vi:'Ký ức, ghi nhớ',syllables:[{text:'기',mean:'記 ký'},{text:'억',mean:'憶 ức'}],hanja:'記憶 = "Ký ức"',example:{ko:'이 여행을 오래 기억하시길.',vi:'Nhớ chuyến đi này mãi.'},tip:'추억 = kỷ niệm (đẹp hơn)'},
-{ko:'추억',roman:'chu-eok',vi:'Kỷ niệm đẹp',syllables:[{text:'추',mean:'追 truy'},{text:'억',mean:'憶 ức'}],hanja:'追憶 = "Truy ức"',example:{ko:'좋은 추억이 되었으면.',vi:'Mong thành kỷ niệm đẹp.'},tip:'기억 = nhớ, 추억 = kỷ niệm đẹp'},
-{ko:'감사',roman:'gam-sa',vi:'Sự biết ơn',syllables:[{text:'감',mean:'感 cảm'},{text:'사',mean:'謝 tạ'}],hanja:'感謝 = "Cảm tạ"',example:{ko:'감사의 마음을 전합니다.',vi:'Gửi lòng biết ơn.'},tip:'감사드리다 = kính cao nhất'}
-]
-],
-/* NGÀY 6: Ngữ pháp HDV cao cấp */
-[
-[
-{ko:'~겠습니다',roman:'-get-seum-ni-da',vi:'~ sẽ (cam kết)',syllables:[{text:'겠',mean:'ý chí/tương lai'},{text:'습니다',mean:'đuôi kính'}],hanja:'Ngữ pháp',example:{ko:'최선을 다하겠습니다.',vi:'Em cố hết sức.'},tip:'Trang trọng hơn ~ㄹ 거예요'},
-{ko:'~도록 하겠습니다',roman:'-do-rok ha-get-seum-ni-da',vi:'Em sẽ cố để ~',syllables:[{text:'도록',mean:'để'},{text:'하겠습니다',mean:'sẽ làm'}],hanja:'Ngữ pháp thuần',example:{ko:'안전하게 모시도록 하겠습니다.',vi:'Em phục vụ an toàn.'},tip:'Câu vàng HDV!'},
-{ko:'~기 바랍니다',roman:'-gi ba-ram-ni-da',vi:'Mong quý khách ~',syllables:[{text:'기',mean:'danh từ hóa'},{text:'바랍니다',mean:'mong ước'}],hanja:'Ngữ pháp thuần',example:{ko:'즐거운 여행 되시기 바랍니다.',vi:'Mong chuyến đi vui vẻ.'},tip:'Dùng ở thông báo chính thức'}
-],
-[
-{ko:'~아/어 드리다',roman:'-a/eo deu-ri-da',vi:'Làm ~ giúp (kính)',syllables:[{text:'아/어',mean:'nối'},{text:'드리다',mean:'cho (khiêm)'}],hanja:'드리다 thuần Hàn',example:{ko:'사진을 찍어 드릴까요?',vi:'Em chụp giúp nhé?'},tip:'Công thức ma thuật HDV!'},
-{ko:'~(으)시면',roman:'-(eu)-si-myeon',vi:'Nếu quý khách ~',syllables:[{text:'시',mean:'kính'},{text:'면',mean:'nếu'}],hanja:'Ngữ pháp',example:{ko:'궁금하신 점이 있으시면 말씀해 주세요.',vi:'Thắc mắc gì xin nói.'},tip:'시 là vàng của kính ngữ'},
-{ko:'~(으)ㄹ 수 있습니다',roman:'-(eu)l su it-seum-ni-da',vi:'Có thể ~',syllables:[{text:'ㄹ 수',mean:'khả năng'},{text:'있습니다',mean:'có'}],hanja:'Ngữ pháp thuần',example:{ko:'여기서 쉬실 수 있습니다.',vi:'Có thể nghỉ ở đây.'},tip:'Trái: ~ㄹ 수 없습니다 = không thể'}
-],
-[
-{ko:'~기 때문에',roman:'-gi ttae-mun-e',vi:'Vì ~',syllables:[{text:'기',mean:'danh từ hóa'},{text:'때문에',mean:'vì'}],hanja:'Ngữ pháp thuần',example:{ko:'시간이 없기 때문에 빨리 가야 합니다.',vi:'Vì không có TG phải đi nhanh.'},tip:'Trang trọng hơn ~서/아서'},
-{ko:'~(으)ㄹ 예정입니다',roman:'-(eu)l ye-jeong-im-ni-da',vi:'Dự kiến sẽ ~',syllables:[{text:'예정',mean:'豫定 dự định'},{text:'입니다',mean:'là'}],hanja:'豫定 dự định',example:{ko:'3시에 도착할 예정입니다.',vi:'Dự kiến 3h đến.'},tip:'Như thông báo sân bay'},
-{ko:'~덕분에',roman:'-deok-bun-e',vi:'Nhờ có ~',syllables:[{text:'덕분',mean:'德分 đức phần'},{text:'에',mean:'nhờ'}],hanja:'德分 = "Đức phần"',example:{ko:'선생님들 덕분에 즐거웠습니다.',vi:'Nhờ quý khách em rất vui.'},tip:'Cảm ơn khéo!'}
-],
-[
-{ko:'~(이)라고 합니다',roman:'-(i)-ra-go ham-ni-da',vi:'Được gọi là ~',syllables:[{text:'(이)라고',mean:'là (trích)'},{text:'합니다',mean:'nói'}],hanja:'Ngữ pháp thuần',example:{ko:'이것을 "반미"라고 합니다.',vi:'Cái này gọi là "bánh mì".'},tip:'Công thức giới thiệu!'},
-{ko:'~(으)ㄹ 만하다',roman:'-(eu)l man-ha-da',vi:'Đáng để ~',syllables:[{text:'ㄹ 만',mean:'mức độ'},{text:'하다',mean:'là'}],hanja:'Ngữ pháp thuần',example:{ko:'호이안은 꼭 가 볼 만한 곳입니다.',vi:'Hội An đáng ghé thăm.'},tip:'Review/recommend tự nhiên!'},
-{ko:'~(으)시죠?',roman:'-(eu)-si-jyo?',vi:'~ đúng không ạ?',syllables:[{text:'시',mean:'kính'},{text:'죠',mean:'đúng không'}],hanja:'Ngữ pháp thuần',example:{ko:'많이 피곤하시죠?',vi:'Mệt nhiều đúng không?'},tip:'Vừa hỏi vừa cảm thông - khéo!'}
-],
-[
-{ko:'~는 김에',roman:'-neun gim-e',vi:'Tiện thể ~',syllables:[{text:'는',mean:'định ngữ'},{text:'김',mean:'cơ hội'}],hanja:'Ngữ pháp',example:{ko:'여기 온 김에 사진도 찍어요.',vi:'Tiện đến đây cùng chụp.'},tip:'Cực tự nhiên trong khẩu ngữ!'},
-{ko:'~자마자',roman:'-ja-ma-ja',vi:'Ngay khi ~',syllables:[{text:'자마자',mean:'ngay khi'}],hanja:'Ngữ pháp thuần',example:{ko:'도착하자마자 식사할 거예요.',vi:'Ngay khi đến sẽ ăn.'},tip:'Nhanh hơn ~면 바로'},
-{ko:'~ㄹ지 모르겠어요',roman:'-l-ji mo-reu-get-seo-yo',vi:'Không biết có ~ không',syllables:[{text:'ㄹ지',mean:'có thể'},{text:'모르겠어요',mean:'không biết'}],hanja:'Ngữ pháp',example:{ko:'비가 올지 모르겠어요.',vi:'Không biết có mưa không.'},tip:'Thể hiện sự bất định khéo léo'}
-]
-],
-/* NGÀY 7: Thành ngữ */
-[
-[
-{ko:'입이 귀에 걸리다',roman:'ib-i gwi-e geol-li-da',vi:'Cười toe tới tai',syllables:[{text:'입',mean:'miệng'},{text:'귀',mean:'tai'},{text:'걸리다',mean:'mắc'}],hanja:'Thành ngữ',example:{ko:'선물 받고 입이 귀에 걸렸어요.',vi:'Nhận quà cười toe.'},tip:'Miệng cười "mắc vào tai" - rất vui!'},
-{ko:'눈이 높다',roman:'nun-i nop-da',vi:'Kén chọn',syllables:[{text:'눈',mean:'mắt'},{text:'높다',mean:'cao'}],hanja:'Thành ngữ',example:{ko:'그 사람은 눈이 높아요.',vi:'Người đó kén quá.'},tip:'"Mắt cao" = tiêu chuẩn cao'},
-{ko:'발이 넓다',roman:'bal-i neol-da',vi:'Quan hệ rộng',syllables:[{text:'발',mean:'chân'},{text:'넓다',mean:'rộng'}],hanja:'Thành ngữ',example:{ko:'그분은 발이 아주 넓으세요.',vi:'Ngài ấy quan hệ rất rộng.'},tip:'"Chân rộng" = quen nhiều'}
-],
-[
-{ko:'손이 크다',roman:'son-i keu-da',vi:'Hào phóng',syllables:[{text:'손',mean:'tay'},{text:'크다',mean:'lớn'}],hanja:'Thành ngữ',example:{ko:'어머니는 손이 크셔요.',vi:'Mẹ hào phóng lắm.'},tip:'"Tay lớn" - cho nhiều. Khen người nấu ăn!'},
-{ko:'바람을 맞다',roman:'ba-ram-eul mat-da',vi:'Bị cho leo cây',syllables:[{text:'바람',mean:'gió'},{text:'맞다',mean:'hứng'}],hanja:'Thành ngữ',example:{ko:'오늘 바람 맞았어요.',vi:'Hôm nay bị cho leo cây.'},tip:'"Hứng gió" - đứng chờ hụt - thơ!'},
-{ko:'시간 가는 줄 모르다',roman:'si-gan ga-neun jul mo-reu-da',vi:'Không biết TG trôi',syllables:[{text:'시간',mean:'時間'},{text:'가는',mean:'trôi'},{text:'줄 모르다',mean:'không biết'}],hanja:'時間',example:{ko:'놀다 보니 시간 가는 줄 몰랐어요.',vi:'Mải chơi không biết TG trôi.'},tip:'Compliment hay cho tour!'}
-],
-[
-{ko:'마음에 들다',roman:'ma-eum-e deul-da',vi:'Vừa ý',syllables:[{text:'마음',mean:'lòng'},{text:'들다',mean:'vào'}],hanja:'Thuần Hàn',example:{ko:'이 기념품이 마음에 들어요.',vi:'Tôi ưng món quà này.'},tip:'"Vào lòng" = vừa lòng'},
-{ko:'정이 들다',roman:'jeong-i deul-da',vi:'Quyến luyến',syllables:[{text:'정',mean:'情 tình'},{text:'들다',mean:'vào'}],hanja:'情',example:{ko:'베트남에 정이 들었어요.',vi:'Tôi quyến luyến VN rồi.'},tip:'Cực đặc trưng Hàn! Nói chia tay - cảm động'},
-{ko:'말이 통하다',roman:'mal-i tong-ha-da',vi:'Hiểu nhau',syllables:[{text:'말',mean:'lời'},{text:'통하다',mean:'通하다'}],hanja:'通하다',example:{ko:'우리는 말이 잘 통해요.',vi:'Chúng ta hiểu nhau.'},tip:'Không chỉ "nói chung NN" mà "hợp ý"'}
-],
-[
-{ko:'얼굴이 두껍다',roman:'eol-gul-i du-kkeop-da',vi:'Mặt dày',syllables:[{text:'얼굴',mean:'mặt'},{text:'두껍다',mean:'dày'}],hanja:'Thành ngữ',example:{ko:'그 사람 얼굴이 두꺼워요.',vi:'Người đó mặt dày.'},tip:'Tiếng Việt cùng ý - xuyên văn hóa Đông Á!'},
-{ko:'배가 아프다',roman:'bae-ga a-peu-da',vi:'Ghen tị',syllables:[{text:'배',mean:'bụng'},{text:'아프다',mean:'đau'}],hanja:'Thành ngữ',example:{ko:'친구가 잘 되니 배가 아프네요.',vi:'Bạn thành công ghen tị thật.'},tip:'"Đau bụng" = ghen tị - tục ngữ phổ biến'},
-{ko:'김칫국 마시다',roman:'kim-chit-guk ma-si-da',vi:'Tưởng bở',syllables:[{text:'김칫국',mean:'nước kimchi'},{text:'마시다',mean:'uống'}],hanja:'Thành ngữ',example:{ko:'김칫국부터 마시지 마세요.',vi:'Đừng tưởng bở.'},tip:'Cổ tích: uống nước kimchi trước khi có thịt'}
-],
-[
-{ko:'천리 길도 한 걸음부터',roman:'cheol-li gil-do han geol-eum-bu-teo',vi:'Ngàn dặm khởi từ bước đầu',syllables:[{text:'천리',mean:'千里'},{text:'길',mean:'đường'},{text:'한 걸음',mean:'một bước'}],hanja:'千里',example:{ko:'천리 길도 한 걸음부터라고 하잖아요.',vi:'Ngàn dặm khởi từ bước chân.'},tip:'Tục ngữ trùng tiếng Việt!'},
-{ko:'시작이 반이다',roman:'si-jak-i ban-i-da',vi:'Bắt đầu là nửa đường',syllables:[{text:'시작',mean:'始作'},{text:'반',mean:'半'}],hanja:'始作 + 半',example:{ko:'시작이 반이에요!',vi:'Bắt đầu là nửa đường!'},tip:'Câu động viên kinh điển'},
-{ko:'화이팅',roman:'hwa-i-ting',vi:'Cố lên!',syllables:[{text:'화이팅',mean:'Fighting'}],hanja:'Mượn tiếng Anh',example:{ko:'힘내세요! 화이팅!',vi:'Cố lên nào!'},tip:'Cực Hàn! 화이팅! 🔥'}
-]
-],
-/* NGÀY 8: Kể chuyện lịch sử */
-[
-[
-{ko:'식민지',roman:'sing-min-ji',vi:'Thuộc địa',syllables:[{text:'식',mean:'殖 thực'},{text:'민',mean:'民 dân'},{text:'지',mean:'地 địa'}],hanja:'殖民地 = "Thực dân địa"',example:{ko:'프랑스 식민지 때 시작되었습니다.',vi:'Bắt đầu thời Pháp thuộc.'},tip:'식민지 = thuộc địa. Dùng khi kể về VN thế kỷ 19-20'},
-{ko:'침략',roman:'chim-nyak',vi:'Xâm lược',syllables:[{text:'침',mean:'侵 xâm'},{text:'략',mean:'略 lược'}],hanja:'侵略 = "Xâm lược"',example:{ko:'중국의 침략을 받았습니다.',vi:'Bị Trung Quốc xâm lược.'},tip:'Trùng Hán Việt hoàn toàn'},
-{ko:'저항',roman:'jeo-hang',vi:'Kháng cự',syllables:[{text:'저',mean:'抵 để'},{text:'항',mean:'抗 kháng'}],hanja:'抵抗 = "Để kháng"',example:{ko:'베트남 사람들은 강하게 저항했습니다.',vi:'Người Việt kháng cự mạnh.'},tip:'Tiếng Việt "kháng chiến" - cùng gốc 抗'}
-],
-[
-{ko:'희생',roman:'hui-saeng',vi:'Hy sinh',syllables:[{text:'희',mean:'犧 hy'},{text:'생',mean:'牲 sinh'}],hanja:'犧牲 = "Hy sinh"',example:{ko:'많은 희생이 있었습니다.',vi:'Có nhiều hy sinh.'},tip:'Trùng Hán Việt'},
-{ko:'영웅',roman:'yeong-ung',vi:'Anh hùng',syllables:[{text:'영',mean:'英 anh'},{text:'웅',mean:'雄 hùng'}],hanja:'英雄 = "Anh hùng"',example:{ko:'민족의 영웅입니다.',vi:'Là anh hùng dân tộc.'},tip:'Kể về Hai Bà Trưng, Trần Hưng Đạo...'},
-{ko:'승리',roman:'seung-ri',vi:'Chiến thắng',syllables:[{text:'승',mean:'勝 thắng'},{text:'리',mean:'利 lợi'}],hanja:'勝利 = "Thắng lợi"',example:{ko:'결국 승리를 거두었습니다.',vi:'Cuối cùng giành thắng lợi.'},tip:'Hàn Việt giống nhau'}
-],
-[
-{ko:'건국',roman:'geon-guk',vi:'Lập quốc',syllables:[{text:'건',mean:'建 kiến'},{text:'국',mean:'國 quốc'}],hanja:'建國 = "Kiến quốc"',example:{ko:'베트남은 2000년 넘는 건국 역사가 있습니다.',vi:'VN có lịch sử lập quốc hơn 2000 năm.'},tip:'Tiếng Việt "kiến quốc" vẫn dùng'},
-{ko:'왕조',roman:'wang-jo',vi:'Triều đại',syllables:[{text:'왕',mean:'王 vương'},{text:'조',mean:'朝 triều'}],hanja:'王朝 = "Vương triều"',example:{ko:'응우옌 왕조는 마지막 왕조였습니다.',vi:'Triều Nguyễn là triều đại cuối.'},tip:'Tiếng Việt "vương triều"'},
-{ko:'수도',roman:'su-do',vi:'Thủ đô',syllables:[{text:'수',mean:'首 thủ'},{text:'도',mean:'都 đô'}],hanja:'首都 = "Thủ đô"',example:{ko:'하노이가 베트남의 수도입니다.',vi:'Hà Nội là thủ đô VN.'},tip:'Trùng Hán Việt 100%'}
-],
-[
-{ko:'통일',roman:'tong-il',vi:'Thống nhất',syllables:[{text:'통',mean:'統 thống'},{text:'일',mean:'一 nhất'}],hanja:'統一 = "Thống nhất"',example:{ko:'1975년에 통일되었습니다.',vi:'Thống nhất năm 1975.'},tip:'Trùng hoàn toàn'},
-{ko:'발전',roman:'bal-jeon',vi:'Phát triển',syllables:[{text:'발',mean:'發 phát'},{text:'전',mean:'展 triển'}],hanja:'發展 = "Phát triển"',example:{ko:'빠르게 발전하고 있습니다.',vi:'Đang phát triển nhanh.'},tip:'Y chang tiếng Việt'},
-{ko:'번영',roman:'beon-yeong',vi:'Phồn vinh',syllables:[{text:'번',mean:'繁 phồn'},{text:'영',mean:'榮 vinh'}],hanja:'繁榮 = "Phồn vinh"',example:{ko:'번영하는 나라가 되었습니다.',vi:'Trở thành quốc gia phồn vinh.'},tip:'Trang trọng, dùng trong bài diễn văn'}
-],
-[
-{ko:'세대',roman:'se-dae',vi:'Thế hệ',syllables:[{text:'세',mean:'世 thế'},{text:'대',mean:'代 đại'}],hanja:'世代 = "Thế đại"',example:{ko:'이 이야기를 다음 세대에 전해야 합니다.',vi:'Phải truyền chuyện này cho thế hệ sau.'},tip:'"Thế đại" - tiếng Việt đọc "thế đại"'},
-{ko:'전설',roman:'jeon-seol',vi:'Truyền thuyết',syllables:[{text:'전',mean:'傳 truyền'},{text:'설',mean:'說 thuyết'}],hanja:'傳說 = "Truyền thuyết"',example:{ko:'이 산에는 전설이 있습니다.',vi:'Núi này có truyền thuyết.'},tip:'Dùng mở đầu câu chuyện hay!'},
-{ko:'교훈',roman:'gyo-hun',vi:'Bài học, giáo huấn',syllables:[{text:'교',mean:'敎 giáo'},{text:'훈',mean:'訓 huấn'}],hanja:'敎訓 = "Giáo huấn"',example:{ko:'역사에서 교훈을 얻어야 합니다.',vi:'Phải rút bài học từ lịch sử.'},tip:'Câu kết story HDV hay!'}
-]
-],
-/* NGÀY 9: Xử lý tình huống */
-[
-[
-{ko:'문제가 생겼어요',roman:'mun-je-ga saeng-gyeot-seo-yo',vi:'Có vấn đề phát sinh',syllables:[{text:'문제',mean:'問題 vấn đề'},{text:'생겼어요',mean:'phát sinh'}],hanja:'問題 + thuần',example:{ko:'죄송합니다, 문제가 생겼어요.',vi:'Xin lỗi, có vấn đề phát sinh.'},tip:'Câu báo tin xấu - luôn kèm 죄송합니다'},
-{ko:'해결하다',roman:'hae-gyeol-ha-da',vi:'Giải quyết',syllables:[{text:'해',mean:'解 giải'},{text:'결',mean:'決 quyết'},{text:'하다',mean:'làm'}],hanja:'解決 = "Giải quyết"',example:{ko:'바로 해결해 드리겠습니다.',vi:'Em giải quyết ngay.'},tip:'Trấn an khách sau khi báo vấn đề'},
-{ko:'조금만 기다려 주세요',roman:'jo-geum-man gi-da-ryeo ju-se-yo',vi:'Xin chờ một chút',syllables:[{text:'조금만',mean:'chút ít'},{text:'기다려',mean:'chờ'},{text:'주세요',mean:'xin'}],hanja:'Thuần Hàn',example:{ko:'조금만 기다려 주세요, 금방 돌아올게요.',vi:'Xin chờ chút, em quay lại ngay.'},tip:'Câu cơ bản nhất khi bận'}
-],
-[
-{ko:'죄송합니다만',roman:'joe-song-ham-ni-da-man',vi:'Em xin lỗi nhưng...',syllables:[{text:'죄송합니다',mean:'xin lỗi'},{text:'만',mean:'nhưng'}],hanja:'Thuần Hàn',example:{ko:'죄송합니다만, 그건 불가능합니다.',vi:'Xin lỗi nhưng không thể được.'},tip:'Mở đầu khi phải từ chối - tối quan trọng'},
-{ko:'어쩔 수 없습니다',roman:'eo-jjeol su eop-seum-ni-da',vi:'Không còn cách nào',syllables:[{text:'어쩔',mean:'làm sao'},{text:'수 없',mean:'không thể'}],hanja:'Thuần Hàn',example:{ko:'날씨 때문에 어쩔 수 없습니다.',vi:'Thời tiết nên không còn cách.'},tip:'Lý do bất khả kháng'},
-{ko:'양해 부탁드립니다',roman:'yang-hae bu-tak-deu-rim-ni-da',vi:'Mong quý khách thông cảm',syllables:[{text:'양해',mean:'諒解 lượng giải'},{text:'부탁',mean:'付託 phó thác'},{text:'드립니다',mean:'kính cho'}],hanja:'諒解付託',example:{ko:'양해 부탁드립니다.',vi:'Mong thông cảm ạ.'},tip:'Câu vàng khi xin lỗi chuyên nghiệp'}
-],
-[
-{ko:'도와드릴까요?',roman:'do-wa-deu-ril-kka-yo?',vi:'Em giúp được gì không?',syllables:[{text:'도와',mean:'giúp'},{text:'드릴까요',mean:'nên cho'}],hanja:'Thuần Hàn',example:{ko:'뭐 도와드릴까요?',vi:'Em giúp gì được ạ?'},tip:'Câu chủ động tuyệt vời!'},
-{ko:'필요하시면',roman:'pil-yo-ha-si-myeon',vi:'Nếu quý khách cần',syllables:[{text:'필요',mean:'必要 tất yếu'},{text:'하시면',mean:'cần thì'}],hanja:'必要 + ngữ pháp',example:{ko:'필요하시면 말씀해 주세요.',vi:'Cần gì xin nói.'},tip:'Rất khéo khi phục vụ'},
-{ko:'최선을 다하겠습니다',roman:'choe-seon-eul da-ha-get-seum-ni-da',vi:'Em sẽ cố hết sức',syllables:[{text:'최선',mean:'最善 tối thiện'},{text:'다하겠',mean:'làm hết'}],hanja:'最善 tối thiện',example:{ko:'최선을 다하겠습니다.',vi:'Em sẽ cố hết sức.'},tip:'Câu cam kết mạnh mẽ'}
-],
-[
-{ko:'불편하게 해드려서',roman:'bul-pyeon-ha-ge hae-deu-ryeo-seo',vi:'Vì làm phiền quý khách nên...',syllables:[{text:'불편',mean:'不便 bất tiện'},{text:'해드려서',mean:'đã làm'}],hanja:'不便',example:{ko:'불편하게 해드려서 죄송합니다.',vi:'Xin lỗi vì làm phiền.'},tip:'Câu xin lỗi chuyên nghiệp!'},
-{ko:'실수',roman:'sil-su',vi:'Sai sót, nhầm lẫn',syllables:[{text:'실',mean:'失 thất'},{text:'수',mean:'手 thủ'}],hanja:'失手 = "Thất thủ"',example:{ko:'제 실수입니다.',vi:'Là lỗi của em.'},tip:'Nhận lỗi nhanh và rõ'},
-{ko:'다시는',roman:'da-si-neun',vi:'Sẽ không bao giờ nữa',syllables:[{text:'다시',mean:'lại'},{text:'는',mean:'không (+ phủ định)'}],hanja:'Ngữ pháp',example:{ko:'다시는 이런 일이 없도록 하겠습니다.',vi:'Sẽ không để xảy ra nữa.'},tip:'Cam kết sau khi xin lỗi'}
-],
-[
-{ko:'이해해 주셔서',roman:'i-hae-hae ju-syeo-seo',vi:'Vì quý khách đã hiểu nên...',syllables:[{text:'이해',mean:'理解 lý giải'},{text:'주셔서',mean:'cho nên'}],hanja:'理解 lý giải',example:{ko:'이해해 주셔서 감사합니다.',vi:'Cảm ơn vì đã hiểu cho.'},tip:'Câu cảm ơn sau khi khách thông cảm'},
-{ko:'배려',roman:'bae-ryeo',vi:'Sự quan tâm, chu đáo',syllables:[{text:'배',mean:'配 phối'},{text:'려',mean:'慮 lự'}],hanja:'配慮 = "Phối lự"',example:{ko:'배려에 감사드립니다.',vi:'Cảm ơn sự quan tâm.'},tip:'Cảm ơn khi khách tốt bụng'},
-{ko:'앞으로는',roman:'ap-eu-ro-neun',vi:'Từ nay về sau',syllables:[{text:'앞',mean:'trước'},{text:'으로',mean:'về phía'},{text:'는',mean:'nhấn mạnh'}],hanja:'Thuần Hàn',example:{ko:'앞으로는 더 주의하겠습니다.',vi:'Từ nay em sẽ cẩn thận hơn.'},tip:'Cam kết cải thiện'}
-]
-],
-/* NGÀY 10: Tiếng Hàn đời sống */
-[
-[
-{ko:'맞아요',roman:'ma-ja-yo',vi:'Đúng rồi',syllables:[{text:'맞',mean:'đúng'},{text:'아요',mean:'đuôi'}],hanja:'Thuần Hàn',example:{ko:'네, 맞아요.',vi:'Vâng, đúng rồi.'},tip:'Câu đồng ý quen thuộc nhất'},
-{ko:'그래요?',roman:'geu-rae-yo?',vi:'Vậy à? Thế à?',syllables:[{text:'그래',mean:'vậy'},{text:'요',mean:'nghi vấn'}],hanja:'Thuần Hàn',example:{ko:'아, 그래요? 몰랐어요.',vi:'À vậy à? Tôi không biết.'},tip:'Phản ứng tự nhiên nhất'},
-{ko:'정말',roman:'jeong-mal',vi:'Thật sự',syllables:[{text:'정',mean:'正 chính'},{text:'말',mean:'lời'}],hanja:'正말 = "Chính lời"',example:{ko:'정말 맛있어요!',vi:'Thật sự ngon!'},tip:'Nhấn mạnh - dùng mọi lúc'}
-],
-[
-{ko:'혹시',roman:'hok-si',vi:'Nếu có... (thăm dò)',syllables:[{text:'혹시',mean:'或是 hoặc thị'}],hanja:'或是 "hoặc thị"',example:{ko:'혹시 한국말 하세요?',vi:'Lỡ... có nói tiếng Hàn không?'},tip:'Câu vàng để hỏi lịch sự'},
-{ko:'그러면',roman:'geu-reo-myeon',vi:'Nếu vậy thì',syllables:[{text:'그러',mean:'làm vậy'},{text:'면',mean:'nếu'}],hanja:'Thuần Hàn',example:{ko:'그러면 저희가 도와드릴게요.',vi:'Vậy thì em giúp nhé.'},tip:'Chuyển ý tự nhiên'},
-{ko:'아무튼',roman:'a-mu-teun',vi:'Dù sao thì',syllables:[{text:'아무튼',mean:'dù sao'}],hanja:'Thuần Hàn',example:{ko:'아무튼 잘 되길 바라요.',vi:'Dù sao mong mọi việc ổn.'},tip:'Kết luận/chuyển đề tài'}
-],
-[
-{ko:'많이',roman:'man-i',vi:'Nhiều',syllables:[{text:'많이',mean:'nhiều'}],hanja:'Thuần Hàn',example:{ko:'많이 드세요!',vi:'Ăn nhiều nhé!'},tip:'Lưu ý đọc là [man-i] không phải [man-hi]'},
-{ko:'조금',roman:'jo-geum',vi:'Một chút',syllables:[{text:'조금',mean:'chút'}],hanja:'Thuần Hàn',example:{ko:'조금만 기다리세요.',vi:'Xin chờ chút.'},tip:'조금 + 만 = chỉ một chút'},
-{ko:'거의',roman:'geo-ui',vi:'Gần như',syllables:[{text:'거의',mean:'gần'}],hanja:'Thuần Hàn',example:{ko:'거의 다 왔어요.',vi:'Gần tới rồi.'},tip:'Trấn an khi khách mệt!'}
-],
-[
-{ko:'재미있다',roman:'jae-mi-it-da',vi:'Thú vị, hay',syllables:[{text:'재미',mean:'niềm vui'},{text:'있다',mean:'có'}],hanja:'Thuần Hàn',example:{ko:'이 이야기 정말 재미있어요!',vi:'Chuyện này thật thú vị!'},tip:'Khen khéo khi kể chuyện hay'},
-{ko:'신기하다',roman:'sin-gi-ha-da',vi:'Kỳ lạ, thú vị',syllables:[{text:'신',mean:'神 thần'},{text:'기',mean:'奇 kỳ'}],hanja:'神奇 = "Thần kỳ"',example:{ko:'정말 신기하네요!',vi:'Thật kỳ diệu!'},tip:'Phản ứng khi khách ngạc nhiên'},
-{ko:'멋지다',roman:'meot-ji-da',vi:'Tuyệt vời, ngầu',syllables:[{text:'멋',mean:'phong cách'},{text:'지다',mean:'trở nên'}],hanja:'Thuần Hàn',example:{ko:'경치가 정말 멋져요!',vi:'Phong cảnh thật tuyệt!'},tip:'Khen cảnh đẹp, đồ đẹp, người đẹp'}
-],
-[
-{ko:'또 오세요',roman:'tto o-se-yo',vi:'Lần sau đến nhé',syllables:[{text:'또',mean:'lại'},{text:'오세요',mean:'xin đến'}],hanja:'Thuần Hàn',example:{ko:'베트남에 또 오세요!',vi:'Hãy quay lại VN nhé!'},tip:'Câu chia tay quan trọng nhất HDV!'},
-{ko:'몸 조심하세요',roman:'mom jo-sim-ha-se-yo',vi:'Xin giữ gìn sức khỏe',syllables:[{text:'몸',mean:'thân thể'},{text:'조심하세요',mean:'cẩn thận'}],hanja:'Thuần Hàn + 操心',example:{ko:'먼 길 몸 조심하세요.',vi:'Đường xa, giữ gìn sức khỏe.'},tip:'Câu tạm biệt ấm áp'},
-{ko:'인연이 있으면',roman:'in-yeon-i i-sseu-myeon',vi:'Nếu có duyên',syllables:[{text:'인연',mean:'因緣 nhân duyên'},{text:'있으면',mean:'có thì'}],hanja:'因緣 nhân duyên',example:{ko:'인연이 있으면 또 만나요.',vi:'Có duyên sẽ gặp lại.'},tip:'Câu chia tay thơ - rất Á Đông!'}
+/* 21h */ [
+{ko:'내일도 건강하게 즐거운 여행 되시길 바랍니다',roman:'nae-il-do geon-gang-ha-ge jeul-geo-un yeo-haeng doe-si-gil ba-ram-ni-da',vi:'Mong ngày mai cũng có chuyến đi vui vẻ và khỏe mạnh',
+syllables:[{t:'내일도',m:'ngày mai cũng'},{t:'건강하게',m:'健康하게 khỏe mạnh'},{t:'즐거운 여행',m:'chuyến đi vui'},{t:'되시길 바랍니다',m:'mong trở thành'}],
+hanja:'健康 = "Kiện khang" | -시길 바랍니다 (kính + cầu chúc)',
+ex:{ko:'오늘 수고 많으셨습니다. 내일도 건강하게 즐거운 여행 되시길 바랍니다.',vi:'Hôm nay vất vả rồi. Mong ngày mai cũng vui và khỏe.'},
+tip:'-시길 바랍니다 = cầu chúc trang trọng. Câu kết đẹp nhất'},
+{ko:'저를 믿고 따라와 주셔서 정말 감사합니다',roman:'jeo-reul mit-go tta-ra-wa ju-syeo-seo jeong-mal gam-sa-ham-ni-da',vi:'Cảm ơn thật sự vì đã tin và đi theo em',
+syllables:[{t:'저를 믿고',m:'tin em và'},{t:'따라와 주셔서',m:'vì đã đi theo'},{t:'정말 감사합니다',m:'thật sự cảm ơn'}],
+hanja:'Thuần Hàn - 믿다 = tin',
+ex:{ko:'처음 만나는 사이인데 저를 믿고 따라와 주셔서 정말 감사합니다.',vi:'Lần đầu gặp mà tin và đi theo em, cảm ơn thật sự.'},
+tip:'Câu cảm ơn chân thành nhất - dùng cuối tour cuối cùng'},
+{ko:'인연이 있으면 다음에 또 뵐 수 있겠죠',roman:'in-yeon-i it-eu-myeon da-eum-e tto boeil su it-get-jyo',vi:'Nếu có duyên thì sẽ lại gặp nhau lần sau',
+syllables:[{t:'인연이 있으면',m:'因緣 nếu có duyên'},{t:'다음에 또',m:'lần sau lại'},{t:'뵐 수 있겠죠',m:'có thể gặp nhỉ'}],
+hanja:'因緣 = "Nhân duyên" - khái niệm Phật Giáo',
+ex:{ko:'인연이 있으면 다음에 또 뵐 수 있겠죠. 건강하게 돌아가세요.',vi:'Có duyên lại gặp. Về bình an nhé.'},
+tip:'Nguyên văn! Câu chia tay thơ - rất Á Đông và xúc động'}
 ]
 ]
 ];
 
-/* ==================== STATE ==================== */
+/* ================================================================
+   STATE MANAGEMENT
+   ================================================================ */
+let S = JSON.parse(localStorage.getItem('hdv3') || '{}');
+// known: Set của các phraseId đã biết rồi (ẩn khỏi danh sách học)
+// mastered: Set của các phraseId đã học xong (ẩn, chỉ hiện khi yêu cầu)
+// scores: object phraseId -> số điểm SRS
+// quizStats: thống kê quiz
+// progress: slot progress
+S.known = new Set(S.knownArr || []);
+S.mastered = new Set(S.masteredArr || []);
+S.scores = S.scores || {};
+S.quizStats = S.quizStats || { total: 0, correct: 0, streak: 0, best: 0 };
+S.progress = S.progress || {};
+S.day = S.day || 1;
+S.slot = S.slot || 0;
+S.mode = S.mode || 'strict';
+S.tab = S.tab || 'learn';
+S.filter = S.filter || 'new';  // 'new' | 'known' | 'mastered' | 'all'
+S.notif = S.notif || false;
 
-let state = JSON.parse(localStorage.getItem('hanStudyV2') || '{}');
-state.day = state.day || 1;
-state.mode = state.mode || 'strict';
-state.notif = state.notif || false;
-state.progress = state.progress || {};
-state.currentSlot = state.currentSlot || null;
-state.currentPhrase = state.currentPhrase || 0;
-state.currentTab = state.currentTab || 'learn';
-state.scores = state.scores || {}; // SRS scores cho mỗi cụm
-state.quizStats = state.quizStats || { total: 0, correct: 0, streak: 0, best: 0 };
-
-let koreanVoice = null;
-let currentSlotIdx = null;
-
-function saveState() {
-  localStorage.setItem('hanStudyV2', JSON.stringify(state));
+function saveS() {
+  S.knownArr = [...S.known];
+  S.masteredArr = [...S.mastered];
+  localStorage.setItem('hdv3', JSON.stringify(S));
 }
 
-function loadVoice() {
-  const voices = speechSynthesis.getVoices();
-  const preferred = ['Yuna', 'Google 한국의', 'Microsoft Heami', 'Microsoft SunHi'];
-  for (const name of preferred) {
-    koreanVoice = voices.find(v => v.name.includes(name));
-    if (koreanVoice) break;
-  }
-  if (!koreanVoice) koreanVoice = voices.find(v => v.lang.startsWith('ko')) || null;
-}
-speechSynthesis.onvoiceschanged = loadVoice;
-loadVoice();
-setTimeout(loadVoice, 500);
+function pid(day, slot, idx) { return `d${day}s${slot}p${idx}`; }
 
-function speak(text, rate) {
-  if (!text) return;
-  speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = 'ko-KR';
-  u.rate = rate || 0.9;
-  if (koreanVoice) u.voice = koreanVoice;
-  speechSynthesis.speak(u);
+function getPhrase(day, slot, idx) {
+  const d = DB[(day-1) % DB.length];
+  if (!d) return null;
+  const sl = d[slot % d.length];
+  if (!sl) return null;
+  return sl[idx] || null;
 }
-
-function getCurrentHour() { return new Date().getHours(); }
-
-function updateClock() {
-  const now = new Date();
-  const h = String(now.getHours()).padStart(2, '0');
-  const m = String(now.getMinutes()).padStart(2, '0');
-  const el = document.getElementById('current-time');
-  if (el) el.textContent = h + ':' + m;
-}
-setInterval(updateClock, 10000);
-updateClock();
 
 function getAllPhrases() {
   const all = [];
-  LESSONS.forEach((day, d) => {
-    day.forEach((slot, s) => {
-      slot.forEach((p, i) => {
-        all.push({ ...p, dayIdx: d, slotIdx: s, phraseIdx: i, id: 'd'+d+'s'+s+'p'+i });
+  DB.forEach((day, di) => {
+    day.forEach((slot, si) => {
+      slot.forEach((p, pi) => {
+        all.push({ ...p, id: `d${di+1}s${si}p${pi}`, day: di+1, slot: si, idx: pi });
       });
     });
   });
   return all;
 }
 
-function isSlotUnlocked(slotIdx) {
-  if (state.mode === 'free') return true;
-  return getCurrentHour() >= SLOTS[slotIdx].hour;
+/* ================================================================
+   VOICE
+   ================================================================ */
+let KVoice = null;
+function loadVoice() {
+  const vv = speechSynthesis.getVoices();
+  const pref = ['Yuna', 'Google 한국의', 'Microsoft Heami', 'Microsoft SunHi'];
+  for (const n of pref) { KVoice = vv.find(v => v.name.includes(n)); if (KVoice) break; }
+  if (!KVoice) KVoice = vv.find(v => v.lang.startsWith('ko')) || null;
+}
+speechSynthesis.onvoiceschanged = loadVoice;
+loadVoice(); setTimeout(loadVoice, 500);
+
+function speak(text, rate) {
+  if (!text) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text.replace(/~/g, ''));
+  u.lang = 'ko-KR'; u.rate = rate || 0.85;
+  if (KVoice) u.voice = KVoice;
+  speechSynthesis.speak(u);
 }
 
-function getSlotProgress(day, slotIdx) {
-  const key = 'd' + day + 's' + slotIdx;
-  return state.progress[key] || 0;
+/* ================================================================
+   CLOCK & NOTIFY
+   ================================================================ */
+function tick() {
+  const n = new Date();
+  const el = document.getElementById('clock');
+  if (el) el.textContent = String(n.getHours()).padStart(2,'0') + ':' + String(n.getMinutes()).padStart(2,'0');
+}
+setInterval(tick, 10000); tick();
+
+function isUnlocked(slotIdx) {
+  if (S.mode === 'free') return true;
+  return new Date().getHours() >= SLOTS_CFG[slotIdx].hour;
 }
 
-function markSlotDone(day, slotIdx) {
-  const key = 'd' + day + 's' + slotIdx;
-  state.progress[key] = 3;
-  saveState();
+function formatCountdown(h) {
+  const now = new Date(), t = new Date();
+  t.setHours(h, 0, 0, 0);
+  if (t < now) t.setDate(t.getDate() + 1);
+  const d = t - now;
+  return `${Math.floor(d/3600000)}h ${Math.floor((d%3600000)/60000)}m`;
 }
 
-/* ==================== TABS ==================== */
-
+/* ================================================================
+   TABS
+   ================================================================ */
 function switchTab(tab) {
-  state.currentTab = tab;
-  saveState();
-  ['learn', 'quiz', 'review', 'stats'].forEach(t => {
-    document.getElementById('tab-' + t).classList.toggle('hidden', t !== tab);
-    document.querySelector('[data-tab="' + t + '"]').classList.toggle('active', t === tab);
+  S.tab = tab; saveS();
+  ['learn','quiz','review','stats'].forEach(t => {
+    document.getElementById('tab-'+t).classList.toggle('hidden', t !== tab);
+    document.querySelector(`.tab-item[data-tab="${t}"]`).classList.toggle('active', t === tab);
   });
   if (tab === 'quiz') renderQuiz();
-  if (tab === 'review') renderReview();
-  if (tab === 'stats') renderStats();
+  else if (tab === 'review') renderReview();
+  else if (tab === 'stats') renderStats();
+  else renderLearn();
 }
 
-/* ==================== LEARN TAB ==================== */
-
-function renderSlots() {
-  const el = document.getElementById('slots');
-  el.innerHTML = '';
-  SLOTS.forEach((s, i) => {
-    const unlocked = isSlotUnlocked(i);
-    const progress = getSlotProgress(state.day, i);
-    const done = progress >= 3;
-    const isActive = currentSlotIdx === i;
-
-    const div = document.createElement('div');
-    div.className = 'slot' + (isActive ? ' active' : '') + (!unlocked ? ' locked' : '') + (done ? ' done' : '');
-    div.innerHTML = '<div class="time">' + s.hour + 'h</div><div class="label">' + s.label + '</div><div class="status">' + (done ? '✅' : (unlocked ? '📖' : '🔒')) + '</div>';
-    div.onclick = () => {
-      if (unlocked) {
-        currentSlotIdx = i;
-        state.currentSlot = i;
-        state.currentPhrase = 0;
-        saveState();
-        renderLearn();
-      }
-    };
-    el.appendChild(div);
-  });
-}
-
-function renderDaySelector() {
-  const el = document.getElementById('day-selector');
-  el.innerHTML = '';
-  for (let d = 1; d <= LESSONS.length; d++) {
-    const div = document.createElement('div');
-    const isDone = SLOTS.every((_, i) => getSlotProgress(d, i) >= 3);
-    div.className = 'day-chip' + (state.day === d ? ' active' : '') + (isDone ? ' done' : '');
-    div.textContent = 'Ngày ' + d;
-    div.onclick = () => {
-      state.day = d;
-      state.currentPhrase = 0;
-      currentSlotIdx = null;
-      saveState();
-      renderLearn();
-    };
-    el.appendChild(div);
-  }
-}
-
-function formatCountdown(targetHour) {
-  const now = new Date();
-  const target = new Date();
-  target.setHours(targetHour, 0, 0, 0);
-  if (target < now) target.setDate(target.getDate() + 1);
-  const diff = target - now;
-  const h = Math.floor(diff / 3600000);
-  const m = Math.floor((diff % 3600000) / 60000);
-  return h + 'h ' + m + 'm';
-}
-
-function renderMainCard() {
-  const card = document.getElementById('main-card');
-
-  if (currentSlotIdx === null) {
-    const hour = getCurrentHour();
-    for (let i = SLOTS.length - 1; i >= 0; i--) {
-      if (hour >= SLOTS[i].hour) { currentSlotIdx = i; break; }
-    }
-    if (currentSlotIdx === null) currentSlotIdx = 0;
-  }
-
-  const unlocked = isSlotUnlocked(currentSlotIdx);
-
-  if (!unlocked) {
-    card.innerHTML = '<div class="locked-view"><div class="icon">🔒</div><h3>Khung ' + SLOTS[currentSlotIdx].hour + 'h chưa mở</h3><p>Quay lại lúc <b>' + SLOTS[currentSlotIdx].hour + ':00</b> để học.<br>Hoặc bật "Mở hết" để luyện tự do.</p><div class="countdown">⏱️ Còn ' + formatCountdown(SLOTS[currentSlotIdx].hour) + '</div></div>';
-    return;
-  }
-
-  const dayLessons = LESSONS[(state.day - 1) % LESSONS.length];
-  const slot = dayLessons[currentSlotIdx];
-  const phrase = slot[state.currentPhrase];
-
-  card.innerHTML = '<div class="session-header"><h2>' + SLOTS[currentSlotIdx].hour + 'h · ' + SLOTS[currentSlotIdx].label + '</h2><span class="phrase-counter">Cụm ' + (state.currentPhrase + 1) + ' / 3</span></div>' +
-    '<div class="flashcard-wrap"><div class="flashcard" id="flashcard">' +
-    '<div class="face face-front"><div class="korean-big">' + phrase.ko + '</div><div class="roman">' + phrase.roman + '</div><div class="hint">Bấm thẻ để xem nghĩa</div></div>' +
-    '<div class="face face-back"><div class="vi-text">' + phrase.vi + '</div>' +
-    '<div class="analysis"><div class="analysis-title">PHÂN TÍCH TỪNG ÂM TIẾT</div>' + phrase.syllables.map(s => '<span class="syllable"><b>' + s.text + '</b> · ' + s.mean + '</span>').join('') + '</div>' +
-    '<div class="analysis"><div class="analysis-title">🈶 GỐC HÁN-HÀN</div><div class="hanja">' + phrase.hanja + '</div></div>' +
-    '<div class="example-box"><b>Ví dụ:</b><br><span style="color:#c8102e; font-weight:600;">' + phrase.example.ko + '</span><br><span style="color:#666;">→ ' + phrase.example.vi + '</span></div>' +
-    '<div class="tip-box">💡 <b>Mẹo:</b> ' + phrase.tip + '</div>' +
-    '</div></div></div>' +
-    '<div class="btn-row"><button onclick="speakWord(0.55)">🔊 Chậm</button><button onclick="speakWord(0.9)">🔊 Thường</button><button onclick="speakExample()">🎧 Cả câu</button></div>' +
-    '<div class="btn-row btn-row-2"><button class="secondary" onclick="prevPhrase()">← Trước</button><button class="big" onclick="flipCard()">🔄 Lật thẻ</button><button class="secondary" onclick="nextPhrase()">Sau →</button></div>' +
-    '<div class="status-bar ' + (koreanVoice ? 'ok' : 'warn') + '">' + (koreanVoice ? '✓ Giọng: ' + koreanVoice.name : '⚠ Giọng mặc định - mở Chrome/Safari để chuẩn hơn') + '</div>' +
-    '<div class="method-box"><h4>📖 5 bước 2 phút/cụm</h4><ol><li>🔊 Chậm x3 lần</li><li>🔊 Thường x3 lần</li><li>🔄 Lật thẻ, đọc phân tích</li><li>🎧 Cả câu x3 lần + shadow</li><li>Tự nghĩ 1 câu mới</li></ol></div>';
-
-  document.getElementById('flashcard').onclick = flipCard;
-}
-
-function flipCard() {
-  document.getElementById('flashcard').classList.toggle('flipped');
-}
-
-function speakWord(rate) {
-  const p = LESSONS[(state.day - 1) % LESSONS.length][currentSlotIdx][state.currentPhrase];
-  speak(p.ko.replace(/~/g, ''), rate);
-}
-
-function speakExample() {
-  const p = LESSONS[(state.day - 1) % LESSONS.length][currentSlotIdx][state.currentPhrase];
-  speak(p.example.ko, 0.85);
-}
-
-function prevPhrase() {
-  if (state.currentPhrase > 0) { state.currentPhrase--; saveState(); renderLearn(); }
-}
-
-function nextPhrase() {
-  if (state.currentPhrase < 2) {
-    state.currentPhrase++; saveState(); renderLearn();
-  } else {
-    markSlotDone(state.day, currentSlotIdx);
-    alert('✅ Hoàn thành khung ' + SLOTS[currentSlotIdx].hour + 'h! Thử Quiz hoặc tiếp khung sau.');
-    state.currentPhrase = 0; saveState(); renderLearn();
-  }
-}
-
+/* ================================================================
+   LEARN TAB
+   ================================================================ */
 function renderLearn() {
-  document.getElementById('day-label').textContent = 'Ngày ' + state.day + ' / ' + LESSONS.length;
-  document.getElementById('notif-btn').classList.toggle('on', state.notif);
-  if (state.notif) document.getElementById('notif-btn').textContent = '✓ Đã bật';
-  document.getElementById('strict-btn').classList.toggle('on', state.mode === 'strict');
-  document.getElementById('free-btn').classList.toggle('on', state.mode === 'free');
-  renderSlots();
-  renderDaySelector();
-  renderMainCard();
-}
+  const el = document.getElementById('tab-learn');
+  const dayData = DB[(S.day-1) % DB.length];
+  const slotData = dayData[S.slot % dayData.length];
 
-/* ==================== QUIZ TAB ==================== */
-
-let currentQuiz = null;
-
-function renderQuiz() {
-  const card = document.getElementById('quiz-card');
-  const all = getAllPhrases();
-
-  // Lọc các cụm đã học (ở ngày <= state.day)
-  const learned = all.filter(p => p.dayIdx < state.day);
-  if (learned.length < 4) {
-    card.innerHTML = '<div class="empty-state"><div class="icon">🎯</div><h3>Chưa đủ dữ liệu cho Quiz</h3><p>Học ít nhất 4 cụm (tương đương khung 7h ngày 1 + vài khung nữa) để bắt đầu quiz.</p></div>';
-    return;
-  }
-
-  const stats = state.quizStats;
-  const accuracy = stats.total > 0 ? Math.round(stats.correct / stats.total * 100) : 0;
-
-  // Chọn 1 cụm ngẫu nhiên (ưu tiên cụm có score thấp)
-  const weighted = learned.map(p => ({
-    ...p,
-    weight: 10 - (state.scores[p.id] || 0)  // score càng thấp, weight càng cao
-  }));
-  weighted.sort((a, b) => b.weight - a.weight);
-  const pool = weighted.slice(0, Math.min(20, weighted.length));
-  const correct = pool[Math.floor(Math.random() * pool.length)];
-
-  // 3 đáp án sai
-  const wrong = learned.filter(p => p.id !== correct.id);
-  const wrongShuffled = wrong.sort(() => Math.random() - 0.5).slice(0, 3);
-  const options = [correct, ...wrongShuffled].sort(() => Math.random() - 0.5);
-
-  // Kiểu câu hỏi: audio-only hoặc text
-  const audioOnly = Math.random() < 0.5;
-
-  currentQuiz = { correct, options, audioOnly, answered: false };
-
-  let questionHtml;
-  if (audioOnly) {
-    questionHtml = '<div class="quiz-question"><div class="prompt">🎧 Nghe và chọn nghĩa đúng</div><div class="audio-only">🔊</div><button onclick="playQuizAudio()" style="margin-top: 10px; padding: 10px 20px;">▶ Phát lại</button></div>';
-    setTimeout(() => speak(correct.ko.replace(/~/g, ''), 0.8), 300);
-  } else {
-    questionHtml = '<div class="quiz-question"><div class="prompt">Cụm từ này nghĩa là gì?</div><div class="korean-audio">' + correct.ko + '</div><div class="roman-hint">' + correct.roman + '</div><button onclick="playQuizAudio()" style="margin-top: 12px; padding: 8px 16px;">🔊 Nghe</button></div>';
-  }
-
-  const optionsHtml = options.map((o, i) =>
-    '<div class="quiz-option" id="opt-' + i + '" onclick="answerQuiz(' + i + ', \'' + o.id + '\')">' + o.vi + '</div>'
-  ).join('');
-
-  card.innerHTML =
-    '<div class="quiz-stats">' +
-      '<div class="quiz-stat"><div class="num">' + stats.total + '</div><div class="label">Tổng câu</div></div>' +
-      '<div class="quiz-stat"><div class="num">' + accuracy + '%</div><div class="label">Chính xác</div></div>' +
-      '<div class="quiz-stat"><div class="num">🔥 ' + stats.streak + '</div><div class="label">Chuỗi đúng</div></div>' +
-    '</div>' +
-    questionHtml +
-    '<div class="quiz-options">' + optionsHtml + '</div>';
-}
-
-function playQuizAudio() {
-  if (currentQuiz) speak(currentQuiz.correct.ko.replace(/~/g, ''), 0.8);
-}
-
-function answerQuiz(idx, id) {
-  if (currentQuiz.answered) return;
-  currentQuiz.answered = true;
-
-  const isCorrect = id === currentQuiz.correct.id;
-  state.quizStats.total++;
-
-  // Cập nhật score cho cụm (SRS logic)
-  state.scores[currentQuiz.correct.id] = (state.scores[currentQuiz.correct.id] || 0);
-
-  if (isCorrect) {
-    state.quizStats.correct++;
-    state.quizStats.streak++;
-    if (state.quizStats.streak > state.quizStats.best) state.quizStats.best = state.quizStats.streak;
-    state.scores[currentQuiz.correct.id] = Math.min(10, state.scores[currentQuiz.correct.id] + 1);
-    document.getElementById('opt-' + idx).classList.add('correct');
-  } else {
-    state.quizStats.streak = 0;
-    state.scores[currentQuiz.correct.id] = Math.max(0, state.scores[currentQuiz.correct.id] - 2);
-    document.getElementById('opt-' + idx).classList.add('wrong');
-    // Highlight đáp án đúng
-    currentQuiz.options.forEach((o, i) => {
-      if (o.id === currentQuiz.correct.id) document.getElementById('opt-' + i).classList.add('correct');
-    });
-  }
-
-  saveState();
-
-  setTimeout(() => {
-    const next = document.createElement('button');
-    next.className = 'big';
-    next.style.width = '100%';
-    next.style.marginTop = '14px';
-    next.textContent = isCorrect ? '✓ Chính xác! Câu tiếp →' : '✗ Sai rồi. Câu tiếp →';
-    next.onclick = renderQuiz;
-    document.getElementById('quiz-card').appendChild(next);
-  }, 800);
-}
-
-/* ==================== REVIEW TAB ==================== */
-
-function getReviewQueue() {
-  const all = getAllPhrases();
-  const learned = all.filter(p => p.dayIdx < state.day || (p.dayIdx === state.day - 1));
-  // Sắp xếp theo score thấp (khó nhớ) lên đầu
-  return learned.sort((a, b) => (state.scores[a.id] || 0) - (state.scores[b.id] || 0));
-}
-
-let reviewIdx = 0;
-let reviewFlipped = false;
-
-function renderReview() {
-  const card = document.getElementById('review-card');
-  const queue = getReviewQueue();
-
-  if (queue.length === 0) {
-    card.innerHTML = '<div class="review-intro"><div class="icon">📚</div><h3>Chưa có cụm nào để ôn</h3><p>Học ít nhất 1 ngày trước khi dùng chế độ ôn tập.</p></div>';
-    return;
-  }
-
-  if (reviewIdx >= queue.length) reviewIdx = 0;
-  const p = queue[reviewIdx];
-  const score = state.scores[p.id] || 0;
-  const difficulty = score <= 3 ? 'Khó' : score <= 6 ? 'Vừa' : 'Dễ';
-  const difficultyColor = score <= 3 ? '#e53e3e' : score <= 6 ? '#f59e0b' : '#10b981';
-
-  card.innerHTML =
-    '<div class="session-header"><h2>🔁 Ôn cụm ' + (reviewIdx + 1) + ' / ' + queue.length + '</h2><span class="phrase-counter" style="background:' + difficultyColor + ';">' + difficulty + '</span></div>' +
-    '<div class="flashcard-wrap"><div class="flashcard ' + (reviewFlipped ? 'flipped' : '') + '" id="review-card-flip">' +
-      '<div class="face face-front"><div class="korean-big">' + p.ko + '</div><div class="roman">' + p.roman + '</div><div class="hint">Bấm để xem nghĩa</div></div>' +
-      '<div class="face face-back"><div class="vi-text">' + p.vi + '</div><div class="tip-box">💡 ' + p.tip + '</div><div class="example-box"><span style="color:#c8102e; font-weight:600;">' + p.example.ko + '</span><br><span style="color:#666;">→ ' + p.example.vi + '</span></div></div>' +
-    '</div></div>' +
-    '<div class="btn-row"><button onclick="speak(\'' + p.ko.replace(/~/g, '').replace(/'/g, '') + '\', 0.55)">🔊 Chậm</button><button onclick="speak(\'' + p.ko.replace(/~/g, '').replace(/'/g, '') + '\', 0.9)">🔊 Thường</button><button onclick="speak(\'' + p.example.ko.replace(/'/g, '') + '\', 0.85)">🎧 Cả câu</button></div>' +
-    '<div class="difficulty-buttons"><button class="diff-btn diff-hard" onclick="rateReview(-2)">😵 Quên</button><button class="diff-btn diff-medium" onclick="rateReview(0)">🤔 Phân vân</button><button class="diff-btn diff-easy" onclick="rateReview(2)">😎 Nhớ rõ</button></div>' +
-    '<div class="method-box"><h4>🧠 Chế độ Ôn tập thông minh (SRS)</h4><ol><li>Nhìn chữ Hàn, thử nhớ nghĩa</li><li>Bấm thẻ lật ra xem đáp án</li><li>Tự đánh giá: <b>Quên</b>/<b>Phân vân</b>/<b>Nhớ rõ</b></li><li>App sẽ lặp lại cụm <b>Khó</b> nhiều hơn</li></ol></div>';
-
-  document.getElementById('review-card-flip').onclick = () => {
-    reviewFlipped = !reviewFlipped;
-    document.getElementById('review-card-flip').classList.toggle('flipped');
-  };
-}
-
-function rateReview(delta) {
-  const queue = getReviewQueue();
-  const p = queue[reviewIdx];
-  state.scores[p.id] = Math.max(0, Math.min(10, (state.scores[p.id] || 0) + delta));
-  saveState();
-  reviewIdx++;
-  reviewFlipped = false;
-  if (reviewIdx >= queue.length) {
-    reviewIdx = 0;
-    document.getElementById('review-card').innerHTML = '<div class="review-intro"><div class="icon">🎉</div><h3>Xong một vòng ôn tập!</h3><p>Quay lại sau để ôn tiếp nhé.</p><button class="big" onclick="reviewIdx=0; renderReview();" style="margin-top:16px; width:100%;">🔁 Ôn lại từ đầu</button></div>';
-  } else {
-    renderReview();
-  }
-}
-
-/* ==================== STATS TAB ==================== */
-
-function renderStats() {
-  const card = document.getElementById('stats-card');
-  const all = getAllPhrases();
-  const learned = all.filter(p => p.dayIdx < state.day);
-  const totalLearned = learned.length;
-  const totalAll = all.length;
-  const mastered = learned.filter(p => (state.scores[p.id] || 0) >= 7).length;
-  const struggling = learned.filter(p => (state.scores[p.id] || 0) <= 2 && state.scores[p.id] !== undefined).length;
-
-  const daysDone = [];
-  for (let d = 1; d <= LESSONS.length; d++) {
-    const allSlotsDone = SLOTS.every((_, i) => getSlotProgress(d, i) >= 3);
-    if (allSlotsDone) daysDone.push(d);
-  }
-
-  const stats = state.quizStats;
-  const accuracy = stats.total > 0 ? Math.round(stats.correct / stats.total * 100) : 0;
-
-  let strugglingList = '';
-  if (struggling > 0) {
-    const list = learned.filter(p => (state.scores[p.id] || 0) <= 2 && state.scores[p.id] !== undefined).slice(0, 5);
-    strugglingList = '<div style="margin-top:14px;"><div style="font-size:12px; color:#e53e3e; font-weight:600; margin-bottom:6px;">⚠ CỤM KHÓ NHẤT (ÔN LẠI!):</div>' +
-      list.map(p => '<div style="background:#ffebee; padding:8px 12px; margin:4px 0; border-radius:6px; font-size:12px;"><b style="color:#c8102e;">' + p.ko + '</b> · ' + p.vi + '</div>').join('') + '</div>';
-  }
-
-  card.innerHTML =
-    '<div class="session-header"><h2>📊 Thống kê tiến độ</h2></div>' +
-    '<div class="stats-grid">' +
-      '<div class="stat-card"><div class="big-num">' + totalLearned + '</div><div class="main-label">Đã học</div><div class="sub-label">/ ' + totalAll + ' cụm tổng</div></div>' +
-      '<div class="stat-card"><div class="big-num">' + mastered + '</div><div class="main-label">Đã thạo</div><div class="sub-label">(điểm ≥ 7/10)</div></div>' +
-      '<div class="stat-card"><div class="big-num">' + daysDone.length + '</div><div class="main-label">Ngày hoàn thành</div><div class="sub-label">/ ' + LESSONS.length + ' ngày</div></div>' +
-      '<div class="stat-card"><div class="big-num">' + accuracy + '%</div><div class="main-label">Chính xác Quiz</div><div class="sub-label">' + stats.correct + '/' + stats.total + ' câu</div></div>' +
-    '</div>' +
-    '<div class="method-box">' +
-      '<h4>📈 Tiến trình học</h4>' +
-      '<div class="progress-bar"><div class="progress-fill" style="width:' + Math.round(totalLearned / totalAll * 100) + '%;"></div></div>' +
-      '<div style="font-size:11px; color:#666; text-align:center;">' + Math.round(totalLearned / totalAll * 100) + '% khóa học hoàn thành</div>' +
-    '</div>' +
-    '<div class="method-box">' +
-      '<h4>🎯 Thành tích Quiz</h4>' +
-      '<div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">' +
-        '<div style="background:white; padding:12px; border-radius:8px; text-align:center;"><div style="font-size:24px; font-weight:700; color:#003478;">🔥 ' + stats.streak + '</div><div style="font-size:11px; color:#666;">Streak hiện tại</div></div>' +
-        '<div style="background:white; padding:12px; border-radius:8px; text-align:center;"><div style="font-size:24px; font-weight:700; color:#c8102e;">🏆 ' + stats.best + '</div><div style="font-size:11px; color:#666;">Streak tốt nhất</div></div>' +
-      '</div>' +
-    '</div>' +
-    strugglingList +
-    '<div class="method-box" style="margin-top:14px;"><h4>💡 Gợi ý học tiếp</h4><ul style="padding-left:16px; font-size:12px;">' +
-      (struggling > 0 ? '<li style="color:#e53e3e;">Có ' + struggling + ' cụm khó - vào tab <b>Ôn tập</b> để luyện lại</li>' : '') +
-      (stats.total < 10 ? '<li>Thử tab <b>Quiz</b> để kiểm tra trí nhớ</li>' : '') +
-      (daysDone.length < state.day ? '<li>Hoàn thành đầy đủ các khung giờ trong ngày ' + state.day + '</li>' : '<li>🎉 Ngày ' + state.day + ' đã xong! Chuyển sang ngày tiếp theo.</li>') +
-    '</ul></div>' +
-    '<button class="big danger" style="width:100%; margin-top:14px;" onclick="if(confirm(\'Xóa toàn bộ tiến độ?\')) { localStorage.clear(); location.reload(); }">🗑 Reset tiến độ</button>';
-}
-
-/* ==================== OTHER ==================== */
-
-function toggleNotif() {
-  if (!('Notification' in window)) { alert('Trình duyệt không hỗ trợ thông báo.'); return; }
-  Notification.requestPermission().then(perm => {
-    if (perm === 'granted') {
-      state.notif = true;
-      document.getElementById('notif-btn').classList.add('on');
-      document.getElementById('notif-btn').textContent = '✓ Đã bật';
-      new Notification('🎉 Đã bật!', { body: 'Sẽ nhắc lúc 7h, 10h, 15h, 17h, 21h.' });
-      saveState();
-    }
+  // Thống kê slot hiện tại
+  let cntNew=0, cntKnown=0, cntMastered=0;
+  slotData.forEach((p,i) => {
+    const id = pid(S.day, S.slot, i);
+    if (S.mastered.has(id)) cntMastered++;
+    else if (S.known.has(id)) cntKnown++;
+    else cntNew++;
   });
+
+  let html = '';
+
+  // Day selector
+  html += `<div class="day-scroll" id="day-scroll">`;
+  for (let d = 1; d <= DB.length; d++) {
+    const done = SLOTS_CFG.every((_,si) => (S.progress[`d${d}s${si}`]||0) >= 3);
+    html += `<div class="day-chip ${S.day===d?'active':''} ${done?'complete':''}" onclick="changeDay(${d})">${d===S.day?'📅 ':''}Ngày ${d}</div>`;
+  }
+  html += `</div>`;
+
+  // Slot bar
+  html += `<div class="slot-bar">`;
+  SLOTS_CFG.forEach((s,i) => {
+    const unlocked = isUnlocked(i);
+    const done = (S.progress[`d${S.day}s${i}`]||0) >= 3;
+    html += `<div class="slot-chip ${S.slot===i?'active':''} ${!unlocked?'locked':''} ${done?'done':''}" onclick="changeSlot(${i})">
+      <span class="slot-time">${s.hour}h</span>
+      <span class="slot-label">${s.label}</span>
+      <span class="slot-status">${done?'✅':unlocked?'📖':'🔒'}</span>
+    </div>`;
+  });
+  html += `</div>`;
+
+  // Nếu slot bị khóa
+  if (!isUnlocked(S.slot)) {
+    html += `<div class="main-card"><div class="state-box">
+      <div class="state-icon">🔒</div>
+      <div class="state-title">Khung ${SLOTS_CFG[S.slot].hour}h chưa mở</div>
+      <div class="state-desc">Quay lại lúc <b>${SLOTS_CFG[S.slot].hour}:00</b><br>hoặc bật "Mở hết" để luyện tự do</div>
+      <div class="countdown-badge">⏱️ Còn ${formatCountdown(SLOTS_CFG[S.slot].hour)}</div>
+    </div></div>`;
+    el.innerHTML = html;
+    renderSettings(el);
+    return;
+  }
+
+  // Session header
+  html += `<div class="main-card">
+    <div class="session-header">
+      <div class="session-title">${SLOTS_CFG[S.slot].hour}h · ${SLOTS_CFG[S.slot].label}</div>
+      <div class="session-stats">
+        <span class="stat-pill stat-new">🔴 ${cntNew} mới</span>
+        <span class="stat-pill stat-known">🟢 ${cntKnown} biết</span>
+        <span class="stat-pill stat-done">🔵 ${cntMastered} xong</span>
+      </div>
+    </div>`;
+
+  // Filter bar
+  html += `<div class="filter-bar">
+    <div class="filter-btn ${S.filter==='new'?'on':''}" onclick="setFilter('new')">📖 Cần học (${cntNew})</div>
+    <div class="filter-btn ${S.filter==='known'?'on-green':''}" onclick="setFilter('known')">✓ Đã biết (${cntKnown})</div>
+    <div class="filter-btn ${S.filter==='mastered'?'on-blue':''}" onclick="setFilter('mastered')">★ Đã xong (${cntMastered})</div>
+    <div class="filter-btn ${S.filter==='all'?'on':''}" onclick="setFilter('all')">Tất cả</div>
+  </div>`;
+
+  // Nếu filter=known hoặc mastered mà ko có gì
+  const filteredPhrases = slotData.map((p,i) => ({...p, _i:i, _id:pid(S.day,S.slot,i)})).filter(p => {
+    const known = S.known.has(p._id), mastered = S.mastered.has(p._id);
+    if (S.filter === 'new') return !known && !mastered;
+    if (S.filter === 'known') return known && !mastered;
+    if (S.filter === 'mastered') return mastered;
+    return true;
+  });
+
+  if (filteredPhrases.length === 0) {
+    if (S.filter === 'new') {
+      html += `<div class="state-box">
+        <div class="state-icon">🎉</div>
+        <div class="state-title">Tất cả đã học xong!</div>
+        <div class="state-desc">Khung này quý khách đã biết hoặc học xong hết rồi.<br>Xem tab Ôn tập hoặc thử Quiz nhé.</div>
+      </div>`;
+    } else {
+      html += `<div class="state-box">
+        <div class="state-icon">📭</div>
+        <div class="state-title">Không có cụm nào ở mục này</div>
+        <div class="state-desc">Chưa có cụm nào ở bộ lọc này trong khung giờ này.</div>
+      </div>`;
+    }
+    html += `</div>`;
+    el.innerHTML = html;
+    renderSettings(el);
+    return;
+  }
+
+  // Render từng phrase card
+  filteredPhrases.forEach(p => {
+    const known = S.known.has(p._id);
+    const mastered = S.mastered.has(p._id);
+    const badgeHtml = mastered
+      ? `<span class="card-status-badge badge-mastered">★ Đã xong</span>`
+      : known
+      ? `<span class="card-status-badge badge-known">✓ Đã biết</span>`
+      : `<span class="card-status-badge badge-new">● Cần học</span>`;
+
+    html += `<div class="phrase-card ${mastered?'mastered':known?'known':''}" id="card-${p._id}">
+      <div class="card-header" onclick="toggleCard('${p._id}')">
+        <div class="card-num">${p._i+1}</div>
+        <div style="flex:1">
+          <div class="card-ko">${p.ko}</div>
+          <div class="card-roman">${p.roman}</div>
+        </div>
+        ${badgeHtml}
+      </div>
+      <div class="card-body" id="body-${p._id}">
+        <div class="vi-text">${p.vi}</div>`;
+
+    // Syllable pills
+    if (p.syllables && p.syllables.length) {
+      html += `<div class="syllable-row">`;
+      p.syllables.forEach(s => {
+        html += `<div class="syllable-pill"><span class="syl">${s.t}</span><span class="syl-mean">${s.m}</span></div>`;
+      });
+      html += `</div>`;
+    }
+
+    // Hanja
+    html += `<div class="hanja-box"><div class="hanja-label">🈶 GỐC HÁN-HÀN</div>${p.hanja}</div>`;
+
+    // Example
+    html += `<div class="example-box"><div class="example-ko">${p.ex.ko}</div><div class="example-vi">→ ${p.ex.vi}</div></div>`;
+
+    // Tip
+    html += `<div class="tip-box">💡 ${p.tip}</div>`;
+
+    // Audio buttons
+    html += `<div class="audio-row">
+      <button class="btn btn-audio" onclick="speak('${p.ko.replace(/'/g,"\\'")}', 0.55)">🔊 Chậm</button>
+      <button class="btn btn-audio" onclick="speak('${p.ko.replace(/'/g,"\\'")}', 0.9)">🔊 Thường</button>
+      <button class="btn btn-audio" onclick="speak('${p.ex.ko.replace(/'/g,"\\'")}', 0.85)">🎧 Cả câu</button>
+    </div>`;
+
+    // Action buttons
+    if (mastered) {
+      html += `<div class="card-actions">
+        <button class="btn btn-restore" onclick="restorePhrase('${p._id}')" style="grid-column:1/-1">↩ Học lại từ đầu</button>
+      </div>`;
+    } else if (known) {
+      html += `<div class="card-actions">
+        <button class="btn btn-master" onclick="markMastered('${p._id}')">★ Đã học xong</button>
+        <button class="btn btn-restore" onclick="restorePhrase('${p._id}')">↩ Học lại</button>
+      </div>`;
+    } else {
+      html += `<div class="card-actions">
+        <button class="btn btn-known" onclick="markKnown('${p._id}')">✓ Đã biết rồi</button>
+        <button class="btn btn-master" onclick="markMastered('${p._id}')">★ Học xong rồi</button>
+      </div>`;
+    }
+
+    html += `</div></div>`;  // end card-body, phrase-card
+  });
+
+  // Phần hiển thị các từ đã ẩn (known + mastered)
+  const hiddenCount = slotData.filter((_,i) => {
+    const id = pid(S.day, S.slot, i);
+    return S.known.has(id) || S.mastered.has(id);
+  }).length;
+
+  if (hiddenCount > 0 && S.filter === 'new') {
+    html += `<div class="restore-section">
+      <div class="restore-header" onclick="toggleRestoreSection()">
+        <span class="restore-title">🔽 Các cụm đã ẩn</span>
+        <span class="restore-count">${hiddenCount} cụm</span>
+      </div>
+      <div class="restore-body" id="restore-body">`;
+    slotData.forEach((p,i) => {
+      const id = pid(S.day, S.slot, i);
+      if (S.known.has(id) || S.mastered.has(id)) {
+        const type = S.mastered.has(id) ? '★ Đã xong' : '✓ Đã biết';
+        html += `<div class="restore-item">
+          <div><span class="restore-ko">${p.ko}</span> <span style="font-size:11px;color:var(--text3)">· ${p.vi.substring(0,25)}...</span></div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <span class="restore-type">${type}</span>
+            <button class="btn btn-restore" style="padding:4px 8px;font-size:10px" onclick="restorePhrase('${id}')">↩</button>
+          </div>
+        </div>`;
+      }
+    });
+    html += `</div></div>`;
+  }
+
+  html += `</div>`;  // end main-card
+  el.innerHTML = html;
+  renderSettings(el);
 }
 
-function setMode(mode) {
-  state.mode = mode;
-  document.getElementById('strict-btn').classList.toggle('on', mode === 'strict');
-  document.getElementById('free-btn').classList.toggle('on', mode === 'free');
-  saveState();
+function renderSettings(el) {
+  let html = `<div class="settings-section">
+    <div class="settings-title">⚙️ Cài đặt</div>
+    <div class="setting-row">
+      <span class="setting-label">Thông báo desktop</span>
+      <button class="tog-btn ${S.notif?'on-green':''}" onclick="toggleNotif()">${S.notif?'✓ Đã bật':'Bật'}</button>
+    </div>
+    <div class="setting-row">
+      <span class="setting-label">Chế độ mở khóa</span>
+      <div class="tog-row">
+        <button class="tog-btn ${S.mode==='strict'?'on':''}" onclick="setMode('strict')">Theo giờ</button>
+        <button class="tog-btn ${S.mode==='free'?'on':''}" onclick="setMode('free')">Mở hết</button>
+      </div>
+    </div>
+  </div>`;
+  el.innerHTML += html;
+}
+
+function toggleCard(id) {
+  // Click header mở/đóng body nếu chưa known/mastered
+  const card = document.getElementById('card-' + id);
+  if (!card) return;
+  if (card.classList.contains('known') || card.classList.contains('mastered')) {
+    // Toggle expand
+    card.classList.toggle('known-expand');
+    const body = document.getElementById('body-' + id);
+    if (body) body.style.display = body.style.display === 'block' ? 'none' : 'block';
+  }
+}
+
+function toggleRestoreSection() {
+  const el = document.getElementById('restore-body');
+  if (el) el.classList.toggle('open');
+}
+
+function markKnown(id) {
+  S.known.add(id);
+  S.mastered.delete(id);
+  saveS();
   renderLearn();
 }
 
-function checkNotifSchedule() {
-  if (!state.notif) return;
-  const now = new Date();
-  const hour = now.getHours();
-  const minute = now.getMinutes();
-  const slotNow = SLOTS.find(s => s.hour === hour && minute === 0);
-  if (slotNow) {
-    const key = now.toDateString() + '-' + hour;
-    if (localStorage.getItem('lastNotif') !== key) {
-      new Notification('🇰🇷 Giờ học tiếng Hàn!', { body: 'Khung ' + hour + 'h (' + slotNow.label + ') đã mở. 3 cụm mới đang chờ.' });
-      localStorage.setItem('lastNotif', key);
-    }
+function markMastered(id) {
+  S.mastered.add(id);
+  S.known.delete(id);
+  saveS();
+  checkSlotDone();
+  renderLearn();
+}
+
+function restorePhrase(id) {
+  S.known.delete(id);
+  S.mastered.delete(id);
+  saveS();
+  renderLearn();
+}
+
+function checkSlotDone() {
+  const dayData = DB[(S.day-1) % DB.length];
+  const slotData = dayData[S.slot % dayData.length];
+  const allDone = slotData.every((_,i) => {
+    const id = pid(S.day, S.slot, i);
+    return S.known.has(id) || S.mastered.has(id);
+  });
+  if (allDone) {
+    S.progress[`d${S.day}s${S.slot}`] = 3;
+    saveS();
   }
 }
-setInterval(checkNotifSchedule, 30000);
 
-// Khởi động
-switchTab(state.currentTab);
-renderLearn();
+function setFilter(f) {
+  S.filter = f; saveS(); renderLearn();
+}
 
-/* ==================== PWA: ĐĂNG KÝ SERVICE WORKER ==================== */
+function changeDay(d) {
+  S.day = d; S.filter = 'new'; saveS(); renderLearn();
+}
 
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('service-worker.js')
-      .then(reg => console.log('✓ Service Worker registered:', reg.scope))
-      .catch(err => console.log('✗ Service Worker failed:', err));
+function changeSlot(i) {
+  if (!isUnlocked(i) && S.mode === 'strict') return;
+  S.slot = i; S.filter = 'new'; saveS(); renderLearn();
+}
+
+function setMode(m) {
+  S.mode = m; saveS(); renderLearn();
+}
+
+function toggleNotif() {
+  if (!('Notification' in window)) { alert('Trình duyệt không hỗ trợ.'); return; }
+  Notification.requestPermission().then(p => {
+    if (p === 'granted') {
+      S.notif = true; saveS();
+      new Notification('🇰🇷 Đã bật!', { body: 'Sẽ nhắc lúc 7h, 10h, 15h, 17h, 21h' });
+      renderLearn();
+    }
   });
 }
 
-// Bắt sự kiện cài app - hiện nút "Cài đặt"
-let deferredPrompt = null;
+/* ================================================================
+   QUIZ TAB
+   ================================================================ */
+let CQ = null;
 
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-  showInstallBanner();
-});
+function renderQuiz() {
+  const el = document.getElementById('tab-quiz');
+  const all = getAllPhrases();
+  // Chỉ quiz với từ chưa mastered và ở ngày <= hiện tại
+  const pool = all.filter(p => p.day <= S.day && !S.mastered.has(p.id));
 
-function showInstallBanner() {
-  // Không hiện nếu đã dismiss
-  if (localStorage.getItem('installDismissed') === 'true') return;
-  // Không hiện nếu đã cài (standalone mode)
-  if (window.matchMedia('(display-mode: standalone)').matches) return;
+  if (pool.length < 4) {
+    el.innerHTML = `<div class="main-card"><div class="state-box">
+      <div class="state-icon">🎯</div>
+      <div class="state-title">Cần học thêm trước</div>
+      <div class="state-desc">Cần ít nhất 4 cụm chưa xong để quiz.<br>Hãy học ở tab Học trước nhé!</div>
+    </div></div>`; return;
+  }
 
-  const banner = document.createElement('div');
-  banner.id = 'install-banner';
-  banner.style.cssText = 'position:fixed; bottom:16px; left:16px; right:16px; background:linear-gradient(135deg,#c8102e,#003478); color:white; padding:14px 16px; border-radius:12px; box-shadow:0 4px 16px rgba(0,0,0,0.2); z-index:9999; display:flex; align-items:center; gap:12px; font-size:13px;';
-  banner.innerHTML =
-    '<div style="font-size:28px;">📲</div>' +
-    '<div style="flex:1;"><div style="font-weight:600; margin-bottom:2px;">Cài vào màn hình chính</div><div style="font-size:11px; opacity:0.92;">Dùng như app thật - mở nhanh, chạy offline</div></div>' +
-    '<button id="install-btn" style="background:white; color:#c8102e; padding:8px 14px; border:none; border-radius:8px; font-weight:600; font-size:12px;">Cài</button>' +
-    '<button id="dismiss-btn" style="background:transparent; color:white; padding:6px; border:none; font-size:18px;">×</button>';
-  document.body.appendChild(banner);
+  const qs = S.quizStats;
+  const acc = qs.total > 0 ? Math.round(qs.correct/qs.total*100) : 0;
 
-  document.getElementById('install-btn').onclick = async () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      console.log('Install choice:', outcome);
-      deferredPrompt = null;
-      banner.remove();
-    }
-  };
-  document.getElementById('dismiss-btn').onclick = () => {
-    localStorage.setItem('installDismissed', 'true');
-    banner.remove();
-  };
+  // Chọn cụm ưu tiên score thấp
+  const weighted = pool.map(p => ({...p, w: 10-(S.scores[p.id]||0)})).sort((a,b) => b.w - a.w);
+  const top = weighted.slice(0, Math.min(30, weighted.length));
+  const correct = top[Math.floor(Math.random()*top.length)];
+  const wrongs = pool.filter(p => p.id !== correct.id).sort(()=>Math.random()-0.5).slice(0,3);
+  const opts = [correct, ...wrongs].sort(()=>Math.random()-0.5);
+  const audioOnly = Math.random() < 0.45;
+  CQ = { correct, opts, audioOnly, answered: false };
+
+  let html = `<div class="quiz-wrap">
+    <div class="quiz-stat-row">
+      <div class="q-stat"><div class="q-stat-num" style="color:var(--gold)">${qs.total}</div><div class="q-stat-label">Tổng câu</div></div>
+      <div class="q-stat"><div class="q-stat-num" style="color:var(--green)">${acc}%</div><div class="q-stat-label">Chính xác</div></div>
+      <div class="q-stat"><div class="q-stat-num" style="color:var(--orange)">🔥${qs.streak}</div><div class="q-stat-label">Streak</div></div>
+    </div>
+    <div class="main-card">`;
+
+  if (audioOnly) {
+    html += `<div class="quiz-q-card"><div class="quiz-prompt">🎧 NGHE VÀ CHỌN NGHĨA ĐÚNG</div><div class="quiz-audio-icon">🔊</div><button class="btn btn-audio" onclick="speak('${correct.ko.replace(/'/g,"\\'")}', 0.8)">▶ Phát lại</button></div>`;
+    setTimeout(() => speak(correct.ko, 0.8), 300);
+  } else {
+    html += `<div class="quiz-q-card"><div class="quiz-prompt">CỤM TỪ NÀY NGHĨA LÀ GÌ?</div><div class="quiz-ko">${correct.ko}</div><div class="quiz-roman">${correct.roman}</div><button class="btn btn-audio" style="margin-top:10px" onclick="speak('${correct.ko.replace(/'/g,"\\'")}', 0.85)">🔊 Nghe</button></div>`;
+  }
+
+  html += `<div class="quiz-options">`;
+  opts.forEach((o,i) => {
+    html += `<button class="quiz-opt" id="qopt-${i}" onclick="answerQ(${i},'${o.id}')">${o.vi}</button>`;
+  });
+  html += `</div></div></div>`;
+  el.innerHTML = html;
 }
 
-// Nếu app đã chạy trong standalone mode, log ra
-window.addEventListener('appinstalled', () => {
-  console.log('✓ App installed!');
-  localStorage.setItem('isInstalled', 'true');
-});
+function answerQ(idx, id) {
+  if (!CQ || CQ.answered) return;
+  CQ.answered = true;
+  const isOk = id === CQ.correct.id;
+  S.quizStats.total++;
+  if (isOk) {
+    S.quizStats.correct++;
+    S.quizStats.streak++;
+    if (S.quizStats.streak > S.quizStats.best) S.quizStats.best = S.quizStats.streak;
+    S.scores[CQ.correct.id] = Math.min(10, (S.scores[CQ.correct.id]||0)+1);
+    document.getElementById('qopt-'+idx).classList.add('correct');
+  } else {
+    S.quizStats.streak = 0;
+    S.scores[CQ.correct.id] = Math.max(0, (S.scores[CQ.correct.id]||0)-2);
+    document.getElementById('qopt-'+idx).classList.add('wrong');
+    CQ.opts.forEach((_,i) => {
+      if (CQ.opts[i].id === CQ.correct.id) document.getElementById('qopt-'+i).classList.add('reveal');
+    });
+  }
+  saveS();
+  setTimeout(() => {
+    const btn = document.createElement('button');
+    btn.className = 'quiz-next-btn';
+    btn.textContent = isOk ? '✓ Đúng! Câu tiếp →' : '✗ Sai. Câu tiếp →';
+    btn.onclick = renderQuiz;
+    document.querySelector('.quiz-options').after(btn);
+  }, 700);
+}
 
-// Wake lock - giữ màn hình sáng khi đang học (tùy chọn)
-// Không dùng wake lock mặc định, chỉ khi user đang ở tab Quiz/Review
+/* ================================================================
+   REVIEW TAB (SRS)
+   ================================================================ */
+let RI = 0; let RFlipped = false;
 
+function getReviewQueue() {
+  return getAllPhrases()
+    .filter(p => p.day <= S.day && !S.mastered.has(p.id))
+    .sort((a,b) => (S.scores[a.id]||0)-(S.scores[b.id]||0));
+}
+
+function renderReview() {
+  const el = document.getElementById('tab-review');
+  const q = getReviewQueue();
+  if (q.length === 0) {
+    el.innerHTML = `<div class="main-card"><div class="state-box">
+      <div class="state-icon">🎉</div><div class="state-title">Không có gì cần ôn</div>
+      <div class="state-desc">Tất cả đã thạo hoặc chưa học tới.<br>Học thêm ngày mới hoặc dùng Quiz!</div>
+    </div></div>`; return;
+  }
+  if (RI >= q.length) RI = 0;
+  const p = q[RI];
+  const score = S.scores[p.id]||0;
+  const [diffLabel, diffColor] = score<=3 ? ['Khó','#e8112d'] : score<=6 ? ['Vừa','#ff7c2e'] : ['Dễ','#00c896'];
+
+  const koSafe = p.ko.replace(/'/g,"\\'");
+  const exSafe = p.ex.ko.replace(/'/g,"\\'");
+
+  let html = `<div class="main-card">
+    <div class="session-header">
+      <div class="session-title">🔁 Ôn ${RI+1}/${q.length}</div>
+      <span class="stat-pill" style="color:${diffColor};border-color:${diffColor}">${diffLabel}</span>
+    </div>
+    <div class="flip-wrap"><div class="flip-inner ${RFlipped?'flipped':''}" id="flipper" onclick="flipReview()">
+      <div class="flip-face flip-front">
+        <div class="flip-ko">${p.ko}</div>
+        <div class="flip-roman">${p.roman}</div>
+        <div class="flip-hint">Nhấn để xem nghĩa</div>
+      </div>
+      <div class="flip-face flip-back">
+        <div class="flip-vi">${p.vi}</div>
+        <div class="tip-box" style="font-size:12px;text-align:left">💡 ${p.tip}</div>
+        <div class="example-box"><div class="example-ko">${p.ex.ko}</div><div class="example-vi">→ ${p.ex.vi}</div></div>
+      </div>
+    </div></div>
+    <div class="audio-row" style="margin-top:10px">
+      <button class="btn btn-audio" onclick="speak('${koSafe}',0.55)">🔊 Chậm</button>
+      <button class="btn btn-audio" onclick="speak('${koSafe}',0.9)">🔊 Thường</button>
+      <button class="btn btn-audio" onclick="speak('${exSafe}',0.85)">🎧 Câu ví dụ</button>
+    </div>
+    <div class="srs-buttons">
+      <button class="srs-btn srs-hard" onclick="rateR(-2)">😵 Quên</button>
+      <button class="srs-btn srs-mid" onclick="rateR(0)">🤔 Phân vân</button>
+      <button class="srs-btn srs-easy" onclick="rateR(2)">😎 Nhớ rõ</button>
+    </div>
+    <div class="section-label">Đánh dấu cụm này</div>
+    <div class="card-actions">
+      <button class="btn btn-known" onclick="markKnownReview('${p.id}')">✓ Đã biết rồi</button>
+      <button class="btn btn-master" onclick="markMasteredReview('${p.id}')">★ Học xong, ẩn đi</button>
+    </div>
+  </div>`;
+  el.innerHTML = html;
+}
+
+function flipReview() {
+  RFlipped = !RFlipped;
+  const f = document.getElementById('flipper');
+  if (f) f.classList.toggle('flipped', RFlipped);
+}
+
+function rateR(delta) {
+  const q = getReviewQueue();
+  if (q[RI]) {
+    S.scores[q[RI].id] = Math.max(0, Math.min(10, (S.scores[q[RI].id]||0)+delta));
+    saveS();
+  }
+  RI++; RFlipped = false;
+  if (RI >= q.length) {
+    RI = 0;
+    document.getElementById('tab-review').innerHTML = `<div class="main-card"><div class="state-box">
+      <div class="state-icon">🎉</div><div class="state-title">Xong 1 vòng ôn tập!</div>
+      <div class="state-desc">Làm tiếp để củng cố.</div>
+      <button class="btn" style="margin-top:16px;width:100%" onclick="RI=0;renderReview()">🔁 Ôn lại</button>
+    </div></div>`;
+  } else renderReview();
+}
+
+function markKnownReview(id) { S.known.add(id); S.mastered.delete(id); saveS(); rateR(0); }
+function markMasteredReview(id) { S.mastered.add(id); S.known.delete(id); saveS(); rateR(1); }
+
+/* ================================================================
+   STATS TAB
+   ================================================================ */
+function renderStats() {
+  const el = document.getElementById('tab-stats');
+  const all = getAllPhrases();
+  const total = all.length;
+  const mastered = all.filter(p => S.mastered.has(p.id)).length;
+  const known = all.filter(p => S.known.has(p.id)).length;
+  const learned = all.filter(p => p.day <= S.day).length;
+  const qs = S.quizStats;
+  const acc = qs.total>0 ? Math.round(qs.correct/qs.total*100) : 0;
+
+  const hardList = all.filter(p => (S.scores[p.id]||0) <= 2 && S.scores[p.id]!==undefined && !S.mastered.has(p.id)).slice(0,5);
+
+  let html = `<div class="main-card">
+    <div class="session-header"><div class="session-title">📊 Thống kê</div></div>
+    <div class="stats-grid">
+      <div class="stat-card-big"><div class="stat-big-num">${learned}</div><div class="stat-big-label">Đã tiếp xúc</div><div class="stat-big-sub">/ ${total} cụm tổng</div></div>
+      <div class="stat-card-big"><div class="stat-big-num" style="color:var(--green)">${mastered}</div><div class="stat-big-label">★ Đã thạo</div><div class="stat-big-sub">(ẩn khỏi học)</div></div>
+      <div class="stat-card-big"><div class="stat-big-num" style="color:var(--blue2)">${known}</div><div class="stat-big-label">✓ Đã biết</div><div class="stat-big-sub">(đang luyện thêm)</div></div>
+      <div class="stat-card-big"><div class="stat-big-num" style="color:var(--gold)">${acc}%</div><div class="stat-big-label">Quiz chính xác</div><div class="stat-big-sub">${qs.correct}/${qs.total} câu</div></div>
+    </div>
+    <div style="padding:12px 0">
+      <div style="font-size:12px;color:var(--text2);margin-bottom:6px">Tiến trình hoàn thành</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${Math.round(mastered/total*100)}%"></div></div>
+      <div style="font-size:11px;color:var(--text3);text-align:center;margin-top:4px">${Math.round(mastered/total*100)}% đã thạo</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0">
+      <div class="stat-card-big" style="padding:12px"><div class="stat-big-num" style="font-size:24px">🔥 ${qs.streak}</div><div class="stat-big-label">Streak hiện tại</div></div>
+      <div class="stat-card-big" style="padding:12px"><div class="stat-big-num" style="font-size:24px">🏆 ${qs.best}</div><div class="stat-big-label">Streak tốt nhất</div></div>
+    </div>`;
+
+  if (hardList.length > 0) {
+    html += `<div class="section-label">⚠ CỤM KHÓ NHẤT - CẦN ÔN</div>`;
+    hardList.forEach(p => {
+      html += `<div style="background:rgba(232,17,45,0.07);border:1px solid rgba(232,17,45,0.2);border-radius:8px;padding:8px 12px;margin:5px 0;font-size:12px">
+        <span style="color:var(--gold);font-weight:700">${p.ko}</span> · <span style="color:var(--text2)">${p.vi.substring(0,30)}...</span>
+      </div>`;
+    });
+  }
+
+  html += `<div class="section-label">🔧 QUẢN LÝ</div>
+    <div style="display:grid;gap:8px">
+      <button class="btn btn-known" onclick="restoreAll('known')">↩ Khôi phục tất cả "Đã biết" (${known} cụm)</button>
+      <button class="btn btn-master" onclick="restoreAll('mastered')">↩ Khôi phục tất cả "Đã xong" (${mastered} cụm)</button>
+      <button class="btn" style="background:#333;color:#ff6680;border-color:#ff4060" onclick="if(confirm('Reset tất cả tiến độ?')){localStorage.removeItem('hdv3');location.reload()}">🗑 Reset toàn bộ tiến độ</button>
+    </div>
+  </div>`;
+
+  el.innerHTML = html;
+}
+
+function restoreAll(type) {
+  if (type === 'known') S.known = new Set();
+  else S.mastered = new Set();
+  saveS();
+  renderStats();
+}
+
+/* ================================================================
+   NOTIFY CHECK
+   ================================================================ */
+setInterval(() => {
+  if (!S.notif) return;
+  const now = new Date(), h = now.getHours(), m = now.getMinutes();
+  const slot = SLOTS_CFG.find(s => s.hour === h && m === 0);
+  if (slot) {
+    const key = now.toDateString()+'-'+h;
+    if (localStorage.getItem('lastN') !== key) {
+      new Notification('🇰🇷 Đến giờ học!', { body: `Khung ${h}h (${slot.label}) đã mở. 3 cụm thực chiến đang chờ.`, icon:'./icon-192.png' });
+      localStorage.setItem('lastN', key);
+    }
+  }
+}, 30000);
+
+/* ================================================================
+   PWA
+   ================================================================ */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js'));
+}
+let dP = null;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); dP = e; showBanner(); });
+function showBanner() {
+  if (localStorage.getItem('ibD') === '1') return;
+  if (window.matchMedia('(display-mode: standalone)').matches) return;
+  const b = document.createElement('div');
+  b.id = 'install-banner';
+  b.innerHTML = `<div style="font-size:28px">📲</div><div class="install-text"><div class="install-title">Cài vào màn hình chính</div><div class="install-sub">Dùng như app thật · Offline · Nhắc giờ học</div></div><button class="btn-install" onclick="doInstall()">Cài ngay</button><button class="btn-dismiss" onclick="document.getElementById('install-banner').remove();localStorage.setItem('ibD','1')">×</button>`;
+  document.body.appendChild(b);
+}
+async function doInstall() {
+  if (!dP) return;
+  dP.prompt();
+  const {outcome} = await dP.userChoice;
+  dP = null;
+  document.getElementById('install-banner')?.remove();
+}
+
+/* ================================================================
+   BOOT
+   ================================================================ */
+switchTab(S.tab);
 </script>
-
 </body>
 </html>
