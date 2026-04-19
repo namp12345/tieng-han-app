@@ -1,29 +1,17 @@
 {
-  "name": "Tiếng Hàn HDV v4 - Phân tích từng từ",
-  "short_name": "한국어 HDV v4",
-  "description": "App học tiếng Hàn HDV v4. Nhấn từng từ để nghe phát âm. Phân biệt Hán-Hàn và Thuần Hàn.",
+  "name": "Tiếng Hàn HDV v5 - Thực chiến",
+  "short_name": "한국어 HDV",
+  "description": "App học tiếng Hàn HDV v5. Cụm từ từ cơ bản đến nâng cao từ transcript thực tế. Light theme.",
   "start_url": "./index.html",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#0a0a0f",
+  "background_color": "#f0f4ff",
   "theme_color": "#c8102e",
   "lang": "vi",
   "icons": [
-    {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
   ],
-  "categories": [
-    "education"
-  ],
+  "categories": ["education"],
   "prefer_related_applications": false
 }
