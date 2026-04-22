@@ -192,6 +192,16 @@ button { cursor: pointer; }
   color: #1e3a8a;
 }
 
+.analysis-tip {
+  margin: 0 0 8px;
+  font-size: 0.82rem;
+  color: #475569;
+  background: #eff6ff;
+  border: 1px dashed #bfdbfe;
+  border-radius: 8px;
+  padding: 6px 8px;
+}
+
 .word-analysis-list {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -200,8 +210,8 @@ button { cursor: pointer; }
 
 .word-chip {
   text-align: left;
-  background: #fff;
-  border: 1px solid #dbeafe;
+  background: linear-gradient(180deg, #ffffff, #f8fbff);
+  border: 1px solid #cfe0ff;
   border-radius: 10px;
   padding: 8px;
   line-height: 1.35;
@@ -209,7 +219,31 @@ button { cursor: pointer; }
 
 .word-ko { display: block; font-weight: 800; color: #1e40af; }
 .word-vi { display: block; font-size: 0.87rem; margin-top: 2px; }
-.word-meta { display: block; font-size: 0.75rem; color: #64748b; margin-top: 3px; }
+.word-meta-row {
+  margin-top: 5px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.word-badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  border-radius: 999px;
+  padding: 2px 6px;
+}
+
+.word-badge.type {
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+  background: #eff6ff;
+}
+
+.word-badge.root {
+  color: #334155;
+  border: 1px solid #dbe4f3;
+  background: #f8fafc;
+}
 
 .actions,
 .study-actions,

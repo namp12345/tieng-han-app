@@ -63,6 +63,28 @@ const ENDING_RULES = [
   { suffix: '입니다', rootSuffix: '이다', meaning: 'là (trang trọng)' }
 ];
 
+const PARTICLE_RULES = [
+  { suffix: '에서는', meaning: 'tại/ở (nhấn mạnh chủ điểm)' },
+  { suffix: '으로', meaning: 'đến/về phía; bằng (phương hướng/cách thức)' },
+  { suffix: '에서', meaning: 'tại/ở (địa điểm hành động)' },
+  { suffix: '에게', meaning: 'cho/đến (người nhận)' },
+  { suffix: '부터', meaning: 'từ (mốc bắt đầu)' },
+  { suffix: '까지', meaning: 'đến (mốc kết thúc)' },
+  { suffix: '으로', meaning: 'hướng/về phía' },
+  { suffix: '로', meaning: 'hướng/về phía' },
+  { suffix: '를', meaning: 'tiểu từ tân ngữ' },
+  { suffix: '을', meaning: 'tiểu từ tân ngữ' },
+  { suffix: '는', meaning: 'tiểu từ chủ đề' },
+  { suffix: '은', meaning: 'tiểu từ chủ đề' },
+  { suffix: '이', meaning: 'tiểu từ chủ ngữ' },
+  { suffix: '가', meaning: 'tiểu từ chủ ngữ' },
+  { suffix: '에', meaning: 'tại/đến (vị trí, thời điểm)' },
+  { suffix: '와', meaning: 'và/cùng với' },
+  { suffix: '과', meaning: 'và/cùng với' },
+  { suffix: '도', meaning: 'cũng' },
+  { suffix: '만', meaning: 'chỉ' }
+];
+
 const state = {
   topic: 'chao-hoi',
   query: '',
@@ -278,9 +300,12 @@ function renderWordAnalysis(node, sentence) {
     chip.type = 'button';
     chip.className = 'word-chip';
     chip.innerHTML = `
-      <span class="word-ko">${word.token}</span>
+      <span class="word-ko">🔊 ${word.token}</span>
       <span class="word-vi">${word.meaning}</span>
-      <span class="word-meta">${word.type}${word.root ? ` · Gốc: ${word.root}` : ''}</span>
+      <span class="word-meta-row">
+        <span class="word-badge type">${word.type}</span>
+        ${word.root ? `<span class="word-badge root">Gốc: ${word.root}</span>` : '<span class="word-badge root">Gốc: —</span>'}
+      </span>
     `;
     chip.addEventListener('click', () => speakKorean(word.token, 0.8));
     container.append(chip);
@@ -305,6 +330,11 @@ function analyzeWords(sentence) {
       };
     }
 
+    const particleMatch = detectParticleToken(token);
+    if (particleMatch) {
+      return particleMatch;
+    }
+
     const endingMatch = detectEnding(token);
     if (endingMatch) {
       return {
@@ -322,6 +352,23 @@ function analyzeWords(sentence) {
       root: ''
     };
   });
+}
+
+function detectParticleToken(token) {
+  for (const particle of PARTICLE_RULES) {
+    if (!token.endsWith(particle.suffix) || token.length <= particle.suffix.length) continue;
+    const stem = token.slice(0, token.length - particle.suffix.length);
+    const baseInfo = WORD_DICT[stem];
+    if (!baseInfo) continue;
+
+    return {
+      token,
+      meaning: `${baseInfo.vi} + ${particle.meaning}`,
+      type: `${baseInfo.type} + ngữ pháp`,
+      root: baseInfo.root || stem
+    };
+  }
+  return null;
 }
 
 function detectEnding(token) {
