@@ -337,6 +337,21 @@ button { cursor: pointer; }
   margin: 10px 0;
 }
 
+.quiz-word-audio {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0;
+}
+
+.word-audio-btn {
+  font-size: 0.82rem;
+  padding: 6px 9px;
+  border: 1px solid #bfdbfe;
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
 .quiz-option {
   text-align: left;
 }

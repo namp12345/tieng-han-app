@@ -5,6 +5,8 @@ const WORD_DICT = {
   안녕하세요: { vi: 'xin chào', type: 'Thuần Hàn', root: '안녕하다' },
   감사합니다: { vi: 'cảm ơn', type: 'Hán Hàn', root: '感謝 + 하다' },
   죄송합니다: { vi: 'xin lỗi', type: 'Hán Hàn', root: '罪悚 + 하다' },
+  처음: { vi: 'đầu tiên / lần đầu', type: 'Thuần Hàn' },
+  뵙겠습니다: { vi: 'rất vui được gặp bạn (kính ngữ)', type: 'Thuần Hàn', root: '뵙다' },
   부탁드립니다: { vi: 'xin nhờ / mong giúp đỡ', type: 'Hán Hàn', root: '付託 + 드리다' },
   안내: { vi: 'hướng dẫn', type: 'Hán Hàn', root: '案內' },
   안내드리겠습니다: { vi: 'xin được hướng dẫn', type: 'Hán Hàn', root: '안내드리다' },
@@ -351,12 +353,23 @@ function renderQuizView() {
   card.className = 'quiz-panel';
   card.innerHTML = `
     <h3>Quiz ${state.quiz.index + 1}/${data.length}</h3>
+    <p><strong>Cụm tiếng Hàn:</strong> ${current.ko}</p>
+    <div class="quiz-word-audio"></div>
     <p><strong>Nghĩa tiếng Việt:</strong> ${current.vi}</p>
     <p><strong>Chọn cụm tiếng Hàn đúng:</strong></p>
     <div class="quiz-options"></div>
     <p class="quiz-score">Điểm: ${state.quiz.score}</p>
     <button class="quiz-next" type="button">Câu tiếp theo</button>
   `;
+  const audioWrap = card.querySelector('.quiz-word-audio');
+  current.ko.split(/\s+/).filter(Boolean).forEach(word => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'word-audio-btn';
+    btn.textContent = `🔊 ${word}`;
+    btn.addEventListener('click', () => speakKorean(word, 0.8));
+    audioWrap.append(btn);
+  });
   const optionWrap = card.querySelector('.quiz-options');
   options.forEach(option => {
     const btn = document.createElement('button');
@@ -509,9 +522,8 @@ function analyzeWords(sentence) {
 
 function explainUnknownToken(token) {
   const parts = splitKnownParts(token);
-  if (parts.length) return parts.map(part => `${part.text}: ${part.meaning}`).join(' · ');
-  const syllables = [...token];
-  return syllables.map(char => `${char}: ${SYLLABLE_DICT[char] || `thành phần của "${token}"`}`).join(' · ');
+  if (parts.length) return parts.map(part => part.meaning).join(' + ');
+  return `Nghĩa theo ngữ cảnh của "${token}"`;
 }
 
 function inferRoot(token) {
