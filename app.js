@@ -1,6 +1,68 @@
 const STORAGE_KEY = 'ktour-v6-progress';
 const RECORDING_DB = 'ktour-v6-recordings';
 
+const WORD_DICT = {
+  안녕하세요: { vi: 'xin chào', type: 'Thuần Hàn', root: '안녕하다' },
+  감사합니다: { vi: 'cảm ơn', type: 'Hán Hàn', root: '感謝 + 하다' },
+  죄송합니다: { vi: 'xin lỗi', type: 'Hán Hàn', root: '罪悚 + 하다' },
+  부탁드립니다: { vi: 'xin nhờ / mong giúp đỡ', type: 'Hán Hàn', root: '付託 + 드리다' },
+  안내: { vi: 'hướng dẫn', type: 'Hán Hàn', root: '案內' },
+  안내드리겠습니다: { vi: 'xin được hướng dẫn', type: 'Hán Hàn', root: '안내드리다' },
+  이동: { vi: 'di chuyển', type: 'Hán Hàn', root: '移動' },
+  이동하겠습니다: { vi: 'sẽ di chuyển', type: 'Hán Hàn', root: '이동하다' },
+  출발합니다: { vi: 'xuất phát', type: 'Hán Hàn', root: '出發하다' },
+  도착합니다: { vi: 'đến nơi', type: 'Hán Hàn', root: '到着하다' },
+  도착했습니다: { vi: 'đã đến nơi', type: 'Hán Hàn', root: '到着하다' },
+  시간: { vi: 'thời gian', type: 'Hán Hàn', root: '時間' },
+  오늘: { vi: 'hôm nay', type: 'Thuần Hàn' },
+  내일: { vi: 'ngày mai', type: 'Thuần Hàn' },
+  여기: { vi: 'ở đây', type: 'Thuần Hàn' },
+  저쪽: { vi: 'phía kia', type: 'Thuần Hàn' },
+  와주세요: { vi: 'hãy đến', type: 'Thuần Hàn', root: '오다' },
+  따라오세요: { vi: 'hãy đi theo', type: 'Thuần Hàn', root: '따라오다' },
+  말씀해: { vi: 'nói (kính ngữ)', type: 'Thuần Hàn', root: '말씀하다' },
+  주세요: { vi: 'xin vui lòng', type: 'Thuần Hàn', root: '주다' },
+  여권: { vi: 'hộ chiếu', type: 'Hán Hàn', root: '旅券' },
+  짐: { vi: 'hành lý', type: 'Thuần Hàn' },
+  수하물: { vi: 'hành lý ký gửi', type: 'Hán Hàn', root: '手荷物' },
+  공항: { vi: 'sân bay', type: 'Hán Hàn', root: '空港' },
+  호텔: { vi: 'khách sạn', type: 'Borrowed' },
+  객실: { vi: 'phòng khách sạn', type: 'Hán Hàn', root: '客室' },
+  체크인: { vi: 'check-in', type: 'Borrowed' },
+  체크아웃: { vi: 'check-out', type: 'Borrowed' },
+  식사: { vi: 'bữa ăn', type: 'Hán Hàn', root: '食事' },
+  메뉴: { vi: 'thực đơn', type: 'Borrowed' },
+  추천: { vi: 'đề xuất', type: 'Hán Hàn', root: '推薦' },
+  알레르기: { vi: 'dị ứng', type: 'Borrowed' },
+  가격: { vi: 'giá cả', type: 'Hán Hàn', root: '價格' },
+  확인: { vi: 'kiểm tra', type: 'Hán Hàn', root: '確認' },
+  영수증: { vi: 'hóa đơn', type: 'Hán Hàn', root: '領收證' },
+  안전: { vi: 'an toàn', type: 'Hán Hàn', root: '安全' },
+  안전벨트: { vi: 'dây an toàn', type: 'Hán Hàn + Borrowed', root: '安全 + belt' },
+  버스: { vi: 'xe buýt', type: 'Borrowed' },
+  기사님: { vi: 'tài xế (kính ngữ)', type: 'Thuần Hàn' },
+  사진: { vi: 'hình ảnh', type: 'Hán Hàn', root: '寫眞' },
+  사찰: { vi: 'chùa', type: 'Hán Hàn', root: '寺刹' },
+  조용히: { vi: 'yên lặng', type: 'Thuần Hàn', root: '조용하다' },
+  기도: { vi: 'cầu nguyện', type: 'Hán Hàn', root: '祈禱' },
+  쇼핑: { vi: 'mua sắm', type: 'Borrowed' },
+  긴급: { vi: 'khẩn cấp', type: 'Hán Hàn', root: '緊急' },
+  상황: { vi: 'tình huống', type: 'Hán Hàn', root: '狀況' },
+  병원: { vi: 'bệnh viện', type: 'Hán Hàn', root: '病院' },
+  경찰서: { vi: 'đồn cảnh sát', type: 'Hán Hàn', root: '警察署' }
+};
+
+const ENDING_RULES = [
+  { suffix: '하겠습니다', rootSuffix: '하다', meaning: 'sẽ làm (kính ngữ trang trọng)' },
+  { suffix: '드립니다', rootSuffix: '드리다', meaning: 'xin gửi/làm cho (kính ngữ)' },
+  { suffix: '했습니다', rootSuffix: '하다', meaning: 'đã làm' },
+  { suffix: '합니다', rootSuffix: '하다', meaning: 'làm (trang trọng)' },
+  { suffix: '해 주세요', rootSuffix: '하다', meaning: 'xin hãy làm' },
+  { suffix: '주세요', rootSuffix: '주다', meaning: 'xin vui lòng' },
+  { suffix: '세요', rootSuffix: '다', meaning: 'đuôi mệnh lệnh lịch sự' },
+  { suffix: '입니다', rootSuffix: '이다', meaning: 'là (trang trọng)' }
+];
+
 const state = {
   topic: 'chao-hoi',
   query: '',
@@ -112,7 +174,6 @@ function setMode(mode) {
 
 function getFilteredPhrases() {
   let list = [...flatPhrases];
-
   if (state.topic !== 'all') list = list.filter(item => item.topicId === state.topic);
   if (state.mode === 'favorites') list = list.filter(item => state.favorites.has(item.id));
   if (state.mode === 'hard') list = list.filter(item => state.hard.has(item.id));
@@ -133,7 +194,7 @@ function getFilteredPhrases() {
 
 function render() {
   const data = getFilteredPhrases();
-  const MAX_RENDER = 120;
+  const MAX_RENDER = 80;
   const visibleData = data.slice(0, MAX_RENDER);
   refs.flashcardList.innerHTML = '';
 
@@ -146,7 +207,7 @@ function render() {
   if (data.length > MAX_RENDER) {
     const note = document.createElement('p');
     note.className = 'empty';
-    note.textContent = `Đang hiển thị ${MAX_RENDER}/${data.length} cụm từ để app chạy mượt trên điện thoại. Hãy lọc theo chủ đề/từ khóa để học sâu.`;
+    note.textContent = `Đang hiển thị ${MAX_RENDER}/${data.length} cụm từ để học mượt trên điện thoại. Hãy lọc theo chủ đề/từ khóa để học sâu.`;
     refs.flashcardList.append(note);
   }
 
@@ -164,6 +225,7 @@ function render() {
     bindOptionalText(node, '.breakdown-row', '.breakdown', item.breakdown);
     bindOptionalText(node, '.root-row', '.root', item.root);
     bindOptionalText(node, '.note-row', '.note', item.note);
+    renderWordAnalysis(node, item.ko);
 
     favoriteBtn.textContent = state.favorites.has(item.id) ? '★' : '☆';
     favoriteBtn.classList.toggle('active', state.favorites.has(item.id));
@@ -176,7 +238,6 @@ function render() {
     });
 
     front.addEventListener('click', () => back.classList.toggle('hidden'));
-
     node.querySelectorAll('.speak-btn').forEach(btn => {
       btn.addEventListener('click', () => speakKorean(item.ko, Number(btn.dataset.rate || 1)));
     });
@@ -205,6 +266,79 @@ function render() {
   });
 
   updateProgress();
+}
+
+function renderWordAnalysis(node, sentence) {
+  const container = node.querySelector('.word-analysis-list');
+  container.innerHTML = '';
+  const words = analyzeWords(sentence);
+
+  words.forEach(word => {
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'word-chip';
+    chip.innerHTML = `
+      <span class="word-ko">${word.token}</span>
+      <span class="word-vi">${word.meaning}</span>
+      <span class="word-meta">${word.type}${word.root ? ` · Gốc: ${word.root}` : ''}</span>
+    `;
+    chip.addEventListener('click', () => speakKorean(word.token, 0.8));
+    container.append(chip);
+  });
+}
+
+function analyzeWords(sentence) {
+  const normalized = sentence
+    .replace(/[.,!?]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (!normalized) return [];
+
+  return normalized.split(' ').map(token => {
+    const dict = WORD_DICT[token];
+    if (dict) {
+      return {
+        token,
+        meaning: dict.vi,
+        type: dict.type,
+        root: dict.root || ''
+      };
+    }
+
+    const endingMatch = detectEnding(token);
+    if (endingMatch) {
+      return {
+        token,
+        meaning: endingMatch.meaning,
+        type: 'Động từ chia đuôi',
+        root: endingMatch.root
+      };
+    }
+
+    return {
+      token,
+      meaning: 'Cụm thực dụng trong ngữ cảnh tour',
+      type: guessWordType(token),
+      root: ''
+    };
+  });
+}
+
+function detectEnding(token) {
+  for (const rule of ENDING_RULES) {
+    if (token.endsWith(rule.suffix)) {
+      const stem = token.slice(0, token.length - rule.suffix.length);
+      const root = stem ? `${stem}${rule.rootSuffix}` : rule.rootSuffix;
+      return { root, meaning: rule.meaning };
+    }
+  }
+  return null;
+}
+
+function guessWordType(token) {
+  if (/[A-Za-z]/.test(token) || token.includes('카') || token.includes('버스')) return 'Borrowed';
+  if (token.endsWith('합니다') || token.endsWith('하다') || token.endsWith('시간') || token.endsWith('권')) return 'Hán Hàn';
+  return 'Thuần Hàn / chưa gắn nhãn';
 }
 
 function bindOptionalText(root, rowSelector, textSelector, value) {
@@ -236,7 +370,7 @@ function updateProgress() {
 
 function speakKorean(text, rate = 1) {
   if (!('speechSynthesis' in window)) {
-    alert('Thiết bị chưa hỗ trợ Web Speech API. Bạn có thể dùng bản ghi âm của bạn trong từng thẻ học.');
+    alert('Thiết bị chưa hỗ trợ Web Speech API.');
     return;
   }
 
@@ -258,9 +392,7 @@ function openRecordingDB() {
     const request = indexedDB.open(RECORDING_DB, 1);
     request.onupgradeneeded = () => {
       const db = request.result;
-      if (!db.objectStoreNames.contains('recordings')) {
-        db.createObjectStore('recordings');
-      }
+      if (!db.objectStoreNames.contains('recordings')) db.createObjectStore('recordings');
     };
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error);
@@ -312,7 +444,6 @@ async function bindRecordingActions(node, phraseId) {
       alert('Thiết bị chưa hỗ trợ ghi âm trên trình duyệt này.');
       return;
     }
-
     if (state.recording.mediaRecorder) {
       alert('Đang có một bản ghi khác. Hãy dừng trước khi ghi tiếp.');
       return;
@@ -373,9 +504,7 @@ async function bindRecordingActions(node, phraseId) {
 }
 
 function cleanupRecorder() {
-  if (state.recording.stream) {
-    state.recording.stream.getTracks().forEach(track => track.stop());
-  }
+  if (state.recording.stream) state.recording.stream.getTracks().forEach(track => track.stop());
   state.recording.mediaRecorder = null;
   state.recording.stream = null;
   state.recording.phraseId = null;
