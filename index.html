@@ -1,505 +1,317 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>K‑Tour Guide v6</title>
-  <meta name="theme-color" content="#007AFF">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="K-Tour Guide v6">
-  <meta name="mobile-web-app-capable" content="yes">
-  <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="icon-192.png">
-  <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f5f5f5; }
-    .container { max-width: 860px; margin: auto; padding: 20px; }
-    h1 { text-align: center; margin-bottom: 24px; }
-    .topic-card { background: #fff; padding: 16px; margin: 8px 0; border-radius: 8px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-    .topic-card h3 { margin: 0 0 4px; }
-    .section { display: none; margin-top: 16px; }
-    .back-button { cursor: pointer; color: #007AFF; margin-bottom: 8px; display: inline-block; }
-    ul { list-style: none; padding: 0; margin: 0; }
-    li { background: #fff; padding: 12px; margin: 8px 0; border-radius: 6px; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.1); display: flex; align-items: center; }
-    li span.label { padding: 2px 6px; border-radius: 4px; font-size: 12px; color: #fff; margin-right: 8px; }
-    .label-core { background-color: #e74c3c; }
-    .label-common { background-color: #f39c12; }
-    .label-optional { background-color: #3498db; }
-    .details { background: #fff; padding: 12px; border-radius: 6px; margin-top: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-    .flashcard { background: #fff; padding: 20px; border-radius: 8px; text-align: center; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-    .button { background: #007AFF; color: #fff; padding: 10px 20px; border-radius: 6px; margin-top: 12px; cursor: pointer; display: inline-block; text-align: center; }
-    .hidden { display: none; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>K-Tour Guide v6</title>
+<link rel="manifest" href="manifest.json">
+<style>
+  :root {
+    --bg: #f0f4ff;
+    --primary: #003478;
+    --accent: #c8102e;
+  }
+  body {
+    background: var(--bg);
+    color: var(--primary);
+    font-family: system-ui, sans-serif;
+    margin: 0;
+    padding: 20px;
+  }
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  select {
+    padding: 8px 12px;
+    font-size: 16px;
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: 400px;
+  }
+  .phrase {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 10px;
+    padding: 12px;
+  }
+  .phrase-title {
+    font-weight: bold;
+    font-size: 18px;
+    color: var(--accent);
+    cursor: pointer;
+  }
+  .phrase-details {
+    display: none;
+    margin-top: 6px;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+  .footer {
+    text-align: center;
+    margin-top: 40px;
+    font-size: 12px;
+    color: #666;
+  }
+</style>
 </head>
 <body>
-  <div class="container">
-    <h1>K‑Tour Guide v6</h1>
-    <div id="topics"></div>
-    <div id="topic-section" class="section">
-      <span class="back-button" onclick="showHome()">← Quay lại</span>
-      <h2 id="topic-title"></h2>
-      <div id="topic-buttons"></div>
-    </div>
-    <div id="phrases-section" class="section">
-      <span class="back-button" onclick="showTopic()">← Quay lại chủ đề</span>
-      <h3>Cụm từ</h3>
-      <ul id="phrase-list"></ul>
-      <div id="phrase-detail" class="details hidden"></div>
-    </div>
-    <div id="script-section" class="section">
-      <span class="back-button" onclick="showTopic()">← Quay lại chủ đề</span>
-      <h3>Mini Script</h3>
-      <p id="script-ko"></p>
-      <h4>Nghĩa tiếng Việt</h4>
-      <p id="script-vi"></p>
-    </div>
-    <div id="flashcard-section" class="section">
-      <span class="back-button" onclick="showTopic()">← Quay lại chủ đề</span>
-      <h3>Flashcards</h3>
-      <div id="flashcard" class="flashcard" onclick="toggleFlashcard()"></div>
-      <div><span id="next-button" class="button" onclick="nextFlashcard()">Tiếp tục</span></div>
-    </div>
-  </div>
+<h1>K-Tour Guide v6</h1>
+<select id="topicSelect" onchange="showPhrases(this.value)">
+  <option value="">-- Chọn chủ đề --</option>
+</select>
+<div id="phrases"></div>
+<div class="footer">Phiên bản thử nghiệm v6. Chạm vào câu để xem chi tiết.</div>
 <script>
-// Dataset for v6 — Chào hỏi khách
-const topics = [
-  {
-    id: 'greeting',
-    titleVi: 'Chào hỏi khách',
-    titleKo: '인사',
-    phrases: [
-      {
-        id: 'hello',
-        ko: '안녕하세요, 여러분.',
-        pronunciation: 'an-nyeong-ha-se-yo, yeo-reo-bun',
-        vi: 'Xin chào mọi người.',
-        category: 'Core',
-        breakdown: [
-          { word: '안녕하세요', meaning: 'Xin chào', type: 'thuần Hàn', root: '안녕하다' },
-          { word: '여러분', meaning: 'mọi người, quý vị', type: 'Hán Hàn', root: '여러+분' }
-        ],
-        logic: 'Chúc bình an tới mọi người.',
-        related: ['안녕하세요, 손님 여러분', '안녕하십니까?']
-      },
-      {
-        id: 'welcome',
-        ko: '한국에서 오신 것을 환영합니다.',
-        pronunciation: 'han-guk-e-seo o-sin geo-seul hwa-nyeong-ham-ni-da',
-        vi: 'Chào mừng quý khách đến từ Hàn Quốc.',
-        category: 'Core',
-        breakdown: [
-          { word: '한국', meaning: 'Hàn Quốc', type: 'Hán Hàn', root: '韓國' },
-          { word: '에서', meaning: 'từ', type: 'ngữ pháp' },
-          { word: '오신', meaning: 'đến (kính ngữ)', type: 'thuần Hàn', root: '오다' },
-          { word: '것을', meaning: 'việc/điều', type: 'Hán Hàn' },
-          { word: '환영합니다', meaning: 'hoan nghênh', type: 'Hán Hàn', root: '歡迎하다' }
-        ],
-        logic: 'Hoan nghênh (việc) quý khách đến từ Hàn Quốc.',
-        related: ['베트남에 오신 것을 환영합니다.', '다낭에 오신 것을 환영합니다.']
-      },
-      {
-        id: 'introduce',
-        ko: '저는 … 가이드입니다.',
-        pronunciation: 'jeo-neun … ga-i-deu-im-ni-da',
-        vi: 'Tôi là …, hướng dẫn viên của quý vị.',
-        category: 'Core',
-        breakdown: [
-          { word: '저는', meaning: 'tôi', type: 'thuần Hàn' },
-          { word: '가이드입니다', meaning: 'là hướng dẫn viên', type: 'vay mượn', root: 'guide' }
-        ],
-        logic: '저는 + nghề + 입니다: tôi là …',
-        related: ['저는 통역사입니다.', '저는 선생님입니다.']
-      },
-      {
-        id: 'nice_meet',
-        ko: '만나서 반갑습니다.',
-        pronunciation: 'man-na-seo ban-gap-seum-ni-da',
-        vi: 'Rất vui được gặp quý khách.',
-        category: 'Core',
-        breakdown: [
-          { word: '만나서', meaning: 'vì gặp', type: 'thuần Hàn', root: '만나다' },
-          { word: '반갑습니다', meaning: 'rất vui', type: 'thuần Hàn', root: '반갑다' }
-        ],
-        logic: 'Vì gặp nên cảm thấy vui mừng.',
-        related: ['이렇게 뵙게 되어 반갑습니다.', '만나서 고마워요.']
-      },
-      {
-        id: 'first_meet',
-        ko: '처음 뵙겠습니다.',
-        pronunciation: 'cheo-eum boep-ge-sseum-ni-da',
-        vi: 'Rất hân hạnh được gặp lần đầu.',
-        category: 'Core',
-        breakdown: [
-          { word: '처음', meaning: 'lần đầu', type: 'thuần Hàn' },
-          { word: '뵙겠습니다', meaning: 'sẽ được gặp (kính ngữ)', type: 'thuần Hàn', root: '뵙다' }
-        ],
-        logic: 'Đây là lần đầu gặp nên rất vinh dự.',
-        related: ['다음에 또 뵙겠습니다.', '곧 뵙겠습니다.']
-      },
-      {
-        id: 'itinerary',
-        ko: '오늘 일정에 대해 설명드리겠습니다.',
-        pronunciation: 'o-neul il-jeong-e dae-hae seol-myeong deu-ri-ge-seum-ni-da',
-        vi: 'Tôi sẽ giới thiệu về lịch trình hôm nay.',
-        category: 'Core',
-        breakdown: [
-          { word: '오늘', meaning: 'hôm nay', type: 'thuần Hàn' },
-          { word: '일정', meaning: 'lịch trình', type: 'Hán Hàn', root: '日程' },
-          { word: '에 대해', meaning: 'về', type: 'ngữ pháp' },
-          { word: '설명드리겠습니다', meaning: 'sẽ giải thích (kính ngữ)', type: 'Hán Hàn', root: '説明하다' }
-        ],
-        logic: 'Giải thích về lịch trình hôm nay.',
-        related: ['내일 일정에 대해 설명드리겠습니다.', '프로그램에 대해 설명드리겠습니다.']
-      },
-      {
-        id: 'feel_free',
-        ko: '편하게 말씀해 주세요.',
-        pronunciation: 'pyeon-ha-ge mal-sseum-hae ju-se-yo',
-        vi: 'Xin cứ thoải mái trao đổi.',
-        category: 'Core',
-        breakdown: [
-          { word: '편하게', meaning: 'một cách thoải mái', type: 'thuần Hàn', root: '편하다' },
-          { word: '말씀해 주세요', meaning: 'xin hãy nói (kính ngữ)', type: 'Hán Hàn', root: '말씀하다' }
-        ],
-        logic: 'Hãy nói một cách thoải mái.',
-        related: ['자유롭게 말씀해 주세요.', '편하게 문의해 주세요.']
-      },
-      {
-        id: 'ask_any',
-        ko: '궁금한 점 있으시면 언제든지 질문해 주세요.',
-        pronunciation: 'gung-geum-han jeom is-seu-si-myeon eon-je-deun-ji jil-mun-hae ju-se-yo',
-        vi: 'Nếu có điều thắc mắc, xin hãy hỏi bất cứ lúc nào.',
-        category: 'Core',
-        breakdown: [
-          { word: '궁금한', meaning: 'điều thắc mắc', type: 'Hán Hàn', root: '궁금하다' },
-          { word: '점', meaning: 'điểm', type: 'Hán Hàn' },
-          { word: '있으시면', meaning: 'nếu có', type: 'thuần Hàn', root: '있다' },
-          { word: '언제든지', meaning: 'bất kỳ lúc nào', type: 'thuần Hàn' },
-          { word: '질문해 주세요', meaning: 'xin hãy hỏi', type: 'Hán Hàn', root: '質問하다' }
-        ],
-        logic: 'Nếu có điểm thắc mắc thì hãy hỏi bất kỳ lúc nào.',
-        related: ['모르는 것이 있으면 말씀해 주세요.', '궁금한 것이 있으면 알려 주세요.']
-      },
-      {
-        id: 'depart',
-        ko: '이제 출발하겠습니다.',
-        pronunciation: 'i-je chul-bal-ha-ge-sseum-ni-da',
-        vi: 'Bây giờ chúng ta sẽ khởi hành.',
-        category: 'Core',
-        breakdown: [
-          { word: '이제', meaning: 'bây giờ', type: 'thuần Hàn' },
-          { word: '출발하겠습니다', meaning: 'sẽ khởi hành (kính ngữ)', type: 'Hán Hàn', root: '出發하다' }
-        ],
-        logic: 'Thông báo sắp bắt đầu di chuyển.',
-        related: ['이제 이동하겠습니다.', '이제 올라가겠습니다.']
-      },
-      {
-        id: 'cooperate',
-        ko: '앞으로 잘 부탁드립니다.',
-        pronunciation: 'ap-eu-ro jal bu-tak-deu-rim-ni-da',
-        vi: 'Mong được quý khách giúp đỡ về sau.',
-        category: 'Core',
-        breakdown: [
-          { word: '앞으로', meaning: 'về sau', type: 'thuần Hàn' },
-          { word: '잘', meaning: 'tốt', type: 'thuần Hàn' },
-          { word: '부탁드립니다', meaning: 'xin hãy giúp đỡ (kính ngữ)', type: 'Hán Hàn', root: '付託드리다' }
-        ],
-        logic: 'Xin được quý khách giúp đỡ trong thời gian tới.',
-        related: ['오늘 하루 잘 부탁드립니다.', '앞으로도 잘 부탁드립니다.']
-      },
-      // Common
-      {
-        id: 'wait',
-        ko: '조금만 기다려 주세요.',
-        pronunciation: 'jo-geum-man gi-da-ryeo ju-se-yo',
-        vi: 'Xin vui lòng đợi một chút.',
-        category: 'Common',
-        breakdown: [
-          { word: '조금만', meaning: 'một chút', type: 'thuần Hàn', root: '조금' },
-          { word: '기다려 주세요', meaning: 'xin hãy đợi', type: 'thuần Hàn', root: '기다리다' }
-        ],
-        logic: 'Xin quý khách đợi trong thời gian ngắn.',
-        related: ['잠시만 기다려 주세요.', '조금만요.']
-      },
-      {
-        id: 'traffic',
-        ko: '길이 밀릴 수 있으니 양해 부탁드립니다.',
-        pronunciation: 'gi-ri mil-lil su it-seu-ni yang-hae bu-tak-deu-rim-ni-da',
-        vi: 'Đường có thể đông, mong quý khách thông cảm.',
-        category: 'Common',
-        breakdown: [
-          { word: '길이', meaning: 'đường', type: 'thuần Hàn', root: '길' },
-          { word: '밀릴 수 있으니', meaning: 'có thể tắc nên', type: 'thuần Hàn', root: '밀리다' },
-          { word: '양해', meaning: 'sự thông cảm', type: 'Hán Hàn', root: '諒解' },
-          { word: '부탁드립니다', meaning: 'xin hãy giúp đỡ', type: 'Hán Hàn', root: '付託드리다' }
-        ],
-        logic: 'Vì đường có thể tắc nên xin quý khách thông cảm.',
-        related: ['차가 막힐 수 있으니 양해 바랍니다.', '길이 많이 막힐 수 있습니다.']
-      },
-      {
-        id: 'drink_water',
-        ko: '날씨가 더우니 물을 충분히 마셔 주세요.',
-        pronunciation: 'nal-ssi-ga deo-u-ni mu-reul chung-bun-hi ma-syeo ju-se-yo',
-        vi: 'Trời nóng, xin hãy uống đủ nước.',
-        category: 'Common',
-        breakdown: [
-          { word: '날씨가', meaning: 'thời tiết', type: 'thuần Hàn' },
-          { word: '더우니', meaning: 'vì nóng', type: 'thuần Hàn', root: '덥다' },
-          { word: '물', meaning: 'nước', type: 'thuần Hàn' },
-          { word: '충분히', meaning: 'đủ', type: 'Hán Hàn', root: '充分' },
-          { word: '마셔 주세요', meaning: 'xin hãy uống', type: 'thuần Hàn', root: '마시다' }
-        ],
-        logic: 'Thời tiết nóng nên cần uống đủ nước.',
-        related: ['날씨가 춥니 따뜻하게 입으세요.', '물 많이 드세요.']
-      },
-      {
-        id: 'restroom',
-        ko: '여기 화장실이 있습니다.',
-        pronunciation: 'yeo-gi hwa-jang-sil-i it-seum-ni-da',
-        vi: 'Nhà vệ sinh ở đây.',
-        category: 'Common',
-        breakdown: [
-          { word: '여기', meaning: 'ở đây', type: 'thuần Hàn' },
-          { word: '화장실', meaning: 'nhà vệ sinh', type: 'Hán Hàn', root: '化粧室' },
-          { word: '있습니다', meaning: 'có', type: 'thuần Hàn', root: '있다' }
-        ],
-        logic: 'Thông báo vị trí nhà vệ sinh.',
-        related: ['화장실은 저쪽에 있습니다.', '화장실이 어디에 있나요?']
-      },
-      {
-        id: 'umbrella',
-        ko: '비가 오면 우산을 준비해 주세요.',
-        pronunciation: 'bi-ga o-myeon u-san-eul jun-bi-hae ju-se-yo',
-        vi: 'Nếu trời mưa, xin hãy chuẩn bị ô.',
-        category: 'Common',
-        breakdown: [
-          { word: '비가', meaning: 'mưa', type: 'thuần Hàn' },
-          { word: '오면', meaning: 'nếu đến', type: 'thuần Hàn', root: '오다' },
-          { word: '우산', meaning: 'ô/dù', type: 'Hán Hàn', root: '雨傘' },
-          { word: '준비해 주세요', meaning: 'xin hãy chuẩn bị', type: 'Hán Hàn', root: '準備하다' }
-        ],
-        logic: 'Khi trời mưa, hãy chuẩn bị ô.',
-        related: ['비가 오면 우비를 입으세요.', '우산을 챙기세요.']
-      },
-      // Optional
-      {
-        id: 'teach_vietnamese',
-        ko: '베트남어 배우고 싶으시면 간단한 표현도 알려드리겠습니다.',
-        pronunciation: 'be-teu-nam-eo bae-u-go sip-eu-si-myeon gan-da-nan pyo-hyeon-do al-lyeo-deu-ri-ge-sseum-ni-da',
-        vi: 'Nếu quý khách muốn học tiếng Việt, tôi sẽ dạy một số câu đơn giản.',
-        category: 'Optional',
-        breakdown: [
-          { word: '베트남어', meaning: 'tiếng Việt', type: 'vay mượn', root: 'Vietnam+어' },
-          { word: '배우고 싶으시면', meaning: 'nếu muốn học', type: 'thuần Hàn', root: '배우다' },
-          { word: '간단한', meaning: 'đơn giản', type: 'Hán Hàn', root: '簡單' },
-          { word: '표현도', meaning: 'cả biểu đạt', type: 'Hán Hàn', root: '表現' },
-          { word: '알려드리겠습니다', meaning: 'tôi sẽ cho biết (kính ngữ)', type: 'thuần Hàn', root: '알리다' }
-        ],
-        logic: 'Nếu muốn học tiếng Việt thì tôi sẽ cho biết một vài biểu đạt đơn giản.',
-        related: ['영어 배우고 싶으시면 알려드릴게요.', '표현 몇 가지 알려드릴게요.']
-      },
-      {
-        id: 'inconvenience',
-        ko: '여행 중 불편한 점이 있으면 언제든지 알려 주세요.',
-        pronunciation: 'yeo-haeng jung bul-pyeon-han jeom-i it-seu-myeon eon-je-deun-ji al-lyeo ju-se-yo',
-        vi: 'Nếu có điều bất tiện trong chuyến đi, xin hãy thông báo cho tôi.',
-        category: 'Optional',
-        breakdown: [
-          { word: '여행 중', meaning: 'trong chuyến du lịch', type: 'Hán Hàn', root: '旅行中' },
-          { word: '불편한', meaning: 'bất tiện', type: 'Hán Hàn', root: '不便' },
-          { word: '점이 있으면', meaning: 'nếu có điểm', type: 'Hán Hàn' },
-          { word: '언제든지', meaning: 'bất kỳ lúc nào', type: 'thuần Hàn' },
-          { word: '알려 주세요', meaning: 'xin hãy cho biết', type: 'thuần Hàn', root: '알리다' }
-        ],
-        logic: 'Trong chuyến đi, nếu có điểm bất tiện thì hãy báo bất kỳ lúc nào.',
-        related: ['불편한 사항이 있으면 말씀해 주세요.', '문제가 있으면 연락 주세요.']
-      },
-      {
-        id: 'welcome_danang',
-        ko: '다낭에 오신 것을 진심으로 환영합니다.',
-        pronunciation: 'da-nang-e o-sin geo-seul jin-sim-eu-ro hwa-nyeong-ham-ni-da',
-        vi: 'Tôi chân thành chào mừng quý khách đến với Đà Nẵng.',
-        category: 'Optional',
-        breakdown: [
-          { word: '다낭에', meaning: 'đến Đà Nẵng', type: 'vay mượn' },
-          { word: '오신 것을', meaning: 'việc đến', type: 'thuần Hàn', root: '오다' },
-          { word: '진심으로', meaning: 'một cách chân thành', type: 'Hán Hàn', root: '眞心' },
-          { word: '환영합니다', meaning: 'chào mừng', type: 'Hán Hàn', root: '歡迎하다' }
-        ],
-        logic: 'Chân thành chào mừng việc quý khách đến Đà Nẵng.',
-        related: ['다낭에 오신 것을 환영합니다.', '다낭 방문을 환영합니다.']
-      }
-    ],
-    miniScript: {
-      ko: '안녕하세요, 여러분. 저는 (이름) 가이드입니다. 한국에서 오신 것을 환영합니다. 오늘 일정에 대해 간단히 설명드리겠습니다. 먼저 숙소로 이동한 후 점심을 드시고 오후에는 다낭 시내를 둘러볼 예정입니다. 궁금한 점 있으시면 언제든지 질문해 주세요. 이제 출발하겠습니다.',
-      vi: 'Xin chào mọi người, tôi là (tên) hướng dẫn viên. Chào mừng quý khách đến từ Hàn Quốc. Tôi sẽ giới thiệu ngắn gọn về lịch trình hôm nay: chúng ta sẽ về khách sạn, dùng bữa trưa và buổi chiều tham quan trung tâm Đà Nẵng. Nếu có thắc mắc, xin quý khách hãy hỏi bất cứ lúc nào. Bây giờ chúng ta sẽ khởi hành.'
+// Dataset v6: nhỏ gọn với ví dụ minh họa.
+const DB = {
+  "Chào hỏi khách": [
+    {
+      ko: "안녕하세요",
+      roman: "an-nyeong-ha-se-yo",
+      vi: "Xin chào",
+      level: 1,
+      usage: "Core",
+      type: "Hán Hàn",
+      root: "安寧하세요",
+      formation: "안녕 (安寧 – bình an) + 하세요 (đuôi kính)",
+      example: "안녕하세요! 저는 가이드입니다.",
+      tip: "Chúc nhau bình an"
+    },
+    {
+      ko: "잘 부탁드립니다",
+      roman: "jal bu-tak-deu-rim-ni-da",
+      vi: "Mong được giúp đỡ",
+      level: 1,
+      usage: "Core",
+      type: "Hán Hàn",
+      root: "付託드립니다",
+      formation: "잘 (tốt) + 부탁 (付託 – phó thác) + 드립니다 (kính dâng)",
+      example: "오늘 하루 잘 부탁드립니다.",
+      tip: "Dùng sau khi giới thiệu tên"
+    },
+    {
+      ko: "반갑습니다",
+      roman: "ban-gap-seum-ni-da",
+      vi: "Rất vui được gặp",
+      level: 1,
+      usage: "Common",
+      type: "Hán Hàn",
+      root: "반갑습니다",
+      formation: "반갑다 (mừng rỡ) + 습니다 (đuôi kính)",
+      example: "처음 뵙겠습니다. 반갑습니다.",
+      tip: "Dùng khi gặp lần đầu"
+    },
+    {
+      ko: "어디에서 오셨어요?",
+      roman: "eo-di-e-seo o-syeoss-eo-yo",
+      vi: "Bạn đến từ đâu?",
+      level: 1,
+      usage: "Common",
+      type: "Thuần Hàn",
+      root: "",
+      formation: "어디에서 (ở đâu) + 오셨어요 (đã đến)",
+      example: "어디에서 오셨어요? 한국에서 오셨나요?",
+      tip: "Câu hỏi thân thiện"
     }
+  ],
+  "Đón khách tại sân bay": [
+    {
+      ko: "여권을 보여 주세요",
+      roman: "yeo-gwon-eul bo-yeo ju-se-yo",
+      vi: "Vui lòng cho xem hộ chiếu",
+      level: 2,
+      usage: "Core",
+      type: "Hán Hàn",
+      root: "旅券 보여 주세요",
+      formation: "여권 (旅券 – hộ chiếu) + 보여 주세요 (xin cho xem)",
+      example: "여권을 직원에게 보여 주세요.",
+      tip: "Dùng khi làm thủ tục"
+    },
+    {
+      ko: "짐은 여기 두세요",
+      roman: "jim-eun yeo-gi du-se-yo",
+      vi: "Xin để hành lý ở đây",
+      level: 2,
+      usage: "Common",
+      type: "Thuần Hàn",
+      root: "",
+      formation: "짐 (đồ đạc) + 여기 (ở đây) + 두세요 (để)",
+      example: "짐은 여기 두세요. 카트를 가지고 올게요.",
+      tip: "Lịch sự"
+    },
+    {
+      ko: "입국 카드 작성하셨나요?",
+      roman: "ip-guk ka-deu jak-seong-ha-syeoss-na-yo",
+      vi: "Quý khách đã điền thẻ nhập cảnh chưa?",
+      level: 3,
+      usage: "Optional",
+      type: "Hán Hàn",
+      root: "入國 카드 작성",
+      formation: "입국 카드 (thẻ nhập cảnh) + 작성하셨나요? (điền chưa?)",
+      example: "입국 카드 작성하셨나요? 아직이면 제가 도와드릴게요.",
+      tip: "Giúp đỡ khách"
+    }
+  ],
+  "Trên xe": [
+    {
+      ko: "이동하겠습니다",
+      roman: "i-dong-ha-get-seum-ni-da",
+      vi: "Chúng ta sẽ di chuyển",
+      level: 1,
+      usage: "Core",
+      type: "Hán Hàn",
+      root: "移動하겠습니다",
+      formation: "이동 (di chuyển) + 하겠습니다 (sẽ làm)",
+      example: "지금부터 바나힐로 이동하겠습니다.",
+      tip: "Thông báo di chuyển"
+    },
+    {
+      ko: "따라오세요",
+      roman: "tta-ra-o-se-yo",
+      vi: "Xin đi theo tôi",
+      level: 1,
+      usage: "Core",
+      type: "Thuần Hàn",
+      root: "",
+      formation: "따라오다 (đi theo đến)",
+      example: "일행 잃지 마시고 저를 따라오세요.",
+      tip: "Phân biệt 따라오다 (đến phía tôi) và 따라가다 (đi theo ra xa)"
+    },
+    {
+      ko: "도착했습니다",
+      roman: "do-chak-haet-seum-ni-da",
+      vi: "Đã tới nơi rồi",
+      level: 1,
+      usage: "Common",
+      type: "Hán Hàn",
+      root: "到着했습니다",
+      formation: "도착 (到着 – đến) + 했습니다 (đã)",
+      example: "목적지에 도착했습니다. 안전벨트를 풀어 주세요.",
+      tip: "Thông báo đã đến nơi"
+    },
+    {
+      ko: "잠시 후 도착합니다",
+      roman: "jam-si hu do-chak-ham-ni-da",
+      vi: "Chúng ta sắp tới nơi",
+      level: 1,
+      usage: "Common",
+      type: "Hán Hàn",
+      root: "",
+      formation: "잠시 후 (một lát sau) + 도착합니다 (đang đến)",
+      example: "잠시 후 도착합니다. 준비해 주세요.",
+      tip: "Báo trước sắp đến"
+    },
+    {
+      ko: "쓰레기는 쓰레기통에 버려 주세요",
+      roman: "sseu-re-gi-neun sseu-re-gi-tong-e beo-ryeo ju-se-yo",
+      vi: "Xin bỏ rác vào thùng",
+      level: 2,
+      usage: "Optional",
+      type: "Thuần Hàn",
+      root: "",
+      formation: "쓰레기 (rác) + 통에 (vào thùng) + 버려 주세요 (hãy bỏ)",
+      example: "쓰레기는 쓰레기통에 버려 주세요. 깨끗하게 여행합시다!",
+      tip: "Nhắc khách giữ vệ sinh"
+    }
+  ],
+  "Nhà hàng": [
+    {
+      ko: "맛있게 드세요",
+      roman: "ma-sit-ge deu-se-yo",
+      vi: "Chúc ngon miệng",
+      level: 1,
+      usage: "Core",
+      type: "Thuần Hàn",
+      root: "",
+      formation: "맛있게 (ngon miệng) + 드세요 (xin dùng)",
+      example: "음식이 나왔습니다. 맛있게 드세요!",
+      tip: "Câu thường nói khi ăn"
+    },
+    {
+      ko: "추천해 드리겠습니다",
+      roman: "chu-cheon-hae deu-ri-ge-sseum-ni-da",
+      vi: "Tôi xin gợi ý món ăn",
+      level: 2,
+      usage: "Common",
+      type: "Hán Hàn",
+      root: "推薦해 드리겠습니다",
+      formation: "추천 (推薦 – gợi ý) + 해 드리겠습니다 (sẽ làm cho)",
+      example: "메뉴를 보시겠어요? 추천해 드리겠습니다.",
+      tip: "Dùng khi giới thiệu món"
+    },
+    {
+      ko: "알레르기가 있으신가요?",
+      roman: "al-le-reu-gi-ga i-sseu-sin-ga-yo",
+      vi: "Quý khách có dị ứng gì không?",
+      level: 3,
+      usage: "Common",
+      type: "Borrowed",
+      root: "알레르기 (allergy)",
+      formation: "알레르기 (dị ứng) + 가 있으신가요? (có không?)",
+      example: "음식 알레르기가 있으신가요? 있으면 알려 주세요.",
+      tip: "Quan tâm sức khỏe khách"
+    },
+    {
+      ko: "계산서는 여기 있습니다",
+      roman: "gye-san-seo-neun yeo-gi i-sseum-ni-da",
+      vi: "Đây là hóa đơn của quý khách",
+      level: 2,
+      usage: "Common",
+      type: "Hán Hàn",
+      root: "計算書는 여기 있습니다",
+      formation: "계산서 (計算書 – hóa đơn) + 는 + 여기 있습니다 (ở đây)",
+      example: "여기 계산서입니다. 확인해 주세요.",
+      tip: "Dùng khi thanh toán"
+    },
+    {
+      ko: "채식 메뉴가 필요하신가요?",
+      roman: "chae-sik me-nyu-ga pi-ryo-ha-sin-ga-yo",
+      vi: "Quý khách cần thực đơn chay không?",
+      level: 3,
+      usage: "Optional",
+      type: "Hán Hàn/English",
+      root: "菜食 메뉴가 필요하신가요",
+      formation: "채식 (菜食 – ăn chay) + 메뉴 (menu) + 가 필요하신가요? (cần không?)",
+      example: "채식 메뉴가 필요하신가요? 준비해 드릴게요.",
+      tip: "Quan tâm đến khách ăn chay"
+    }
+  ]
+};
+function populateTopics() {
+  const select = document.getElementById('topicSelect');
+  for (const topic in DB) {
+    const option = document.createElement('option');
+    option.value = topic;
+    option.textContent = topic;
+    select.appendChild(option);
   }
-];
-
-let currentTopic = null;
-let currentIndex = 0;
-let showBack = false;
-
-function init() {
-  const topicsDiv = document.getElementById('topics');
-  topics.forEach(topic => {
-    const div = document.createElement('div');
-    div.className = 'topic-card';
-    div.onclick = () => openTopic(topic);
-    div.innerHTML = '<h3>' + topic.titleVi + '</h3><p>' + topic.titleKo + '</p>';
-    topicsDiv.appendChild(div);
-  });
 }
-
-function openTopic(topic) {
-  currentTopic = topic;
-  document.getElementById('topics').style.display = 'none';
-  document.getElementById('topic-section').style.display = 'block';
-  document.getElementById('topic-title').innerText = topic.titleVi;
-  const btnDiv = document.getElementById('topic-buttons');
-  btnDiv.innerHTML = '';
-  ['Phrases','Mini Script','Flashcards'].forEach(name => {
-    const btn = document.createElement('div');
-    btn.className = 'button';
-    btn.innerText = name;
-    btn.onclick = () => {
-      if(name === 'Phrases') showPhrases();
-      if(name === 'Mini Script') showScript();
-      if(name === 'Flashcards') showFlashcards();
+function showPhrases(topic) {
+  const container = document.getElementById('phrases');
+  container.innerHTML = '';
+  if (!topic || !DB[topic]) return;
+  DB[topic].forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'phrase';
+    const title = document.createElement('div');
+    title.className = 'phrase-title';
+    title.textContent = `${p.ko} — ${p.vi}`;
+    const details = document.createElement('div');
+    details.className = 'phrase-details';
+    details.innerHTML = `<b>Phiên âm:</b> ${p.roman}<br><b>Cấp độ:</b> ${p.level} | <b>Sử dụng:</b> ${p.usage}<br><b>Loại từ:</b> ${p.type}<br>` +
+      (p.root ? `<b>Từ gốc:</b> ${p.root}<br>` : '') +
+      `<b>Giải thích:</b> ${p.formation}<br><b>Ví dụ:</b> ${p.example}<br><b>Mẹo:</b> ${p.tip}`;
+    title.onclick = () => {
+      details.style.display = details.style.display === 'none' ? 'block' : 'none';
     };
-    btnDiv.appendChild(btn);
+    card.appendChild(title);
+    card.appendChild(details);
+    container.appendChild(card);
   });
 }
-
-function showHome() {
-  hideAllSections();
-  document.getElementById('topics').style.display = 'block';
-}
-
-function showTopic() {
-  hideAllSections();
-  document.getElementById('topic-section').style.display = 'block';
-}
-
-function showPhrases() {
-  hideAllSections();
-  document.getElementById('phrases-section').style.display = 'block';
-  const list = document.getElementById('phrase-list');
-  list.innerHTML = '';
-  currentTopic.phrases.forEach((phrase, idx) => {
-    const li = document.createElement('li');
-    li.onclick = () => openPhrase(phrase);
-    // create label
-    const label = document.createElement('span');
-    label.className = 'label ' + 'label-' + phrase.category.toLowerCase();
-    label.innerText = phrase.category;
-    li.appendChild(label);
-    const textContainer = document.createElement('div');
-    textContainer.innerHTML = '<strong>' + phrase.ko + '</strong><br/><span>' + phrase.vi + '</span>';
-    li.appendChild(textContainer);
-    list.appendChild(li);
-  });
-  document.getElementById('phrase-detail').classList.add('hidden');
-}
-
-function openPhrase(phrase) {
-  const detail = document.getElementById('phrase-detail');
-  detail.innerHTML = '';
-  const ko = document.createElement('p');
-  ko.innerHTML = '<strong>' + phrase.ko + '</strong>';
-  detail.appendChild(ko);
-  const pron = document.createElement('p');
-  pron.innerHTML = '<em>' + phrase.pronunciation + '</em>';
-  detail.appendChild(pron);
-  const vi = document.createElement('p');
-  vi.innerText = phrase.vi;
-  detail.appendChild(vi);
-  const breakTitle = document.createElement('p');
-  breakTitle.innerHTML = '<strong>Tách từ:</strong>';
-  detail.appendChild(breakTitle);
-  const ul = document.createElement('ul');
-  phrase.breakdown.forEach(item => {
-    const li = document.createElement('li');
-    li.innerText = item.word + ': ' + item.meaning;
-    ul.appendChild(li);
-  });
-  detail.appendChild(ul);
-  const logic = document.createElement('p');
-  logic.innerHTML = '<strong>Logic nghĩa:</strong> ' + phrase.logic;
-  detail.appendChild(logic);
-  if(phrase.related && phrase.related.length > 0) {
-    const relTitle = document.createElement('p');
-    relTitle.innerHTML = '<strong>Câu liên quan:</strong>';
-    detail.appendChild(relTitle);
-    const relUl = document.createElement('ul');
-    phrase.related.forEach(r => {
-      const li = document.createElement('li');
-      li.innerText = r;
-      relUl.appendChild(li);
-    });
-    detail.appendChild(relUl);
-  }
-  detail.classList.remove('hidden');
-}
-
-function showScript() {
-  hideAllSections();
-  document.getElementById('script-section').style.display = 'block';
-  document.getElementById('script-ko').innerText = currentTopic.miniScript.ko;
-  document.getElementById('script-vi').innerText = currentTopic.miniScript.vi;
-}
-
-function showFlashcards() {
-  hideAllSections();
-  document.getElementById('flashcard-section').style.display = 'block';
-  currentIndex = 0;
-  showBack = false;
-  updateFlashcard();
-}
-
-function updateFlashcard() {
-  const flash = document.getElementById('flashcard');
-  const phrase = currentTopic.phrases[currentIndex];
-  if(!showBack) {
-    flash.innerHTML = '<p style="font-size:24px; margin:0;">' + phrase.ko + '</p>';
-  } else {
-    let html = '<p><strong>' + phrase.ko + '</strong><br/><em>' + phrase.pronunciation + '</em><br/>' + phrase.vi + '</p>';
-    html += '<p><strong>Tách từ:</strong></p><ul>';
-    phrase.breakdown.forEach(item => {
-      html += '<li>' + item.word + ': ' + item.meaning + '</li>';
-    });
-    html += '</ul>';
-    if(phrase.logic) html += '<p><strong>Logic:</strong> ' + phrase.logic + '</p>';
-    flash.innerHTML = html;
-  }
-}
-
-function toggleFlashcard() {
-  showBack = !showBack;
-  updateFlashcard();
-}
-
-function nextFlashcard() {
-  currentIndex = (currentIndex + 1) % currentTopic.phrases.length;
-  showBack = false;
-  updateFlashcard();
-}
-
-function hideAllSections() {
-  document.getElementById('topic-section').style.display = 'none';
-  document.getElementById('phrases-section').style.display = 'none';
-  document.getElementById('script-section').style.display = 'none';
-  document.getElementById('flashcard-section').style.display = 'none';
-}
-window.onload = init;
-</script>
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function() {
-    navigator.serviceWorker.register('./service-worker.js').catch(function(err){console.log('SW fail', err);});
-  });
-}
+window.onload = populateTopics;
 </script>
 </body>
 </html>
