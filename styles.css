@@ -211,11 +211,44 @@ button { cursor: pointer; }
   padding: 12px;
 }
 
+.hero-phrase {
+  display: grid;
+  grid-template-columns: 92px 1fr;
+  gap: 12px;
+  align-items: center;
+}
+
+.hero-icon {
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.2rem;
+  background: #e0ecff;
+}
+
+.roman-line {
+  margin: 6px 0 0;
+  color: #64748b;
+  font-size: 1.02rem;
+}
+
+.tap-sound { font-size: 1.1rem; }
+
 .ko {
   font-size: clamp(1.3rem, 6vw, 1.8rem);
   font-weight: 800;
   line-height: 1.35;
   margin: 0;
+}
+
+.hero-text .vi {
+  margin: 6px 0 0;
+  font-size: 1.7rem;
+  color: #1d4ed8;
+  font-weight: 700;
 }
 
 .hint { margin: 6px 0 0; font-size: 0.84rem; color: var(--muted); }
@@ -226,6 +259,31 @@ button { cursor: pointer; }
   padding-top: 10px;
 }
 .back p { margin: 0 0 8px; line-height: 1.45; }
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.info-box {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px;
+  background: #fff;
+}
+
+.info-box h4 {
+  margin: 0 0 6px;
+  font-size: 0.95rem;
+}
+
+.info-box p { margin: 0; font-size: 0.95rem; }
+
+.info-box.meaning h4 { color: #059669; }
+.info-box.pronounce h4 { color: #d97706; }
+.info-box.note h4 { color: #2563eb; }
 
 .word-analysis {
   border: 1px solid var(--border);
@@ -293,6 +351,20 @@ button { cursor: pointer; }
   border: 1px solid #dbe4f3;
   background: #f8fafc;
 }
+
+.flashcard.theme-greeting .hero-icon { background: #dbeafe; }
+.flashcard.theme-airport .hero-icon { background: #fee2e2; }
+.flashcard.theme-itinerary .hero-icon { background: #e0e7ff; }
+.flashcard.theme-time .hero-icon { background: #fef3c7; }
+.flashcard.theme-transport .hero-icon { background: #dcfce7; }
+.flashcard.theme-food .hero-icon { background: #ffedd5; }
+.flashcard.theme-hotel .hero-icon { background: #ede9fe; }
+.flashcard.theme-hoian .hero-icon { background: #fef9c3; }
+.flashcard.theme-bana .hero-icon { background: #cffafe; }
+.flashcard.theme-temple .hero-icon { background: #fae8ff; }
+.flashcard.theme-shopping .hero-icon { background: #fce7f3; }
+.flashcard.theme-emergency .hero-icon { background: #fee2e2; }
+.flashcard.theme-goodbye .hero-icon { background: #dcfce7; }
 
 .actions,
 .study-actions,
@@ -385,6 +457,8 @@ button { cursor: pointer; }
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .filter-row,
+  .hero-phrase,
+  .info-grid,
   .actions,
   .study-actions,
   .record-actions,

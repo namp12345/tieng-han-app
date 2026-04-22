@@ -141,6 +141,22 @@ const refs = {
   statsText: document.getElementById('statsText')
 };
 
+const TOPIC_VISUAL = {
+  'chao-hoi': { icon: '👋', theme: 'theme-greeting' },
+  'san-bay': { icon: '🛬', theme: 'theme-airport' },
+  'lich-trinh': { icon: '🗺️', theme: 'theme-itinerary' },
+  'nhac-gio': { icon: '⏰', theme: 'theme-time' },
+  'len-xe': { icon: '🚌', theme: 'theme-transport' },
+  'an-uong': { icon: '🍜', theme: 'theme-food' },
+  'khach-san': { icon: '🏨', theme: 'theme-hotel' },
+  'hoi-an': { icon: '🏮', theme: 'theme-hoian' },
+  'bana': { icon: '🏔️', theme: 'theme-bana' },
+  'linh-ung': { icon: '🙏', theme: 'theme-temple' },
+  'mua-sam': { icon: '🛍️', theme: 'theme-shopping' },
+  'tinh-huong': { icon: '🚨', theme: 'theme-emergency' },
+  'tam-biet': { icon: '👋', theme: 'theme-goodbye' }
+};
+
 function init() {
   hydrateState();
   buildTopicFilter();
@@ -289,8 +305,12 @@ function renderLearnView() {
     const back = node.querySelector('.back');
 
     node.querySelector('.topic-pill').textContent = item.topicName;
+    const visual = TOPIC_VISUAL[item.topicId] || { icon: '🧭', theme: 'theme-default' };
+    node.querySelector('.visual-icon').textContent = visual.icon;
+    node.classList.add(visual.theme);
     node.querySelector('.ko').textContent = item.ko;
     node.querySelector('.vi').textContent = item.vi;
+    node.querySelector('.vi-detail').textContent = item.vi;
     node.querySelector('.roman').textContent = item.roman || 'Đang cập nhật';
 
     bindOptionalText(node, '.breakdown-row', '.breakdown', item.breakdown);
