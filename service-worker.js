@@ -42,3 +42,35 @@ self.addEventListener('fetch', event => {
     })
   );
 });
+
+// Lắng nghe sự kiện thông báo
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  event.waitUntil(
+    clients.matchAll({ type: 'window' }).then(clientList => {
+      for (const client of clientList) {
+        if (client.url.includes('index.html') && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) return clients.openWindow('./index.html');
+    })
+  );
+});
+
+// Nhận message từ app chính để schedule notification
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SCHEDULE_NOTIFICATION') {
+    const { title, body, delay } = event.data;
+    setTimeout(() => {
+      self.registration.showNotification(title, {
+        body: body,
+        icon: './icon-192.png',
+        badge: './icon-192.png',
+        vibrate: [200, 100, 200],
+        tag: 'tieng-han-reminder',
+        requireInteraction: false
+      });
+    }, delay);
+  }
+});
