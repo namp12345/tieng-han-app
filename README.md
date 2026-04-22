@@ -4,29 +4,27 @@
 
 ## Tính năng chính
 
-- Flashcard 2 mặt (Hàn ↔ Việt) có phát âm thường/chậm.
-- Dữ liệu tách theo chủ đề trong `phrases.js`, dễ mở rộng.
+- Mỗi chủ đề có **50 cụm từ** (13 chủ đề = 650 cụm từ học).
+- Flashcard 2 mặt (Hàn ↔ Việt) + phiên âm + ghi chú.
 - Tìm kiếm nhanh, lọc chủ đề, học ngẫu nhiên.
-- Đánh dấu yêu thích, đánh dấu cụm từ khó, theo dõi tiến độ học.
-- Lưu trạng thái bằng `localStorage`.
+- Đánh dấu yêu thích, cụm từ khó, trạng thái đã nhớ + tiến độ học.
+- Phát âm Web Speech API (bình thường/chậm).
+- **Ghi âm giọng nói cá nhân theo từng cụm từ** (MediaRecorder + IndexedDB).
 - Hỗ trợ PWA qua `manifest.json` và `service-worker.js`.
 
-## Cấu trúc đề xuất cho audio thật
-
-Khi muốn thay Web Speech API bằng file audio thu sẵn, có thể dùng cấu trúc:
+## Cấu trúc đề xuất cho audio thật (nếu muốn thay TTS)
 
 ```text
 /audio/
-  chao-hoi/hello.mp3
-  san-bay/passport.mp3
-  ...
+  <topic-id>/
+    <phrase-id>.mp3
 ```
 
-Trong đó `<topic-id>/<phrase-id>.mp3` bám theo `phrases.js`.
+Ví dụ: `/audio/chao-hoi/chao-hoi-1.mp3`
 
 ## Deploy GitHub Pages
 
 1. Push toàn bộ file lên GitHub.
 2. Vào **Settings → Pages**, chọn branch cần publish.
-3. Mở URL Pages trên Chrome mobile.
+3. Mở URL Pages trên Chrome mobile (HTTPS để dùng ghi âm micro).
 4. Chọn **Add to Home Screen** để cài như app.

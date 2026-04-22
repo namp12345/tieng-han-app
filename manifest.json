@@ -1,5 +1,4 @@
 {
-<<<<<<< codex/improve-tieng-han-app-to-version-6
   "name": "K-Tour Guide v6",
   "short_name": "K-Guide v6",
   "description": "Ứng dụng học cụm từ tiếng Hàn thực chiến cho hướng dẫn viên du lịch Đà Nẵng - Hội An - Bà Nà - Linh Ứng.",
@@ -13,21 +12,4 @@
   "orientation": "portrait",
   "background_color": "#f5f7fb",
   "theme_color": "#2563eb"
-=======
-  "name": "Tiếng Hàn HDV v6 - Thực chiến",
-  "short_name": "한국어 HDV",
-  "description": "App học tiếng Hàn HDV v6 với chế độ tối và tìm kiếm cụm từ. Cụm từ từ cơ bản đến nâng cao từ transcript thực tế.",
-  "start_url": "./index.html",
-  "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#f0f4ff",
-  "theme_color": "#c8102e",
-  "lang": "vi",
-  "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
-  ],
-  "categories": ["education"],
-  "prefer_related_applications": false
->>>>>>> main
 }

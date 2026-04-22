@@ -187,6 +187,24 @@ button { cursor: pointer; }
   margin-top: 10px;
 }
 
+.record-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.record-btn { border-color: #bfdbfe; color: #1d4ed8; background: #eff6ff; }
+.stop-record-btn { border-color: #fecaca; color: #991b1b; background: #fef2f2; }
+.play-record-btn { border-color: #bbf7d0; color: #166534; background: #f0fdf4; }
+.delete-record-btn { border-color: #e5e7eb; color: #334155; background: #f8fafc; }
+
+.record-status {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
 .speak-btn,
 .learned-btn,
 .hard-btn {
@@ -209,5 +227,6 @@ button { cursor: pointer; }
 @media (max-width: 420px) {
   .filter-row { grid-template-columns: 1fr; }
   .actions,
-  .study-actions { grid-template-columns: 1fr; }
+  .study-actions,
+  .record-actions { grid-template-columns: 1fr; }
 }

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tieng-han-hdv-v6.0.0';
+const CACHE_NAME = 'tieng-han-hdv-v6.1.0';
 const OFFLINE_ASSETS = [
   './',
   './index.html',
