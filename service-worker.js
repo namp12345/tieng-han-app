@@ -1,42 +1,45 @@
-// Service Worker cho app Tiếng Hàn HDV
-// Tên cache - đổi khi có update lớn
-const CACHE_NAME = 'tieng-han-hdv-v1';
-
-// Các file cần cache để chạy offline
-const urlsToCache = [
+const CACHE_NAME = 'tieng-han-hdv-v6.0.0';
+const OFFLINE_ASSETS = [
   './',
   './index.html',
+  './styles.css',
+  './phrases.js',
+  './app.js',
   './manifest.json',
   './icon-192.png',
   './icon-512.png'
 ];
 
-// Install event - cache các file khi cài đặt
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(urlsToCache))
+      .then(cache => cache.addAll(OFFLINE_ASSETS))
       .then(() => self.skipWaiting())
   );
 });
 
-// Activate event - xóa cache cũ
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(names => {
-      return Promise.all(
-        names.filter(name => name !== CACHE_NAME).map(name => caches.delete(name))
-      );
-    }).then(() => self.clients.claim())
+    caches.keys().then(keys => Promise.all(keys
+      .filter(key => key !== CACHE_NAME)
+      .map(key => caches.delete(key))
+    )).then(() => self.clients.claim())
   );
 });
 
-// Fetch event - phục vụ file từ cache trước, rồi mới lên mạng
 self.addEventListener('fetch', event => {
+  if (event.request.method !== 'GET') return;
   event.respondWith(
-    caches.match(event.request)
-      .then(response => response || fetch(event.request))
-      .catch(() => caches.match('./index.html'))
+    caches.match(event.request).then(cached => {
+      if (cached) return cached;
+      return fetch(event.request)
+        .then(networkResponse => {
+          const responseClone = networkResponse.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseClone));
+          return networkResponse;
+        })
+        .catch(() => caches.match('./index.html'));
+    })
   );
 });
 
