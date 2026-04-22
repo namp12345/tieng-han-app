@@ -100,6 +100,7 @@ const SYLLABLE_DICT = {
 };
 
 const state = {
+  view: 'learn',
   topic: 'chao-hoi',
   query: '',
   mode: 'all',
@@ -112,6 +113,11 @@ const state = {
     stream: null,
     phraseId: null,
     chunks: []
+  },
+  quiz: {
+    index: 0,
+    score: 0,
+    selected: null
   }
 };
 
@@ -189,6 +195,14 @@ function buildTopicFilter() {
 }
 
 function bindEvents() {
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      state.view = tab.dataset.view || 'learn';
+      document.querySelectorAll('.tab').forEach(other => other.classList.toggle('active', other === tab));
+      render();
+    });
+  });
+
   refs.topicFilter.addEventListener('change', event => {
     state.topic = event.target.value;
     state.random = false;
@@ -241,6 +255,13 @@ function getFilteredPhrases() {
 }
 
 function render() {
+  if (state.view === 'quiz') return renderQuizView();
+  if (state.view === 'review') return renderReviewView();
+  if (state.view === 'stats') return renderStatsView();
+  return renderLearnView();
+}
+
+function renderLearnView() {
   const data = getFilteredPhrases();
   const MAX_RENDER = 80;
   const visibleData = data.slice(0, MAX_RENDER);
@@ -316,6 +337,112 @@ function render() {
   updateProgress();
 }
 
+function renderQuizView() {
+  refs.flashcardList.innerHTML = '';
+  const data = getFilteredPhrases();
+  if (!data.length) {
+    refs.flashcardList.innerHTML = '<p class="empty">Không có dữ liệu để làm quiz.</p>';
+    return;
+  }
+
+  const current = data[state.quiz.index % data.length];
+  const options = pickQuizOptions(data, current);
+  const card = document.createElement('section');
+  card.className = 'quiz-panel';
+  card.innerHTML = `
+    <h3>Quiz ${state.quiz.index + 1}/${data.length}</h3>
+    <p><strong>Nghĩa tiếng Việt:</strong> ${current.vi}</p>
+    <p><strong>Chọn cụm tiếng Hàn đúng:</strong></p>
+    <div class="quiz-options"></div>
+    <p class="quiz-score">Điểm: ${state.quiz.score}</p>
+    <button class="quiz-next" type="button">Câu tiếp theo</button>
+  `;
+  const optionWrap = card.querySelector('.quiz-options');
+  options.forEach(option => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'quiz-option';
+    btn.textContent = option.ko;
+    btn.addEventListener('click', () => {
+      const correct = option.id === current.id;
+      btn.classList.add(correct ? 'correct' : 'wrong');
+      if (correct) state.quiz.score += 1;
+      state.quiz.selected = option.id;
+    });
+    optionWrap.append(btn);
+  });
+
+  card.querySelector('.quiz-next').addEventListener('click', () => {
+    state.quiz.index += 1;
+    state.quiz.selected = null;
+    renderQuizView();
+  });
+
+  refs.flashcardList.append(card);
+}
+
+function pickQuizOptions(data, current) {
+  const pool = [...data].filter(item => item.id !== current.id).sort(() => Math.random() - 0.5).slice(0, 3);
+  return [current, ...pool].sort(() => Math.random() - 0.5);
+}
+
+function renderReviewView() {
+  refs.flashcardList.innerHTML = '';
+  const reviewSet = flatPhrases.filter(item => state.hard.has(item.id) || !state.learned.has(item.id));
+  if (!reviewSet.length) {
+    refs.flashcardList.innerHTML = '<p class="empty">Bạn đã thuộc hết rồi! Tuyệt vời 🎉</p>';
+    return;
+  }
+
+  const intro = document.createElement('p');
+  intro.className = 'empty';
+  intro.textContent = `Ôn tập: ${reviewSet.length} cụm từ (từ khó + chưa học).`;
+  refs.flashcardList.append(intro);
+
+  reviewSet.slice(0, 100).forEach(item => {
+    const line = document.createElement('article');
+    line.className = 'review-item';
+    line.innerHTML = `
+      <p class="review-ko">${item.ko}</p>
+      <p class="review-vi">${item.vi}</p>
+      <div class="review-actions">
+        <button type="button" class="quick-speak">🔊 Nghe</button>
+        <button type="button" class="quick-known">✔ Đã nhớ</button>
+      </div>
+    `;
+    line.querySelector('.quick-speak').addEventListener('click', () => speakKorean(item.ko, 0.85));
+    line.querySelector('.quick-known').addEventListener('click', () => {
+      state.learned.add(item.id);
+      state.hard.delete(item.id);
+      persistState();
+      renderReviewView();
+      updateProgress();
+    });
+    refs.flashcardList.append(line);
+  });
+}
+
+function renderStatsView() {
+  refs.flashcardList.innerHTML = '';
+  const panel = document.createElement('section');
+  panel.className = 'stats-panel';
+  const rows = PHRASE_TOPICS.map(topic => {
+    const learned = topic.phrases.filter(p => state.learned.has(p.id)).length;
+    return `<tr><td>${topic.name}</td><td>${learned}/${topic.phrases.length}</td><td>${Math.round((learned / topic.phrases.length) * 100)}%</td></tr>`;
+  }).join('');
+
+  panel.innerHTML = `
+    <h3>Thống kê học tập</h3>
+    <p>Tổng đã học: ${state.learned.size}/${flatPhrases.length}</p>
+    <p>Yêu thích: ${state.favorites.size} · Từ khó: ${state.hard.size}</p>
+    <table class="stats-table">
+      <thead><tr><th>Chủ đề</th><th>Tiến độ</th><th>%</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  `;
+  refs.flashcardList.append(panel);
+}
+
 function renderWordAnalysis(node, sentence) {
   const container = node.querySelector('.word-analysis-list');
   container.innerHTML = '';
@@ -381,10 +508,10 @@ function analyzeWords(sentence) {
 }
 
 function explainUnknownToken(token) {
+  const parts = splitKnownParts(token);
+  if (parts.length) return parts.map(part => `${part.text}: ${part.meaning}`).join(' · ');
   const syllables = [...token];
-  return syllables
-    .map(char => `${char}: ${SYLLABLE_DICT[char] || 'âm tiết trong ngữ cảnh du lịch'}`)
-    .join(' · ');
+  return syllables.map(char => `${char}: ${SYLLABLE_DICT[char] || `thành phần của "${token}"`}`).join(' · ');
 }
 
 function inferRoot(token) {
@@ -393,6 +520,22 @@ function inferRoot(token) {
   const ending = detectEnding(token);
   if (ending?.root) return ending.root;
   return token;
+}
+
+function splitKnownParts(token) {
+  const keys = Object.keys(WORD_DICT).sort((a, b) => b.length - a.length);
+  const parts = [];
+  let rest = token;
+
+  while (rest.length > 0) {
+    const hit = keys.find(key => rest.startsWith(key));
+    if (!hit) break;
+    parts.push({ text: hit, meaning: WORD_DICT[hit].vi });
+    rest = rest.slice(hit.length);
+  }
+
+  if (parts.length && rest.length === 0) return parts;
+  return [];
 }
 
 function detectParticleToken(token) {
