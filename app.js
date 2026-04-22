@@ -85,6 +85,20 @@ const PARTICLE_RULES = [
   { suffix: '만', meaning: 'chỉ' }
 ];
 
+const SYLLABLE_DICT = {
+  안: 'bình an', 녕: 'yên ổn', 하: 'làm/thực hiện', 세: 'đuôi kính ngữ', 요: 'đuôi lịch sự',
+  감: 'cảm', 사: 'ơn/cảm tạ', 부: 'phó/nhờ', 탁: 'gửi gắm', 드: 'kính gửi', 림: 'hành động kính',
+  이: 'chủ ngữ/người', 동: 'di chuyển', 출: 'ra', 발: 'khởi hành', 도: 'đến/cũng', 착: 'đến nơi',
+  시: 'giờ', 간: 'khoảng/thời', 오: 'đến', 늘: 'hôm nay', 내: 'bên trong/ngày mai', 일: 'ngày',
+  여: 'nơi này', 권: 'quyển/giấy', 짐: 'hành lý', 공: 'công/công cộng', 항: 'cảng', 호: 'số/hồ',
+  텔: 'hotel (mượn)', 객: 'khách', 실: 'phòng', 체: 'check', 크: 'check', 인: 'vào', 아: 'ra',
+  웃: 'out (mượn)', 식: 'ăn', 메: 'menu (mượn)', 뉴: 'menu (mượn)', 추: 'đẩy/cử', 천: 'đề cử',
+  가: 'đi/chủ ngữ', 격: 'mức/khung', 확: 'chắc', 영: 'lãnh/nhận', 수: 'thu/nhận', 증: 'chứng',
+  안: 'an', 전: 'toàn', 벨: 'belt (mượn)', 트: 'belt (mượn)', 버: 'bus (mượn)', 스: 'bus (mượn)',
+  기: 'khí/cơ', 사: 'sự việc', 진: 'ảnh', 찰: 'chùa/quan sát', 조: 'điều hòa', 용: 'dùng/yên',
+  긴: 'gấp', 급: 'khẩn', 상: 'trạng', 황: 'hoàn cảnh', 병: 'bệnh', 원: 'viện', 경: 'cảnh', 서: 'sở'
+};
+
 const state = {
   topic: 'chao-hoi',
   query: '',
@@ -123,8 +137,20 @@ function init() {
   hydrateState();
   buildTopicFilter();
   bindEvents();
+  startClock();
   render();
   registerServiceWorker();
+}
+
+function startClock() {
+  const badge = document.getElementById('clockBadge');
+  if (!badge) return;
+  const tick = () => {
+    const now = new Date();
+    badge.textContent = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+  };
+  tick();
+  setInterval(tick, 30000);
 }
 
 function hydrateState() {
@@ -347,11 +373,26 @@ function analyzeWords(sentence) {
 
     return {
       token,
-      meaning: 'Cụm thực dụng trong ngữ cảnh tour',
+      meaning: explainUnknownToken(token),
       type: guessWordType(token),
-      root: ''
+      root: inferRoot(token)
     };
   });
+}
+
+function explainUnknownToken(token) {
+  const syllables = [...token];
+  return syllables
+    .map(char => `${char}: ${SYLLABLE_DICT[char] || 'âm tiết trong ngữ cảnh du lịch'}`)
+    .join(' · ');
+}
+
+function inferRoot(token) {
+  const particle = detectParticleToken(token);
+  if (particle?.root) return particle.root;
+  const ending = detectEnding(token);
+  if (ending?.root) return ending.root;
+  return token;
 }
 
 function detectParticleToken(token) {

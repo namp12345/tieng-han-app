@@ -26,12 +26,61 @@ body {
   padding: max(16px, env(safe-area-inset-top)) 14px calc(24px + env(safe-area-inset-bottom));
 }
 
-.app-header {
-  background: linear-gradient(135deg, #1d4ed8, #0ea5e9);
+.top-shell {
+  background: linear-gradient(90deg, #d01345, #2d4f8d);
   color: #fff;
-  border-radius: 18px;
-  padding: 16px;
+  border-radius: 14px;
+  padding: 10px 12px;
   box-shadow: var(--shadow);
+}
+
+.brand-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand-title { margin: 0; font-weight: 800; font-size: 1rem; }
+.brand-sub { margin: 1px 0 0; font-size: 0.74rem; opacity: 0.9; }
+
+.clock-badge {
+  background: rgba(255,255,255,0.18);
+  border: 1px solid rgba(255,255,255,0.45);
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-weight: 700;
+  font-size: 0.78rem;
+}
+
+.top-tabs {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.tab {
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.12);
+  font-size: 0.82rem;
+  padding: 8px 6px;
+}
+
+.tab.active {
+  background: #fff;
+  color: #be123c;
+  font-weight: 800;
+}
+
+.app-header {
+  background: linear-gradient(135deg, #ffffff, #f8fbff);
+  color: #0f172a;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: var(--shadow);
+  margin-top: 10px;
 }
 
 .app-header h1 { margin: 2px 0; font-size: clamp(1.55rem, 5.3vw, 2rem); }
@@ -274,6 +323,9 @@ button { cursor: pointer; }
 }
 
 @media (max-width: 520px) {
+  .top-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
   .filter-row,
   .actions,
   .study-actions,
