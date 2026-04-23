@@ -14,7 +14,13 @@ const state = {
   },
   progressById: {},
   dailyStats: {},
-  quizIndex: 0
+  quizIndex: 0,
+  recording: {
+    mediaRecorder: null,
+    stream: null,
+    chunks: [],
+    activeId: null
+  }
 };
 
 const refs = {
@@ -218,12 +224,11 @@ function FlashcardSentence(s) {
   node.querySelector('[data-vietnamese]').textContent = s.vietnamese;
   node.querySelector('[data-korean-back]').textContent = s.korean;
   node.querySelector('[data-natural]').textContent = s.naturalMeaning;
-  node.querySelector('[data-usage]').textContent = s.usage;
 
   node.querySelector('[data-front-audio]').addEventListener('click', e => { e.stopPropagation(); actListen(s, false); });
-  node.querySelector('[data-flip]').addEventListener('click', () => node.classList.add('flipped'));
+  node.querySelector('[data-flip-zone]').addEventListener('click', e => { e.stopPropagation(); node.classList.add('flipped'); });
   node.querySelector('[data-flip-btn]').addEventListener('click', e => { e.stopPropagation(); node.classList.add('flipped'); });
-  node.querySelector('[data-unflip]').addEventListener('click', () => node.classList.remove('flipped'));
+  node.querySelector('[data-unflip]').addEventListener('click', e => { e.stopPropagation(); node.classList.remove('flipped'); });
 
   const completionLabel = node.querySelector('[data-completion-label]');
   completionLabel.textContent = p.isCompleted ? 'Đã hoàn thành' : 'Chưa hoàn thành';
@@ -237,10 +242,15 @@ function FlashcardSentence(s) {
 
 function bindPractice(node, s) {
   const status = node.querySelector('[data-record-status]');
-  node.querySelector('[data-action="listen"]').addEventListener('click', () => actListen(s, false));
-  node.querySelector('[data-action="listenSlow"]').addEventListener('click', () => actListen(s, true));
-  node.querySelector('[data-action="known"]').addEventListener('click', () => markCompleted(s.id));
-  node.querySelector('[data-action="hard"]').addEventListener('click', () => { state.progressById[s.id].reviewBucket = !state.progressById[s.id].reviewBucket; persist(); });
+  node.querySelector('[data-action="listen"]').addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); actListen(s, false); });
+  node.querySelector('[data-action="listenSlow"]').addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); actListen(s, true); });
+  node.querySelector('[data-action="known"]')?.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); markCompleted(s.id); });
+  node.querySelector('[data-action="hard"]')?.addEventListener('click', e => {
+    e.preventDefault();
+    e.stopPropagation();
+    state.progressById[s.id].reviewBucket = !state.progressById[s.id].reviewBucket;
+    persist();
+  });
   bindRecording(node, s, status);
 }
 
@@ -547,28 +557,38 @@ async function bindRecording(node, sentence, statusNode) {
   const deleteBtn = node.querySelector('[data-action="delete"]');
   const p = state.progressById[sentence.id];
   const existing = await getRecording(sentence.id).catch(() => null);
-  playBtns.forEach(btn => btn.disabled = !existing);
-  deleteBtn.classList.toggle('hidden', !existing);
+  const hasRecording = Boolean(existing);
+  playBtns.forEach(btn => btn.disabled = !hasRecording);
+  if (deleteBtn) deleteBtn.classList.toggle('hidden', !hasRecording);
+  statusNode.textContent = hasRecording ? 'Đã có bản ghi âm.' : 'Chưa có bản ghi âm.';
 
   const startRecord = async () => {
-    if (!navigator.mediaDevices || !window.MediaRecorder || state.recording.mediaRecorder) return;
+    if (!navigator.mediaDevices || !window.MediaRecorder) return;
+    if (state.recording.mediaRecorder && state.recording.activeId === sentence.id) {
+      state.recording.mediaRecorder.stop();
+      return;
+    }
+    if (state.recording.mediaRecorder) return;
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     state.recording.stream = stream;
     state.recording.mediaRecorder = new MediaRecorder(stream);
     state.recording.chunks = [];
+    state.recording.activeId = sentence.id;
     state.recording.mediaRecorder.ondataavailable = e => e.data.size > 0 && state.recording.chunks.push(e.data);
     state.recording.mediaRecorder.onstop = async () => {
       await saveRecording(sentence.id, new Blob(state.recording.chunks, { type: 'audio/webm' }));
       playBtns.forEach(btn => btn.disabled = false);
-      deleteBtn.classList.remove('hidden');
+      if (deleteBtn) deleteBtn.classList.remove('hidden');
       statusNode.textContent = 'Đã lưu bản ghi âm.';
       p.recordCount += 1; logDaily('recordCount', sentence); persist();
       stream.getTracks().forEach(t => t.stop());
       state.recording.mediaRecorder = null;
+      state.recording.stream = null;
+      state.recording.chunks = [];
+      state.recording.activeId = null;
     };
     state.recording.mediaRecorder.start();
     statusNode.textContent = 'Đang ghi âm...';
-    setTimeout(() => state.recording.mediaRecorder?.stop(), 3200);
   };
 
   const playSelf = async () => {
@@ -578,9 +598,11 @@ async function bindRecording(node, sentence, statusNode) {
     p.selfPlayCount += 1; logDaily('selfPlayCount', sentence); persist();
   };
 
-  recordBtns.forEach(btn => btn.addEventListener('click', startRecord));
-  playBtns.forEach(btn => btn.addEventListener('click', playSelf));
-  deleteBtn.addEventListener('click', async () => {
+  recordBtns.forEach(btn => btn.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); startRecord(); }));
+  playBtns.forEach(btn => btn.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); playSelf(); }));
+  deleteBtn?.addEventListener('click', async e => {
+    e.preventDefault();
+    e.stopPropagation();
     await deleteRecording(sentence.id);
     playBtns.forEach(btn => btn.disabled = true);
     deleteBtn.classList.add('hidden');

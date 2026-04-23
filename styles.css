@@ -1,5 +1,6 @@
 :root {
   --background:#FFFBEA;
+  --section:#FFF8D6;
   --card:#FFFFFF;
   --primary:#2563EB;
   --text:#111827;
@@ -10,8 +11,8 @@
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--background);color:var(--text);font-family:Inter,system-ui,sans-serif}
-.app{width:min(760px,100%);margin:0 auto;padding:12px}
-.app-header,.controls,.progress,.simple-panel,.QuizCard{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px}
+.app{width:min(760px,100%);margin:0 auto;padding:12px;background:var(--background)}
+.app-header,.controls,.progress,.simple-panel,.QuizCard{background:var(--section);border:1px solid var(--border);border-radius:14px;padding:12px}
 .app-header h1{margin:0;color:var(--primary);font-size:1.2rem}.app-header p{margin:4px 0 0;color:var(--secondary)}
 .top-nav{margin-top:8px;display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
 .nav-tab,.mini-tab,.chip,.flip-btn,.AudioButton,.FrontPracticePanel button,.ActionButtonGrid button,.quiz-option,.quiz-next,.delete-record{border:1px solid var(--border);background:#fff;border-radius:10px;padding:8px}
@@ -26,13 +27,14 @@ body{margin:0;background:var(--background);color:var(--text);font-family:Inter,s
 .front-head{display:flex;justify-content:space-between;align-items:center}.SemanticImage{width:72px;height:72px;border-radius:50%;background:#DBEAFE;display:flex;align-items:center;justify-content:center;font-size:2rem}.topic-chip{font-size:.72rem;color:var(--primary);background:#EFF6FF;border:1px solid #BFDBFE;border-radius:999px;padding:4px 8px}
 .korean-row{display:flex;align-items:center;gap:8px}.korean,.quiz-korean{margin:10px 0 0;font-size:clamp(1.45rem,5.4vw,2rem);font-weight:800;line-height:1.2}.roman{margin:4px 0 0;color:var(--secondary)}.vietnamese{margin:6px 0 0;color:var(--primary);font-size:1.18rem;font-weight:700}
 .FrontPracticePanel{margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:6px}.FrontPracticePanel button,.ActionButtonGrid button{min-height:42px;font-weight:600}
-.FrontPracticePanel button:disabled{opacity:.45}
+.FrontPracticePanel button:disabled{opacity:.45;cursor:not-allowed}
 .CompletionToggle{margin-top:8px;display:flex;justify-content:space-between;align-items:center;gap:6px;background:#F8FAFC;border:1px solid var(--border);border-radius:10px;padding:8px}.CompletionToggle span{font-size:.88rem;color:var(--secondary)}
+.flip-zone{margin-top:8px;width:100%;border:1px dashed #CBD5E1;background:#FFFBEB;color:#92400E;border-radius:10px;padding:8px;font-weight:600}
 .back-top{display:flex;justify-content:space-between;align-items:center;gap:8px}.back-tabs{margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:6px}.tab-body{margin-top:8px}
 .brief{border:1px solid var(--border);border-radius:10px;padding:8px;margin-top:6px;font-size:.9rem}
 .AnalysisList{display:grid;gap:6px}.word-item{border:1px solid var(--border);border-radius:10px;padding:8px}.word-head{display:flex;justify-content:space-between;align-items:center}.word-item p{margin:4px 0 0;font-size:.9rem}
 .origin-tag{display:inline-block;margin-top:6px;border-radius:999px;padding:2px 8px;font-size:.74rem;font-weight:700}.tag-native{background:var(--tag-native)}.tag-sino{background:var(--tag-sino)}.tag-unknown{background:#F3F4F6}
 .ActionButtonGrid{display:grid;grid-template-columns:1fr 1fr;gap:6px}.record-status{margin:6px 0 0;color:var(--secondary);font-size:.84rem}
 .quiz-title{margin:0;color:var(--secondary)}.quiz-options{margin-top:8px;display:grid;gap:6px}.quiz-option.ok{background:#DDF4E4;border-color:#86EFAC}.quiz-option.fail{background:#FDE2E2;border-color:#FCA5A5}.quiz-result{min-height:20px;color:var(--primary);font-weight:700}
-.empty{background:var(--card);border:1px dashed var(--border);border-radius:12px;padding:14px;text-align:center}.hidden{display:none!important}
+.empty{background:var(--section);border:1px dashed var(--border);border-radius:12px;padding:14px;text-align:center}.hidden{display:none!important}
 @media(max-width:560px){.top-nav{grid-template-columns:repeat(3,1fr)}.control-row,.FrontPracticePanel,.ActionButtonGrid{grid-template-columns:1fr}}

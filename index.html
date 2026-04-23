@@ -43,7 +43,7 @@
     <template id="flashcardTemplate">
       <article class="FlashcardSentence">
         <div class="card-inner">
-          <section class="FlashcardFront" data-flip>
+          <section class="FlashcardFront">
             <div class="front-head">
               <div class="SemanticImage" data-image>🧭</div>
               <span class="topic-chip" data-topic></span>
@@ -68,6 +68,7 @@
               <button data-action="complete">Đã hoàn thành</button>
             </div>
 
+            <button class="flip-zone" data-flip-zone>Chạm để lật xem phân tích</button>
             <button class="flip-btn" data-flip-btn>Lật thẻ</button>
           </section>
 
@@ -76,26 +77,9 @@
               <strong data-korean-back></strong>
               <button class="flip-btn" data-unflip>Quay lại</button>
             </div>
-            <div class="back-tabs">
-              <button class="mini-tab active" data-tab="analysis">Phân tích</button>
-              <button class="mini-tab" data-tab="speak">Luyện nói</button>
-            </div>
-
             <div class="tab-body" data-panel="analysis">
               <div class="AnalysisList" data-analysis></div>
               <div class="brief"><b>Nghĩa tự nhiên:</b> <span data-natural></span></div>
-              <div class="brief"><b>Dùng khi nào:</b> <span data-usage></span></div>
-            </div>
-            <div class="tab-body hidden" data-panel="speak">
-              <div class="ActionButtonGrid">
-                <button data-action="listen">Nghe</button>
-                <button data-action="listenSlow">Nghe chậm</button>
-                <button data-action="record">Ghi âm</button>
-                <button data-action="selfPlay">Nghe giọng tôi</button>
-                <button data-action="known">Đã nhớ</button>
-                <button data-action="hard">Đánh dấu khó</button>
-              </div>
-              <button class="delete-record hidden" data-action="delete">Xóa bản ghi</button>
             </div>
           </section>
         </div>
