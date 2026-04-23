@@ -1,4 +1,4 @@
-const STORAGE_KEY = 'ktour-v6-progress';
+const STORAGE_KEY = 'ktour-v6-state';
 const RECORDING_DB = 'ktour-v6-recordings';
 
 const WORD_DICT = {
@@ -14,7 +14,6 @@ const state = {
   view: 'learn',
   topic: 'all',
   query: '',
-  mode: 'all',
   random: false,
   favorites: new Set(),
   hard: new Set(),
@@ -24,14 +23,15 @@ const state = {
 };
 
 const refs = {
+  viewRoot: document.getElementById('viewRoot'),
+  flashcardTemplate: document.getElementById('flashcardTemplate'),
+  quizTemplate: document.getElementById('quizTemplate'),
   topicFilter: document.getElementById('topicFilter'),
   searchInput: document.getElementById('searchInput'),
-  flashcardList: document.getElementById('flashcardList'),
-  template: document.getElementById('cardTemplate'),
   randomBtn: document.getElementById('randomBtn'),
-  allBtn: document.getElementById('allBtn'),
-  favoriteBtn: document.getElementById('favoriteBtn'),
-  hardBtn: document.getElementById('hardBtn'),
+  controlPanel: document.getElementById('controlPanel'),
+  sessionPanel: document.getElementById('sessionPanel'),
+  progressPanel: document.getElementById('progressPanel'),
   progressText: document.getElementById('progressText'),
   progressBar: document.getElementById('progressBar'),
   statsText: document.getElementById('statsText'),
@@ -92,9 +92,73 @@ function normalizeWordType(type) {
   return 'Không xác định';
 }
 
+const ICON_POOL = ['👤','🧳','☂️','🙏','💬','👥','🚌','🏨','🏮','🗺️','🍜','⏰','📸','🛍️','🚨','✈️','🎫','🧭','🌧️','🌉'];
+const SENTENCES = buildSentences();
+
+function buildSentences() {
+  const rows = [];
+  PHRASE_TOPICS.forEach(topic => {
+    topic.phrases.forEach((p, idx) => {
+      const sessionIndex = Math.floor(idx / 3);
+      rows.push({
+        id: p.id,
+        topic: topic.name,
+        topicId: topic.id,
+        korean: p.ko,
+        romanization: p.roman,
+        vietnamese: p.vi,
+        image: p.image || ICON_POOL[Math.abs(hash(p.id)) % ICON_POOL.length],
+        analysis: p.analysis || null,
+        naturalMeaning: p.naturalMeaning || p.vi,
+        usage: p.usage || p.note || 'Dùng trong dẫn tour thực tế',
+        similarPatterns: p.similarPatterns || [p.ko],
+        sessionIndex,
+        sessionTime: SESSION_TIMES[sessionIndex % SESSION_TIMES.length]
+      });
+    });
+  });
+  return rows;
+}
+
+function hash(s){ let h=0; for(const c of s) h=(h<<5)-h+c.charCodeAt(0); return h; }
+function todayKey(){ return new Date().toISOString().slice(0,10); }
+
+function ensureDaily() {
+  const key = todayKey();
+  if (!state.dailyStats[key]) {
+    state.dailyStats[key] = { date: key, studiedCount: 0, completedCount: 0, listenCount: 0, slowListenCount: 0, recordCount: 0, selfPlayCount: 0, completedSessions: [], topicsStudied: [] };
+  }
+  return state.dailyStats[key];
+}
+
+function ensureProgress(id, sentence) {
+  if (!state.progressById[id]) {
+    state.progressById[id] = {
+      id,
+      topic: sentence.topic,
+      korean: sentence.korean,
+      romanization: sentence.romanization,
+      vietnamese: sentence.vietnamese,
+      image: sentence.image,
+      analysis: sentence.analysis || [],
+      isCompleted: false,
+      completedAt: null,
+      reviewBucket: false,
+      listenCount: 0,
+      slowListenCount: 0,
+      recordCount: 0,
+      selfPlayCount: 0,
+      sessionTime: sentence.sessionTime,
+      sessionIndex: sentence.sessionIndex,
+      unlocked: sentence.sessionIndex === 0
+    };
+  }
+  return state.progressById[id];
+}
+
 function init() {
-  hydrateState();
-  buildTopicFilter();
+  hydrate();
+  SENTENCES.forEach(s => ensureProgress(s.id, s));
   bindEvents();
   startClock();
   renderDashboard();
@@ -158,12 +222,11 @@ function bindEvents() {
   refs.hardBtn.addEventListener('click', () => setMode('hard'));
 }
 
-function setMode(mode) {
-  state.mode = mode;
-  refs.allBtn.classList.toggle('active', mode === 'all');
-  refs.favoriteBtn.classList.toggle('active', mode === 'favorites');
-  refs.hardBtn.classList.toggle('active', mode === 'hard');
-  render();
+function buildTopicFilter() {
+  refs.topicFilter.innerHTML = '<option value="all">Tất cả chủ đề</option>';
+  PHRASE_TOPICS.forEach(t => {
+    const o = document.createElement('option'); o.value = t.id; o.textContent = t.name; refs.topicFilter.append(o);
+  });
 }
 
 function getFilteredPhrases() {
@@ -352,7 +415,6 @@ function bindFavorite(node, item) {
     updateProgress();
     renderDashboard();
   });
-}
 
 function bindStateActions(node, item) {
   node.querySelectorAll('.speak-btn').forEach(btn => btn.addEventListener('click', e => {
@@ -447,46 +509,43 @@ function speakKorean(text, rate = 1) {
   const voice = speechSynthesis.getVoices().find(v => v.lang.toLowerCase().startsWith('ko'));
   if (voice) utterance.voice = voice;
   speechSynthesis.cancel();
-  speechSynthesis.speak(utterance);
+  speechSynthesis.speak(u);
 }
 
 function openRecordingDB() {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open(RECORDING_DB, 1);
-    request.onupgradeneeded = () => {
-      const db = request.result;
-      if (!db.objectStoreNames.contains('recordings')) db.createObjectStore('recordings');
-    };
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
+    const req = indexedDB.open(RECORDING_DB, 1);
+    req.onupgradeneeded = () => !req.result.objectStoreNames.contains('recordings') && req.result.createObjectStore('recordings');
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
   });
 }
 
-async function saveRecording(phraseId, blob) {
+async function saveRecording(id, blob) {
   const db = await openRecordingDB();
   return new Promise((resolve, reject) => {
     const tx = db.transaction('recordings', 'readwrite');
-    tx.objectStore('recordings').put(blob, phraseId);
+    tx.objectStore('recordings').put(blob, id);
     tx.oncomplete = resolve;
     tx.onerror = () => reject(tx.error);
   });
 }
 
-async function getRecording(phraseId) {
+async function getRecording(id) {
   const db = await openRecordingDB();
   return new Promise((resolve, reject) => {
     const tx = db.transaction('recordings', 'readonly');
-    const req = tx.objectStore('recordings').get(phraseId);
+    const req = tx.objectStore('recordings').get(id);
     req.onsuccess = () => resolve(req.result || null);
     req.onerror = () => reject(req.error);
   });
 }
 
-async function deleteRecording(phraseId) {
+async function deleteRecording(id) {
   const db = await openRecordingDB();
   return new Promise((resolve, reject) => {
     const tx = db.transaction('recordings', 'readwrite');
-    tx.objectStore('recordings').delete(phraseId);
+    tx.objectStore('recordings').delete(id);
     tx.oncomplete = resolve;
     tx.onerror = () => reject(tx.error);
   });

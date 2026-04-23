@@ -42,11 +42,13 @@
       <div id="studySlots" class="study-slots"></div>
     </section>
 
-    <section class="controls">
-      <label class="search-wrap" for="searchInput">
-        <span>🔎</span>
-        <input id="searchInput" type="search" placeholder="Tìm theo tiếng Hàn, nghĩa Việt, phát âm..." autocomplete="off">
-      </label>
+    <nav class="top-nav">
+      <button class="nav-tab active" data-view="learn">Học</button>
+      <button class="nav-tab" data-view="quiz">Quiz</button>
+      <button class="nav-tab" data-view="review">Ôn tập</button>
+      <button class="nav-tab" data-view="stats">Thống kê</button>
+      <button class="nav-tab" data-view="settings">Cài đặt</button>
+    </nav>
 
       <div class="filter-row">
         <select id="topicFilter" aria-label="Lọc theo chủ đề"></select>
@@ -60,13 +62,15 @@
       </div>
     </section>
 
-    <section class="progress-card" aria-live="polite">
-      <div><strong id="progressText">0/0 đã học</strong></div>
-      <div class="progress-track"><div id="progressBar" class="progress-bar"></div></div>
+    <section id="sessionPanel" class="session-panel"></section>
+
+    <section id="progressPanel" class="progress">
+      <strong id="progressText">0/0 đã học</strong>
+      <div class="track"><div id="progressBar"></div></div>
       <p id="statsText">Yêu thích: 0 · Khó: 0</p>
     </section>
 
-    <section id="flashcardList" class="card-list" aria-live="polite"></section>
+    <section id="viewRoot"></section>
 
     <template id="cardTemplate">
       <article class="flashcard">
@@ -118,6 +122,9 @@
             <p class="record-status">Chưa có bản ghi âm cá nhân.</p>
           </section>
         </div>
+        <div class="quiz-options" data-quiz-options></div>
+        <p class="quiz-result" data-quiz-result></p>
+        <button class="quiz-next" data-quiz-next>Câu tiếp</button>
       </article>
     </template>
   </main>
