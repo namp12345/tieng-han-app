@@ -1,317 +1,106 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>K-Tour Guide v6</title>
-<link rel="manifest" href="manifest.json">
-<style>
-  :root {
-    --bg: #f0f4ff;
-    --primary: #003478;
-    --accent: #c8102e;
-  }
-  body {
-    background: var(--bg);
-    color: var(--primary);
-    font-family: system-ui, sans-serif;
-    margin: 0;
-    padding: 20px;
-  }
-  h1 {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  select {
-    padding: 8px 12px;
-    font-size: 16px;
-    margin-bottom: 20px;
-    width: 100%;
-    max-width: 400px;
-  }
-  .phrase {
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    margin-bottom: 10px;
-    padding: 12px;
-  }
-  .phrase-title {
-    font-weight: bold;
-    font-size: 18px;
-    color: var(--accent);
-    cursor: pointer;
-  }
-  .phrase-details {
-    display: none;
-    margin-top: 6px;
-    font-size: 14px;
-    line-height: 1.4;
-  }
-  .footer {
-    text-align: center;
-    margin-top: 40px;
-    font-size: 12px;
-    color: #666;
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>K-Tour Guide v6</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<h1>K-Tour Guide v6</h1>
-<select id="topicSelect" onchange="showPhrases(this.value)">
-  <option value="">-- Chọn chủ đề --</option>
-</select>
-<div id="phrases"></div>
-<div class="footer">Phiên bản thử nghiệm v6. Chạm vào câu để xem chi tiết.</div>
-<script>
-// Dataset v6: nhỏ gọn với ví dụ minh họa.
-const DB = {
-  "Chào hỏi khách": [
-    {
-      ko: "안녕하세요",
-      roman: "an-nyeong-ha-se-yo",
-      vi: "Xin chào",
-      level: 1,
-      usage: "Core",
-      type: "Hán Hàn",
-      root: "安寧하세요",
-      formation: "안녕 (安寧 – bình an) + 하세요 (đuôi kính)",
-      example: "안녕하세요! 저는 가이드입니다.",
-      tip: "Chúc nhau bình an"
-    },
-    {
-      ko: "잘 부탁드립니다",
-      roman: "jal bu-tak-deu-rim-ni-da",
-      vi: "Mong được giúp đỡ",
-      level: 1,
-      usage: "Core",
-      type: "Hán Hàn",
-      root: "付託드립니다",
-      formation: "잘 (tốt) + 부탁 (付託 – phó thác) + 드립니다 (kính dâng)",
-      example: "오늘 하루 잘 부탁드립니다.",
-      tip: "Dùng sau khi giới thiệu tên"
-    },
-    {
-      ko: "반갑습니다",
-      roman: "ban-gap-seum-ni-da",
-      vi: "Rất vui được gặp",
-      level: 1,
-      usage: "Common",
-      type: "Hán Hàn",
-      root: "반갑습니다",
-      formation: "반갑다 (mừng rỡ) + 습니다 (đuôi kính)",
-      example: "처음 뵙겠습니다. 반갑습니다.",
-      tip: "Dùng khi gặp lần đầu"
-    },
-    {
-      ko: "어디에서 오셨어요?",
-      roman: "eo-di-e-seo o-syeoss-eo-yo",
-      vi: "Bạn đến từ đâu?",
-      level: 1,
-      usage: "Common",
-      type: "Thuần Hàn",
-      root: "",
-      formation: "어디에서 (ở đâu) + 오셨어요 (đã đến)",
-      example: "어디에서 오셨어요? 한국에서 오셨나요?",
-      tip: "Câu hỏi thân thiện"
-    }
-  ],
-  "Đón khách tại sân bay": [
-    {
-      ko: "여권을 보여 주세요",
-      roman: "yeo-gwon-eul bo-yeo ju-se-yo",
-      vi: "Vui lòng cho xem hộ chiếu",
-      level: 2,
-      usage: "Core",
-      type: "Hán Hàn",
-      root: "旅券 보여 주세요",
-      formation: "여권 (旅券 – hộ chiếu) + 보여 주세요 (xin cho xem)",
-      example: "여권을 직원에게 보여 주세요.",
-      tip: "Dùng khi làm thủ tục"
-    },
-    {
-      ko: "짐은 여기 두세요",
-      roman: "jim-eun yeo-gi du-se-yo",
-      vi: "Xin để hành lý ở đây",
-      level: 2,
-      usage: "Common",
-      type: "Thuần Hàn",
-      root: "",
-      formation: "짐 (đồ đạc) + 여기 (ở đây) + 두세요 (để)",
-      example: "짐은 여기 두세요. 카트를 가지고 올게요.",
-      tip: "Lịch sự"
-    },
-    {
-      ko: "입국 카드 작성하셨나요?",
-      roman: "ip-guk ka-deu jak-seong-ha-syeoss-na-yo",
-      vi: "Quý khách đã điền thẻ nhập cảnh chưa?",
-      level: 3,
-      usage: "Optional",
-      type: "Hán Hàn",
-      root: "入國 카드 작성",
-      formation: "입국 카드 (thẻ nhập cảnh) + 작성하셨나요? (điền chưa?)",
-      example: "입국 카드 작성하셨나요? 아직이면 제가 도와드릴게요.",
-      tip: "Giúp đỡ khách"
-    }
-  ],
-  "Trên xe": [
-    {
-      ko: "이동하겠습니다",
-      roman: "i-dong-ha-get-seum-ni-da",
-      vi: "Chúng ta sẽ di chuyển",
-      level: 1,
-      usage: "Core",
-      type: "Hán Hàn",
-      root: "移動하겠습니다",
-      formation: "이동 (di chuyển) + 하겠습니다 (sẽ làm)",
-      example: "지금부터 바나힐로 이동하겠습니다.",
-      tip: "Thông báo di chuyển"
-    },
-    {
-      ko: "따라오세요",
-      roman: "tta-ra-o-se-yo",
-      vi: "Xin đi theo tôi",
-      level: 1,
-      usage: "Core",
-      type: "Thuần Hàn",
-      root: "",
-      formation: "따라오다 (đi theo đến)",
-      example: "일행 잃지 마시고 저를 따라오세요.",
-      tip: "Phân biệt 따라오다 (đến phía tôi) và 따라가다 (đi theo ra xa)"
-    },
-    {
-      ko: "도착했습니다",
-      roman: "do-chak-haet-seum-ni-da",
-      vi: "Đã tới nơi rồi",
-      level: 1,
-      usage: "Common",
-      type: "Hán Hàn",
-      root: "到着했습니다",
-      formation: "도착 (到着 – đến) + 했습니다 (đã)",
-      example: "목적지에 도착했습니다. 안전벨트를 풀어 주세요.",
-      tip: "Thông báo đã đến nơi"
-    },
-    {
-      ko: "잠시 후 도착합니다",
-      roman: "jam-si hu do-chak-ham-ni-da",
-      vi: "Chúng ta sắp tới nơi",
-      level: 1,
-      usage: "Common",
-      type: "Hán Hàn",
-      root: "",
-      formation: "잠시 후 (một lát sau) + 도착합니다 (đang đến)",
-      example: "잠시 후 도착합니다. 준비해 주세요.",
-      tip: "Báo trước sắp đến"
-    },
-    {
-      ko: "쓰레기는 쓰레기통에 버려 주세요",
-      roman: "sseu-re-gi-neun sseu-re-gi-tong-e beo-ryeo ju-se-yo",
-      vi: "Xin bỏ rác vào thùng",
-      level: 2,
-      usage: "Optional",
-      type: "Thuần Hàn",
-      root: "",
-      formation: "쓰레기 (rác) + 통에 (vào thùng) + 버려 주세요 (hãy bỏ)",
-      example: "쓰레기는 쓰레기통에 버려 주세요. 깨끗하게 여행합시다!",
-      tip: "Nhắc khách giữ vệ sinh"
-    }
-  ],
-  "Nhà hàng": [
-    {
-      ko: "맛있게 드세요",
-      roman: "ma-sit-ge deu-se-yo",
-      vi: "Chúc ngon miệng",
-      level: 1,
-      usage: "Core",
-      type: "Thuần Hàn",
-      root: "",
-      formation: "맛있게 (ngon miệng) + 드세요 (xin dùng)",
-      example: "음식이 나왔습니다. 맛있게 드세요!",
-      tip: "Câu thường nói khi ăn"
-    },
-    {
-      ko: "추천해 드리겠습니다",
-      roman: "chu-cheon-hae deu-ri-ge-sseum-ni-da",
-      vi: "Tôi xin gợi ý món ăn",
-      level: 2,
-      usage: "Common",
-      type: "Hán Hàn",
-      root: "推薦해 드리겠습니다",
-      formation: "추천 (推薦 – gợi ý) + 해 드리겠습니다 (sẽ làm cho)",
-      example: "메뉴를 보시겠어요? 추천해 드리겠습니다.",
-      tip: "Dùng khi giới thiệu món"
-    },
-    {
-      ko: "알레르기가 있으신가요?",
-      roman: "al-le-reu-gi-ga i-sseu-sin-ga-yo",
-      vi: "Quý khách có dị ứng gì không?",
-      level: 3,
-      usage: "Common",
-      type: "Borrowed",
-      root: "알레르기 (allergy)",
-      formation: "알레르기 (dị ứng) + 가 있으신가요? (có không?)",
-      example: "음식 알레르기가 있으신가요? 있으면 알려 주세요.",
-      tip: "Quan tâm sức khỏe khách"
-    },
-    {
-      ko: "계산서는 여기 있습니다",
-      roman: "gye-san-seo-neun yeo-gi i-sseum-ni-da",
-      vi: "Đây là hóa đơn của quý khách",
-      level: 2,
-      usage: "Common",
-      type: "Hán Hàn",
-      root: "計算書는 여기 있습니다",
-      formation: "계산서 (計算書 – hóa đơn) + 는 + 여기 있습니다 (ở đây)",
-      example: "여기 계산서입니다. 확인해 주세요.",
-      tip: "Dùng khi thanh toán"
-    },
-    {
-      ko: "채식 메뉴가 필요하신가요?",
-      roman: "chae-sik me-nyu-ga pi-ryo-ha-sin-ga-yo",
-      vi: "Quý khách cần thực đơn chay không?",
-      level: 3,
-      usage: "Optional",
-      type: "Hán Hàn/English",
-      root: "菜食 메뉴가 필요하신가요",
-      formation: "채식 (菜食 – ăn chay) + 메뉴 (menu) + 가 필요하신가요? (cần không?)",
-      example: "채식 메뉴가 필요하신가요? 준비해 드릴게요.",
-      tip: "Quan tâm đến khách ăn chay"
-    }
-  ]
-};
-function populateTopics() {
-  const select = document.getElementById('topicSelect');
-  for (const topic in DB) {
-    const option = document.createElement('option');
-    option.value = topic;
-    option.textContent = topic;
-    select.appendChild(option);
-  }
-}
-function showPhrases(topic) {
-  const container = document.getElementById('phrases');
-  container.innerHTML = '';
-  if (!topic || !DB[topic]) return;
-  DB[topic].forEach(p => {
-    const card = document.createElement('div');
-    card.className = 'phrase';
-    const title = document.createElement('div');
-    title.className = 'phrase-title';
-    title.textContent = `${p.ko} — ${p.vi}`;
-    const details = document.createElement('div');
-    details.className = 'phrase-details';
-    details.innerHTML = `<b>Phiên âm:</b> ${p.roman}<br><b>Cấp độ:</b> ${p.level} | <b>Sử dụng:</b> ${p.usage}<br><b>Loại từ:</b> ${p.type}<br>` +
-      (p.root ? `<b>Từ gốc:</b> ${p.root}<br>` : '') +
-      `<b>Giải thích:</b> ${p.formation}<br><b>Ví dụ:</b> ${p.example}<br><b>Mẹo:</b> ${p.tip}`;
-    title.onclick = () => {
-      details.style.display = details.style.display === 'none' ? 'block' : 'none';
-    };
-    card.appendChild(title);
-    card.appendChild(details);
-    container.appendChild(card);
-  });
-}
-window.onload = populateTopics;
-</script>
+  <main class="app">
+    <header class="app-header">
+      <h1>K-Tour Guide v6</h1>
+      <p>Học phản xạ theo khung giờ trong ngày</p>
+    </header>
+
+    <nav class="top-nav">
+      <button class="nav-tab active" data-view="learn">Học</button>
+      <button class="nav-tab" data-view="quiz">Quiz</button>
+      <button class="nav-tab" data-view="review">Ôn tập</button>
+      <button class="nav-tab" data-view="stats">Thống kê</button>
+      <button class="nav-tab" data-view="settings">Cài đặt</button>
+    </nav>
+
+    <section id="controlPanel" class="controls">
+      <input id="searchInput" type="search" placeholder="Tìm cụm từ...">
+      <div class="control-row">
+        <select id="topicFilter"></select>
+        <button id="randomBtn">Ngẫu nhiên</button>
+      </div>
+    </section>
+
+    <section id="sessionPanel" class="session-panel"></section>
+
+    <section id="progressPanel" class="progress">
+      <strong id="progressText">0/0 đã học</strong>
+      <div class="track"><div id="progressBar"></div></div>
+      <p id="statsText">Yêu thích: 0 · Khó: 0</p>
+    </section>
+
+    <section id="viewRoot"></section>
+
+    <template id="flashcardTemplate">
+      <article class="FlashcardSentence">
+        <div class="card-inner">
+          <section class="FlashcardFront">
+            <div class="front-head">
+              <div class="SemanticImage" data-image>🧭</div>
+              <span class="topic-chip" data-topic></span>
+            </div>
+            <div class="korean-row">
+              <p class="korean" data-korean></p>
+              <button class="AudioButton" data-front-audio>🔊</button>
+            </div>
+            <p class="roman" data-roman></p>
+            <p class="vietnamese" data-vietnamese></p>
+
+            <div class="FrontPracticePanel">
+              <button data-action="listen">Nghe</button>
+              <button data-action="listenSlow">Nghe chậm</button>
+              <button data-action="record">Ghi âm</button>
+              <button data-action="selfPlay">Nghe giọng tôi</button>
+            </div>
+            <p class="record-status" data-record-status>Chưa có bản ghi âm.</p>
+
+            <div class="CompletionToggle">
+              <span data-completion-label>Chưa hoàn thành</span>
+              <button data-action="complete">Đã hoàn thành</button>
+            </div>
+
+            <button class="flip-zone" data-flip-zone>Chạm để lật xem phân tích</button>
+            <button class="flip-btn" data-flip-btn>Lật thẻ</button>
+          </section>
+
+          <section class="FlashcardBack">
+            <div class="back-top">
+              <strong data-korean-back></strong>
+              <button class="flip-btn" data-unflip>Quay lại</button>
+            </div>
+            <div class="tab-body" data-panel="analysis">
+              <div class="AnalysisList" data-analysis></div>
+              <div class="brief"><b>Nghĩa tự nhiên:</b> <span data-natural></span></div>
+            </div>
+          </section>
+        </div>
+      </article>
+    </template>
+
+    <template id="quizTemplate">
+      <article class="QuizCard">
+        <p class="quiz-title">Nghe và chọn nghĩa đúng</p>
+        <div class="korean-row">
+          <p class="quiz-korean" data-quiz-korean></p>
+          <button class="AudioButton" data-quiz-audio>🔊</button>
+        </div>
+        <div class="quiz-options" data-quiz-options></div>
+        <p class="quiz-result" data-quiz-result></p>
+        <button class="quiz-next" data-quiz-next>Câu tiếp</button>
+      </article>
+    </template>
+  </main>
+
+  <script src="phrases.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
