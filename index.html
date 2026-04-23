@@ -4,38 +4,37 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>K-Tour Guide v6</title>
-  <meta name="theme-color" content="#1E4ED8">
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <main class="app">
     <header class="app-header">
-      <h1>Học tiếng Hàn thực chiến cho HDV</h1>
-      <p>Đà Nẵng · Hội An · Bà Nà · Linh Ứng</p>
+      <h1>K-Tour Guide v6</h1>
+      <p>Học phản xạ tiếng Hàn cho hướng dẫn viên</p>
     </header>
 
     <nav class="top-nav">
-      <button class="nav-tab active" data-view="learn" type="button">Học</button>
-      <button class="nav-tab" data-view="quiz" type="button">Quiz</button>
-      <button class="nav-tab" data-view="review" type="button">Ôn tập</button>
-      <button class="nav-tab" data-view="stats" type="button">Thống kê</button>
+      <button class="nav-tab active" data-view="learn">Học</button>
+      <button class="nav-tab" data-view="quiz">Quiz</button>
+      <button class="nav-tab" data-view="review">Ôn tập</button>
+      <button class="nav-tab" data-view="stats">Thống kê</button>
     </nav>
 
-    <section class="controls" id="controlPanel">
+    <section id="controlPanel" class="controls">
       <input id="searchInput" type="search" placeholder="Tìm cụm từ...">
       <div class="control-row">
         <select id="topicFilter"></select>
-        <button id="randomBtn" type="button">Ngẫu nhiên</button>
+        <button id="randomBtn">Ngẫu nhiên</button>
       </div>
       <div class="control-row compact">
-        <button id="allBtn" class="chip active" type="button">Tất cả</button>
-        <button id="favoriteBtn" class="chip" type="button">Yêu thích</button>
-        <button id="hardBtn" class="chip" type="button">Khó</button>
+        <button id="allBtn" class="chip active">Tất cả</button>
+        <button id="favoriteBtn" class="chip">Yêu thích</button>
+        <button id="hardBtn" class="chip">Khó</button>
       </div>
     </section>
 
-    <section class="progress" id="progressPanel">
+    <section id="progressPanel" class="progress">
       <strong id="progressText">0/0 đã học</strong>
       <div class="track"><div id="progressBar"></div></div>
       <p id="statsText">Yêu thích: 0 · Khó: 0</p>
@@ -46,54 +45,68 @@
     <template id="flashcardTemplate">
       <article class="FlashcardSentence">
         <div class="card-inner">
-          <section class="FlashcardFront" aria-label="Mặt trước flashcard">
-            <div class="front-image-wrap">
-              <div class="SemanticImage" data-image></div>
+          <section class="FlashcardFront" data-flip>
+            <div class="front-head">
+              <div class="SemanticImage" data-image>🧭</div>
               <span class="topic-chip" data-topic></span>
             </div>
-            <p class="korean" data-korean></p>
-            <p class="roman" data-roman></p>
-            <p class="vietnamese" data-vietnamese></p>
-            <button class="flip-btn" type="button" data-flip>Lật thẻ</button>
+            <div class="front-main">
+              <div class="korean-row">
+                <p class="korean" data-korean></p>
+                <button class="AudioButton" data-front-audio>🔊</button>
+              </div>
+              <p class="roman" data-roman></p>
+              <p class="vietnamese" data-vietnamese></p>
+            </div>
+            <button class="flip-btn" data-flip-btn>Lật thẻ</button>
           </section>
 
-          <section class="FlashcardBack" aria-label="Mặt sau flashcard">
-            <div class="back-head">
-              <p class="back-title" data-korean-back></p>
-              <button class="flip-btn" type="button" data-flip>Quay lại</button>
+          <section class="FlashcardBack">
+            <div class="back-top">
+              <strong data-korean-back></strong>
+              <button class="flip-btn" data-unflip>Quay lại</button>
             </div>
-
             <div class="back-tabs">
-              <button class="mini-tab active" data-tab="analysis" type="button">Phân tích</button>
-              <button class="mini-tab" data-tab="similar" type="button">Mẫu tương tự</button>
-              <button class="mini-tab" data-tab="speak" type="button">Luyện nói</button>
+              <button class="mini-tab active" data-tab="analysis">Phân tích</button>
+              <button class="mini-tab" data-tab="similar">Mẫu tương tự</button>
+              <button class="mini-tab" data-tab="speak">Luyện nói</button>
             </div>
 
             <div class="tab-body" data-panel="analysis">
               <div class="AnalysisList" data-analysis></div>
-              <div class="back-block"><strong>Nghĩa tự nhiên:</strong> <span data-natural></span></div>
-              <div class="back-block"><strong>Dùng khi nào:</strong> <span data-usage></span></div>
-              <div class="back-block"><strong>Mẹo nhớ:</strong> <span data-memory></span></div>
+              <div class="brief"><b>Nghĩa tự nhiên:</b> <span data-natural></span></div>
+              <div class="brief"><b>Dùng khi nào:</b> <span data-usage></span></div>
             </div>
-
             <div class="tab-body hidden" data-panel="similar">
-              <ul class="similar-list" data-similar></ul>
+              <ul data-similar></ul>
             </div>
-
             <div class="tab-body hidden" data-panel="speak">
               <div class="ActionButtonGrid">
-                <button type="button" data-action="speak-normal">Nghe</button>
-                <button type="button" data-action="speak-slow">Nghe chậm</button>
-                <button type="button" data-action="record">Ghi âm</button>
-                <button type="button" data-action="play-record">Nghe giọng tôi</button>
-                <button type="button" data-action="learned">Đã nhớ</button>
-                <button type="button" data-action="hard">Đánh dấu khó</button>
+                <button data-action="speak">Nghe</button>
+                <button data-action="speak-slow">Nghe chậm</button>
+                <button data-action="record">Ghi âm</button>
+                <button data-action="play">Nghe giọng tôi</button>
+                <button data-action="learned">Đã nhớ</button>
+                <button data-action="hard">Đánh dấu khó</button>
               </div>
-              <button class="delete-record hidden" type="button" data-action="delete-record">Xóa bản ghi</button>
-              <p class="record-status" data-record-status>Chưa có bản ghi âm cá nhân.</p>
+              <button class="delete-record hidden" data-action="delete">Xóa bản ghi</button>
+              <p class="record-status" data-record-status>Chưa có bản ghi âm.</p>
             </div>
           </section>
         </div>
+      </article>
+    </template>
+
+    <template id="quizTemplate">
+      <article class="QuizCard">
+        <p class="quiz-title">Chọn nghĩa đúng</p>
+        <div class="korean-row">
+          <p class="quiz-korean" data-quiz-korean></p>
+          <button class="AudioButton" data-quiz-audio>🔊</button>
+        </div>
+        <div class="quiz-options" data-quiz-options></div>
+        <p class="quiz-result" data-quiz-result></p>
+        <button class="quiz-next" data-quiz-next>Câu tiếp</button>
       </article>
     </template>
   </main>
