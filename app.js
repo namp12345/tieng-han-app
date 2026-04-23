@@ -226,9 +226,9 @@ function FlashcardSentence(s) {
   node.querySelector('[data-natural]').textContent = s.naturalMeaning;
 
   node.querySelector('[data-front-audio]').addEventListener('click', e => { e.stopPropagation(); actListen(s, false); });
-  node.querySelector('[data-flip-zone]').addEventListener('click', e => { e.stopPropagation(); node.classList.add('flipped'); });
-  node.querySelector('[data-flip-btn]').addEventListener('click', e => { e.stopPropagation(); node.classList.add('flipped'); });
-  node.querySelector('[data-unflip]').addEventListener('click', e => { e.stopPropagation(); node.classList.remove('flipped'); });
+  bindTap(node.querySelector('[data-flip-zone]'), e => { e.stopPropagation(); node.classList.add('flipped'); });
+  bindTap(node.querySelector('[data-flip-btn]'), e => { e.stopPropagation(); node.classList.add('flipped'); });
+  bindTap(node.querySelector('[data-unflip]'), e => { e.stopPropagation(); node.classList.remove('flipped'); });
 
   const completionLabel = node.querySelector('[data-completion-label]');
   completionLabel.textContent = p.isCompleted ? 'Đã hoàn thành' : 'Chưa hoàn thành';
@@ -252,6 +252,15 @@ function bindPractice(node, s) {
     persist();
   });
   bindRecording(node, s, status);
+}
+
+function bindTap(el, handler) {
+  if (!el) return;
+  el.addEventListener('click', handler);
+  el.addEventListener('touchend', e => {
+    e.preventDefault();
+    handler(e);
+  }, { passive: false });
 }
 
 function bindBackTabs(node) {
