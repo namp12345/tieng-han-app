@@ -2,130 +2,26 @@ const STORAGE_KEY = 'ktour-v6-progress';
 const RECORDING_DB = 'ktour-v6-recordings';
 
 const WORD_DICT = {
-  안녕하세요: { vi: 'xin chào', type: 'Thuần Hàn', root: '안녕하다' },
-  감사합니다: { vi: 'cảm ơn', type: 'Hán Hàn', root: '感謝 + 하다' },
-  죄송합니다: { vi: 'xin lỗi', type: 'Hán Hàn', root: '罪悚 + 하다' },
-  처음: { vi: 'đầu tiên / lần đầu', type: 'Thuần Hàn' },
-  뵙겠습니다: { vi: 'rất vui được gặp bạn (kính ngữ)', type: 'Thuần Hàn', root: '뵙다' },
-  부탁드립니다: { vi: 'xin nhờ / mong giúp đỡ', type: 'Hán Hàn', root: '付託 + 드리다' },
-  안내: { vi: 'hướng dẫn', type: 'Hán Hàn', root: '案內' },
-  안내드리겠습니다: { vi: 'xin được hướng dẫn', type: 'Hán Hàn', root: '안내드리다' },
-  이동: { vi: 'di chuyển', type: 'Hán Hàn', root: '移動' },
-  이동하겠습니다: { vi: 'sẽ di chuyển', type: 'Hán Hàn', root: '이동하다' },
-  출발합니다: { vi: 'xuất phát', type: 'Hán Hàn', root: '出發하다' },
-  도착합니다: { vi: 'đến nơi', type: 'Hán Hàn', root: '到着하다' },
-  도착했습니다: { vi: 'đã đến nơi', type: 'Hán Hàn', root: '到着하다' },
-  시간: { vi: 'thời gian', type: 'Hán Hàn', root: '時間' },
   오늘: { vi: 'hôm nay', type: 'Thuần Hàn' },
-  내일: { vi: 'ngày mai', type: 'Thuần Hàn' },
-  여기: { vi: 'ở đây', type: 'Thuần Hàn' },
-  저쪽: { vi: 'phía kia', type: 'Thuần Hàn' },
-  와주세요: { vi: 'hãy đến', type: 'Thuần Hàn', root: '오다' },
-  따라오세요: { vi: 'hãy đi theo', type: 'Thuần Hàn', root: '따라오다' },
-  말씀해: { vi: 'nói (kính ngữ)', type: 'Thuần Hàn', root: '말씀하다' },
-  주세요: { vi: 'xin vui lòng', type: 'Thuần Hàn', root: '주다' },
-  여권: { vi: 'hộ chiếu', type: 'Hán Hàn', root: '旅券' },
-  짐: { vi: 'hành lý', type: 'Thuần Hàn' },
-  수하물: { vi: 'hành lý ký gửi', type: 'Hán Hàn', root: '手荷物' },
-  공항: { vi: 'sân bay', type: 'Hán Hàn', root: '空港' },
-  호텔: { vi: 'khách sạn', type: 'Borrowed' },
-  객실: { vi: 'phòng khách sạn', type: 'Hán Hàn', root: '客室' },
-  체크인: { vi: 'check-in', type: 'Borrowed' },
-  체크아웃: { vi: 'check-out', type: 'Borrowed' },
-  식사: { vi: 'bữa ăn', type: 'Hán Hàn', root: '食事' },
-  메뉴: { vi: 'thực đơn', type: 'Borrowed' },
-  추천: { vi: 'đề xuất', type: 'Hán Hàn', root: '推薦' },
-  알레르기: { vi: 'dị ứng', type: 'Borrowed' },
-  가격: { vi: 'giá cả', type: 'Hán Hàn', root: '價格' },
-  확인: { vi: 'kiểm tra', type: 'Hán Hàn', root: '確認' },
-  영수증: { vi: 'hóa đơn', type: 'Hán Hàn', root: '領收證' },
-  안전: { vi: 'an toàn', type: 'Hán Hàn', root: '安全' },
-  안전벨트: { vi: 'dây an toàn', type: 'Hán Hàn + Borrowed', root: '安全 + belt' },
-  버스: { vi: 'xe buýt', type: 'Borrowed' },
-  기사님: { vi: 'tài xế (kính ngữ)', type: 'Thuần Hàn' },
-  사진: { vi: 'hình ảnh', type: 'Hán Hàn', root: '寫眞' },
-  사찰: { vi: 'chùa', type: 'Hán Hàn', root: '寺刹' },
-  조용히: { vi: 'yên lặng', type: 'Thuần Hàn', root: '조용하다' },
-  기도: { vi: 'cầu nguyện', type: 'Hán Hàn', root: '祈禱' },
-  쇼핑: { vi: 'mua sắm', type: 'Borrowed' },
-  긴급: { vi: 'khẩn cấp', type: 'Hán Hàn', root: '緊急' },
-  상황: { vi: 'tình huống', type: 'Hán Hàn', root: '狀況' },
-  병원: { vi: 'bệnh viện', type: 'Hán Hàn', root: '病院' },
-  경찰서: { vi: 'đồn cảnh sát', type: 'Hán Hàn', root: '警察署' }
+  함께해: { vi: 'cùng đồng hành / cùng làm', root: '함께하다', note: 'Thân thiện, tự nhiên', type: 'Thuần Hàn' },
+  주셔서: { vi: 'vì đã vui lòng làm cho', root: '주시다', note: 'Dạng kính ngữ', type: 'Thuần Hàn' },
+  감사합니다: { vi: 'cảm ơn', root: '감사하다', hanja: '感謝', type: 'Hán Hàn' }
 };
 
-const ENDING_RULES = [
-  { suffix: '하겠습니다', rootSuffix: '하다', meaning: 'sẽ làm (kính ngữ trang trọng)' },
-  { suffix: '드립니다', rootSuffix: '드리다', meaning: 'xin gửi/làm cho (kính ngữ)' },
-  { suffix: '했습니다', rootSuffix: '하다', meaning: 'đã làm' },
-  { suffix: '합니다', rootSuffix: '하다', meaning: 'làm (trang trọng)' },
-  { suffix: '해 주세요', rootSuffix: '하다', meaning: 'xin hãy làm' },
-  { suffix: '주세요', rootSuffix: '주다', meaning: 'xin vui lòng' },
-  { suffix: '세요', rootSuffix: '다', meaning: 'đuôi mệnh lệnh lịch sự' },
-  { suffix: '입니다', rootSuffix: '이다', meaning: 'là (trang trọng)' }
-];
-
-const PARTICLE_RULES = [
-  { suffix: '에서는', meaning: 'tại/ở (nhấn mạnh chủ điểm)' },
-  { suffix: '으로', meaning: 'đến/về phía; bằng (phương hướng/cách thức)' },
-  { suffix: '에서', meaning: 'tại/ở (địa điểm hành động)' },
-  { suffix: '에게', meaning: 'cho/đến (người nhận)' },
-  { suffix: '부터', meaning: 'từ (mốc bắt đầu)' },
-  { suffix: '까지', meaning: 'đến (mốc kết thúc)' },
-  { suffix: '으로', meaning: 'hướng/về phía' },
-  { suffix: '로', meaning: 'hướng/về phía' },
-  { suffix: '를', meaning: 'tiểu từ tân ngữ' },
-  { suffix: '을', meaning: 'tiểu từ tân ngữ' },
-  { suffix: '는', meaning: 'tiểu từ chủ đề' },
-  { suffix: '은', meaning: 'tiểu từ chủ đề' },
-  { suffix: '이', meaning: 'tiểu từ chủ ngữ' },
-  { suffix: '가', meaning: 'tiểu từ chủ ngữ' },
-  { suffix: '에', meaning: 'tại/đến (vị trí, thời điểm)' },
-  { suffix: '와', meaning: 'và/cùng với' },
-  { suffix: '과', meaning: 'và/cùng với' },
-  { suffix: '도', meaning: 'cũng' },
-  { suffix: '만', meaning: 'chỉ' }
-];
-
-const SYLLABLE_DICT = {
-  안: 'bình an', 녕: 'yên ổn', 하: 'làm/thực hiện', 세: 'đuôi kính ngữ', 요: 'đuôi lịch sự',
-  감: 'cảm', 사: 'ơn/cảm tạ', 부: 'phó/nhờ', 탁: 'gửi gắm', 드: 'kính gửi', 림: 'hành động kính',
-  이: 'chủ ngữ/người', 동: 'di chuyển', 출: 'ra', 발: 'khởi hành', 도: 'đến/cũng', 착: 'đến nơi',
-  시: 'giờ', 간: 'khoảng/thời', 오: 'đến', 늘: 'hôm nay', 내: 'bên trong/ngày mai', 일: 'ngày',
-  여: 'nơi này', 권: 'quyển/giấy', 짐: 'hành lý', 공: 'công/công cộng', 항: 'cảng', 호: 'số/hồ',
-  텔: 'hotel (mượn)', 객: 'khách', 실: 'phòng', 체: 'check', 크: 'check', 인: 'vào', 아: 'ra',
-  웃: 'out (mượn)', 식: 'ăn', 메: 'menu (mượn)', 뉴: 'menu (mượn)', 추: 'đẩy/cử', 천: 'đề cử',
-  가: 'đi/chủ ngữ', 격: 'mức/khung', 확: 'chắc', 영: 'lãnh/nhận', 수: 'thu/nhận', 증: 'chứng',
-  안: 'an', 전: 'toàn', 벨: 'belt (mượn)', 트: 'belt (mượn)', 버: 'bus (mượn)', 스: 'bus (mượn)',
-  기: 'khí/cơ', 사: 'sự việc', 진: 'ảnh', 찰: 'chùa/quan sát', 조: 'điều hòa', 용: 'dùng/yên',
-  긴: 'gấp', 급: 'khẩn', 상: 'trạng', 황: 'hoàn cảnh', 병: 'bệnh', 원: 'viện', 경: 'cảnh', 서: 'sở'
-};
+const STUDY_SLOTS = ['07:00', '10:00', '14:00', '19:00'];
 
 const state = {
   view: 'learn',
-  topic: 'chao-hoi',
+  topic: 'all',
   query: '',
   mode: 'all',
   random: false,
   favorites: new Set(),
   hard: new Set(),
   learned: new Set(),
-  recording: {
-    mediaRecorder: null,
-    stream: null,
-    phraseId: null,
-    chunks: []
-  },
-  quiz: {
-    index: 0,
-    score: 0,
-    selected: null
-  }
+  quiz: { index: 0, score: 0 },
+  recording: { mediaRecorder: null, stream: null, phraseId: null, chunks: [] }
 };
-
-const flatPhrases = PHRASE_TOPICS.flatMap(topic =>
-  topic.phrases.map(phrase => ({ ...phrase, topicId: topic.id, topicName: topic.name }))
-);
 
 const refs = {
   topicFilter: document.getElementById('topicFilter'),
@@ -138,37 +34,77 @@ const refs = {
   hardBtn: document.getElementById('hardBtn'),
   progressText: document.getElementById('progressText'),
   progressBar: document.getElementById('progressBar'),
-  statsText: document.getElementById('statsText')
+  statsText: document.getElementById('statsText'),
+  todayLearned: document.getElementById('todayLearned'),
+  streakCount: document.getElementById('streakCount'),
+  totalPoints: document.getElementById('totalPoints'),
+  dailyGoal: document.getElementById('dailyGoal'),
+  goalBar: document.getElementById('goalBar'),
+  studySlots: document.getElementById('studySlots')
 };
 
-const TOPIC_VISUAL = {
-  'chao-hoi': { icon: '👋', theme: 'theme-greeting' },
-  'san-bay': { icon: '🛬', theme: 'theme-airport' },
-  'lich-trinh': { icon: '🗺️', theme: 'theme-itinerary' },
-  'nhac-gio': { icon: '⏰', theme: 'theme-time' },
-  'len-xe': { icon: '🚌', theme: 'theme-transport' },
-  'an-uong': { icon: '🍜', theme: 'theme-food' },
-  'khach-san': { icon: '🏨', theme: 'theme-hotel' },
-  'hoi-an': { icon: '🏮', theme: 'theme-hoian' },
-  'bana': { icon: '🏔️', theme: 'theme-bana' },
-  'linh-ung': { icon: '🙏', theme: 'theme-temple' },
-  'mua-sam': { icon: '🛍️', theme: 'theme-shopping' },
-  'tinh-huong': { icon: '🚨', theme: 'theme-emergency' },
-  'tam-biet': { icon: '👋', theme: 'theme-goodbye' }
-};
+const flatPhrases = PHRASE_TOPICS.flatMap(topic =>
+  topic.phrases.map(phrase => ({ ...normalizePhrase(phrase), topicId: topic.id, topicName: topic.name }))
+);
+
+function normalizePhrase(phrase) {
+  const korean = phrase.korean || phrase.ko || '';
+  const romanization = phrase.romanization || phrase.roman || '';
+  const vietnamese = phrase.vietnamese || phrase.vi || '';
+  const analysis = Array.isArray(phrase.analysis) && phrase.analysis.length ? phrase.analysis : fallbackAnalysis(korean);
+
+  return {
+    ...phrase,
+    korean,
+    romanization,
+    vietnamese,
+    image: phrase.image || '',
+    analysis,
+    naturalMeaning: phrase.naturalMeaning || vietnamese,
+    similarPatterns: Array.isArray(phrase.similarPatterns) && phrase.similarPatterns.length
+      ? phrase.similarPatterns.slice(0, 3)
+      : ['한 번 더 말씀해 주세요', '천천히 말씀해 주세요', '도와드릴까요?'],
+    ko: korean,
+    roman: romanization,
+    vi: vietnamese
+  };
+}
+
+function fallbackAnalysis(sentence) {
+  return (sentence || '').split(/\s+/).filter(Boolean).map(token => {
+    const hit = WORD_DICT[token] || {};
+    const type = normalizeWordType(hit.type);
+    return {
+      word: token,
+      meaning: hit.vi || `Nghĩa theo ngữ cảnh của "${token}"`,
+      root: hit.root || token,
+      note: hit.note || '',
+      type,
+      hanja: hit.hanja || ''
+    };
+  });
+}
+
+function normalizeWordType(type) {
+  if (!type) return 'Không xác định';
+  if (type.includes('Hán Hàn')) return 'Hán Hàn';
+  if (type.includes('Thuần Hàn')) return 'Thuần Hàn';
+  return 'Không xác định';
+}
 
 function init() {
   hydrateState();
   buildTopicFilter();
   bindEvents();
   startClock();
+  renderDashboard();
+  renderStudySlots();
   render();
   registerServiceWorker();
 }
 
 function startClock() {
   const badge = document.getElementById('clockBadge');
-  if (!badge) return;
   const tick = () => {
     const now = new Date();
     badge.textContent = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
@@ -179,26 +115,19 @@ function startClock() {
 
 function hydrateState() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return;
-    const parsed = JSON.parse(raw);
+    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
     state.favorites = new Set(parsed.favorites || []);
     state.hard = new Set(parsed.hard || []);
     state.learned = new Set(parsed.learned || []);
-  } catch (error) {
-    console.warn('Không đọc được dữ liệu cũ:', error);
-  }
+  } catch (_error) {}
 }
 
 function persistState() {
-  localStorage.setItem(
-    STORAGE_KEY,
-    JSON.stringify({
-      favorites: [...state.favorites],
-      hard: [...state.hard],
-      learned: [...state.learned]
-    })
-  );
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({
+    favorites: [...state.favorites],
+    hard: [...state.hard],
+    learned: [...state.learned]
+  }));
 }
 
 function buildTopicFilter() {
@@ -209,7 +138,7 @@ function buildTopicFilter() {
     option.textContent = `${topic.name} (${topic.phrases.length})`;
     refs.topicFilter.append(option);
   });
-  refs.topicFilter.value = state.topic;
+  refs.topicFilter.value = 'all';
 }
 
 function bindEvents() {
@@ -221,24 +150,9 @@ function bindEvents() {
     });
   });
 
-  refs.topicFilter.addEventListener('change', event => {
-    state.topic = event.target.value;
-    state.random = false;
-    refs.randomBtn.classList.remove('active');
-    render();
-  });
-
-  refs.searchInput.addEventListener('input', event => {
-    state.query = event.target.value.trim().toLowerCase();
-    render();
-  });
-
-  refs.randomBtn.addEventListener('click', () => {
-    state.random = !state.random;
-    refs.randomBtn.classList.toggle('active', state.random);
-    render();
-  });
-
+  refs.topicFilter.addEventListener('change', e => { state.topic = e.target.value; render(); });
+  refs.searchInput.addEventListener('input', e => { state.query = e.target.value.toLowerCase().trim(); render(); });
+  refs.randomBtn.addEventListener('click', () => { state.random = !state.random; refs.randomBtn.classList.toggle('active', state.random); render(); });
   refs.allBtn.addEventListener('click', () => setMode('all'));
   refs.favoriteBtn.addEventListener('click', () => setMode('favorites'));
   refs.hardBtn.addEventListener('click', () => setMode('hard'));
@@ -254,204 +168,266 @@ function setMode(mode) {
 
 function getFilteredPhrases() {
   let list = [...flatPhrases];
-  if (state.topic !== 'all') list = list.filter(item => item.topicId === state.topic);
-  if (state.mode === 'favorites') list = list.filter(item => state.favorites.has(item.id));
-  if (state.mode === 'hard') list = list.filter(item => state.hard.has(item.id));
-
-  if (state.query) {
-    list = list.filter(item => {
-      const haystack = [item.ko, item.vi, item.roman, item.breakdown, item.root, item.note]
-        .filter(Boolean)
-        .join(' ')
-        .toLowerCase();
-      return haystack.includes(state.query);
-    });
-  }
-
+  if (state.topic !== 'all') list = list.filter(x => x.topicId === state.topic);
+  if (state.mode === 'favorites') list = list.filter(x => state.favorites.has(x.id));
+  if (state.mode === 'hard') list = list.filter(x => state.hard.has(x.id));
+  if (state.query) list = list.filter(item => [item.korean, item.vietnamese, item.romanization, item.naturalMeaning].join(' ').toLowerCase().includes(state.query));
   if (state.random) list.sort(() => Math.random() - 0.5);
   return list;
 }
 
 function render() {
+  renderDashboard();
+  renderStudySlots();
   if (state.view === 'quiz') return renderQuizView();
   if (state.view === 'review') return renderReviewView();
   if (state.view === 'stats') return renderStatsView();
   return renderLearnView();
 }
 
+function renderDashboard() {
+  const learnedToday = Math.min(state.learned.size, 20);
+  const streak = Math.max(1, Math.floor(state.learned.size / 8));
+  const points = (state.learned.size * 10) + (state.favorites.size * 2);
+  const goalPercent = Math.min(100, Math.round((learnedToday / 20) * 100));
+
+  refs.todayLearned.textContent = `${learnedToday} từ`;
+  refs.streakCount.textContent = `${streak} ngày`;
+  refs.totalPoints.textContent = `${points} điểm`;
+  refs.dailyGoal.textContent = `${goalPercent}%`;
+  refs.goalBar.style.width = `${goalPercent}%`;
+}
+
+function renderStudySlots() {
+  const currentHour = new Date().getHours();
+  refs.studySlots.innerHTML = '';
+  STUDY_SLOTS.forEach((slot, index) => {
+    const [hour] = slot.split(':').map(Number);
+    let status = 'locked';
+    let label = 'Bị khóa';
+
+    if (currentHour >= hour) {
+      status = 'pending';
+      label = 'Chưa học';
+    }
+    if (currentHour >= hour && currentHour < hour + 2) {
+      status = 'active';
+      label = 'Đang học';
+    }
+    if (state.learned.size >= (index + 1) * 5) {
+      status = 'done';
+      label = 'Đã hoàn thành';
+    }
+
+    const item = document.createElement('article');
+    item.className = `slot-task ${status}`;
+    item.innerHTML = `<div class="left"><span class="time">${slot}</span><small>Nhiệm vụ ôn cụm từ</small></div><span class="state">${label}</span>`;
+    refs.studySlots.append(item);
+  });
+}
+
 function renderLearnView() {
   const data = getFilteredPhrases();
-  const MAX_RENDER = 80;
-  const visibleData = data.slice(0, MAX_RENDER);
   refs.flashcardList.innerHTML = '';
-
   if (!data.length) {
-    refs.flashcardList.innerHTML = '<p class="empty">Không tìm thấy cụm từ phù hợp. Hãy đổi bộ lọc hoặc từ khóa.</p>';
+    refs.flashcardList.innerHTML = '<p class="empty">Không có thẻ phù hợp với bộ lọc hiện tại.</p>';
     updateProgress();
     return;
   }
 
-  if (data.length > MAX_RENDER) {
-    const note = document.createElement('p');
-    note.className = 'empty';
-    note.textContent = `Đang hiển thị ${MAX_RENDER}/${data.length} cụm từ để học mượt trên điện thoại. Hãy lọc theo chủ đề/từ khóa để học sâu.`;
-    refs.flashcardList.append(note);
+  data.slice(0, 80).forEach((item, index) => refs.flashcardList.append(createFlashcardSentence(item, index)));
+  updateProgress();
+}
+
+function createFlashcardSentence(item, index) {
+  const node = refs.template.content.firstElementChild.cloneNode(true);
+  node.querySelector('.topic-pill').textContent = item.topicName;
+  bindFavorite(node, item);
+  renderFlashcardFront(node, item);
+  renderFlashcardBack(node, item);
+  wireFlip(node);
+  bindStateActions(node, item);
+  bindRecordingActions(node, item.id);
+
+  const statusBadge = node.querySelector('.card-status-badge');
+  if (state.learned.has(item.id)) {
+    node.classList.add('learned');
+    statusBadge.textContent = '✔ Đã học';
+  } else if (index === 0) {
+    node.classList.add('current');
+    statusBadge.textContent = '⏳ Đang học';
+  } else if (index > 24) {
+    node.classList.add('locked');
+    statusBadge.textContent = '🔒 Khóa';
+  } else {
+    statusBadge.textContent = 'Mới';
   }
 
-  visibleData.forEach(item => {
-    const node = refs.template.content.firstElementChild.cloneNode(true);
-    const favoriteBtn = node.querySelector('.favorite-toggle');
-    const front = node.querySelector('.front');
-    const back = node.querySelector('.back');
+  return node;
+}
 
-    node.querySelector('.topic-pill').textContent = item.topicName;
-    const visual = TOPIC_VISUAL[item.topicId] || { icon: '🧭', theme: 'theme-default' };
-    node.querySelector('.visual-icon').textContent = visual.icon;
-    node.classList.add(visual.theme);
-    node.querySelector('.ko').textContent = item.ko;
-    node.querySelector('.vi').textContent = item.vi;
-    node.querySelector('.vi-detail').textContent = item.vi;
-    node.querySelector('.roman').textContent = item.roman || 'Đang cập nhật';
+function renderFlashcardFront(node, item) {
+  node.querySelector('.ko').textContent = item.korean;
+  node.querySelector('.roman').textContent = item.romanization;
+  node.querySelector('.vi').textContent = item.vietnamese;
+  renderSemanticImage(node.querySelector('.semantic-image'), item);
+}
 
-    bindOptionalText(node, '.breakdown-row', '.breakdown', item.breakdown);
-    bindOptionalText(node, '.root-row', '.root', item.root);
-    bindOptionalText(node, '.note-row', '.note', item.note);
-    renderWordAnalysis(node, item.ko);
+function renderFlashcardBack(node, item) {
+  renderAnalysisList(node.querySelector('.analysis-list'), item.analysis);
+  node.querySelector('.natural-meaning').textContent = `Nghĩa tự nhiên: ${item.naturalMeaning}`;
+  const similar = node.querySelector('.similar-list');
+  similar.innerHTML = '';
+  item.similarPatterns.slice(0, 3).forEach(x => {
+    const li = document.createElement('li');
+    li.textContent = x;
+    similar.append(li);
+  });
+}
 
+function renderSemanticImage(container, item) {
+  const text = `${item.korean} ${item.vietnamese}`.toLowerCase();
+  const map = [
+    { keys: ['우산', 'mưa', 'ô'], icon: '☔ Ô / mưa' },
+    { keys: ['수하물', '짐', 'hành lý', 'vali'], icon: '🧳 Khu hành lý' },
+    { keys: ['감사', 'cảm ơn', 'tạm biệt'], icon: '🙇 Cảm ơn khách' },
+    { keys: ['모이', '집합', 'tập trung'], icon: '👥 Tập trung đoàn' },
+    { keys: ['공항', 'sân bay'], icon: '🛬 Sân bay' },
+    { keys: ['버스', 'xe'], icon: '🚌 Di chuyển xe' },
+    { keys: ['호텔', 'khách sạn'], icon: '🏨 Khách sạn' },
+    { keys: ['식사', 'ăn', 'menu'], icon: '🍱 Ăn uống' }
+  ];
+  const hit = map.find(m => m.keys.some(k => text.includes(k))) || { icon: '🧭 Ngữ cảnh tour' };
+  container.textContent = hit.icon;
+}
+
+function renderAnalysisList(container, analysis) {
+  container.innerHTML = '';
+  (analysis || []).forEach(word => {
+    const type = normalizeWordType(word.type);
+    const item = document.createElement('article');
+    item.className = 'analysis-item';
+    item.innerHTML = `
+      <div class="analysis-word">${word.word}</div>
+      <div class="analysis-mean">${word.meaning || 'Không có nghĩa chi tiết'}</div>
+      <div class="meta-row">
+        <span class="chip ${type === 'Hán Hàn' ? 'sino' : type === 'Thuần Hàn' ? 'native' : ''}">${type}${type === 'Hán Hàn' && word.hanja ? ` (${word.hanja})` : ''}</span>
+        <span class="chip">Gốc: ${word.root || '—'}</span>
+        ${word.note ? `<span class="chip">${word.note}</span>` : ''}
+      </div>
+    `;
+    container.append(item);
+  });
+}
+
+function wireFlip(node) {
+  const shell = node.querySelector('.flip-shell');
+  const toggle = ev => {
+    if (ev.target.closest('.speak-btn, .record-btn, .play-record-btn, .delete-record-btn, .stop-record-btn, .learned-btn, .hard-btn, .favorite-toggle')) return;
+    shell.classList.toggle('flipped');
+  };
+  shell.addEventListener('click', toggle);
+  shell.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      shell.classList.toggle('flipped');
+    }
+  });
+  node.querySelectorAll('.flip-btn').forEach(btn => btn.addEventListener('click', e => {
+    e.stopPropagation();
+    shell.classList.toggle('flipped');
+  }));
+}
+
+function bindFavorite(node, item) {
+  const favoriteBtn = node.querySelector('.favorite-toggle');
+  favoriteBtn.textContent = state.favorites.has(item.id) ? '★' : '☆';
+  favoriteBtn.classList.toggle('active', state.favorites.has(item.id));
+  favoriteBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    toggleSet(state.favorites, item.id);
     favoriteBtn.textContent = state.favorites.has(item.id) ? '★' : '☆';
     favoriteBtn.classList.toggle('active', state.favorites.has(item.id));
-    favoriteBtn.addEventListener('click', () => {
-      toggleSet(state.favorites, item.id);
-      favoriteBtn.textContent = state.favorites.has(item.id) ? '★' : '☆';
-      favoriteBtn.classList.toggle('active', state.favorites.has(item.id));
-      persistState();
-      updateProgress();
-    });
+    persistState();
+    updateProgress();
+    renderDashboard();
+  });
+}
 
-    front.addEventListener('click', () => back.classList.toggle('hidden'));
-    node.querySelectorAll('.speak-btn').forEach(btn => {
-      btn.addEventListener('click', () => speakKorean(item.ko, Number(btn.dataset.rate || 1)));
-    });
+function bindStateActions(node, item) {
+  node.querySelectorAll('.speak-btn').forEach(btn => btn.addEventListener('click', e => {
+    e.stopPropagation();
+    speakKorean(item.korean, Number(btn.dataset.rate || 1));
+  }));
 
-    node.querySelector('.learned-btn').addEventListener('click', () => {
-      state.learned.add(item.id);
-      state.hard.delete(item.id);
-      persistState();
-      updateProgress();
-      node.classList.add('learned');
-      node.classList.remove('hard');
-    });
-
-    node.querySelector('.hard-btn').addEventListener('click', () => {
-      toggleSet(state.hard, item.id);
-      persistState();
-      updateProgress();
-      node.classList.toggle('hard', state.hard.has(item.id));
-    });
-
-    bindRecordingActions(node, item.id);
-
-    node.classList.toggle('learned', state.learned.has(item.id));
-    node.classList.toggle('hard', state.hard.has(item.id));
-    refs.flashcardList.append(node);
+  node.querySelector('.learned-btn').addEventListener('click', e => {
+    e.stopPropagation();
+    state.learned.add(item.id);
+    state.hard.delete(item.id);
+    persistState();
+    node.classList.add('learned');
+    node.classList.remove('hard');
+    node.querySelector('.card-status-badge').textContent = '✔ Đã học';
+    updateProgress();
+    renderDashboard();
+    renderStudySlots();
   });
 
-  updateProgress();
+  node.querySelector('.hard-btn').addEventListener('click', e => {
+    e.stopPropagation();
+    toggleSet(state.hard, item.id);
+    persistState();
+    node.classList.toggle('hard', state.hard.has(item.id));
+    updateProgress();
+  });
+}
+
+function toggleSet(set, value) { if (set.has(value)) set.delete(value); else set.add(value); }
+
+function updateProgress() {
+  const total = flatPhrases.length;
+  const learned = state.learned.size;
+  const percent = total ? Math.round((learned / total) * 100) : 0;
+  refs.progressText.textContent = `${learned}/${total} đã nhớ (${percent}%)`;
+  refs.progressBar.style.width = `${percent}%`;
+  refs.statsText.textContent = `Yêu thích: ${state.favorites.size} · Khó: ${state.hard.size}`;
 }
 
 function renderQuizView() {
   refs.flashcardList.innerHTML = '';
   const data = getFilteredPhrases();
-  if (!data.length) {
-    refs.flashcardList.innerHTML = '<p class="empty">Không có dữ liệu để làm quiz.</p>';
-    return;
-  }
-
+  if (!data.length) return;
   const current = data[state.quiz.index % data.length];
-  const options = pickQuizOptions(data, current);
-  const card = document.createElement('section');
-  card.className = 'quiz-panel';
-  card.innerHTML = `
-    <h3>Quiz ${state.quiz.index + 1}/${data.length}</h3>
-    <p><strong>Cụm tiếng Hàn:</strong> ${current.ko}</p>
-    <div class="quiz-word-audio"></div>
-    <p><strong>Nghĩa tiếng Việt:</strong> ${current.vi}</p>
-    <p><strong>Chọn cụm tiếng Hàn đúng:</strong></p>
-    <div class="quiz-options"></div>
-    <p class="quiz-score">Điểm: ${state.quiz.score}</p>
-    <button class="quiz-next" type="button">Câu tiếp theo</button>
-  `;
-  const audioWrap = card.querySelector('.quiz-word-audio');
-  current.ko.split(/\s+/).filter(Boolean).forEach(word => {
+  const options = [current, ...data.filter(x => x.id !== current.id).sort(() => Math.random() - 0.5).slice(0, 3)].sort(() => Math.random() - 0.5);
+  const panel = document.createElement('section');
+  panel.className = 'quiz-panel';
+  panel.innerHTML = `<h3>Quiz</h3><p><strong>${current.vietnamese}</strong></p><div class="quiz-options"></div><button class="quiz-next">Tiếp</button>`;
+  const wrap = panel.querySelector('.quiz-options');
+  options.forEach(opt => {
     const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'word-audio-btn';
-    btn.textContent = `🔊 ${word}`;
-    btn.addEventListener('click', () => speakKorean(word, 0.8));
-    audioWrap.append(btn);
-  });
-  const optionWrap = card.querySelector('.quiz-options');
-  options.forEach(option => {
-    const btn = document.createElement('button');
-    btn.type = 'button';
     btn.className = 'quiz-option';
-    btn.textContent = option.ko;
-    btn.addEventListener('click', () => {
-      const correct = option.id === current.id;
-      btn.classList.add(correct ? 'correct' : 'wrong');
-      if (correct) state.quiz.score += 1;
-      state.quiz.selected = option.id;
-    });
-    optionWrap.append(btn);
+    btn.textContent = opt.korean;
+    btn.onclick = () => btn.classList.add(opt.id === current.id ? 'correct' : 'wrong');
+    wrap.append(btn);
   });
-
-  card.querySelector('.quiz-next').addEventListener('click', () => {
-    state.quiz.index += 1;
-    state.quiz.selected = null;
-    renderQuizView();
-  });
-
-  refs.flashcardList.append(card);
-}
-
-function pickQuizOptions(data, current) {
-  const pool = [...data].filter(item => item.id !== current.id).sort(() => Math.random() - 0.5).slice(0, 3);
-  return [current, ...pool].sort(() => Math.random() - 0.5);
+  panel.querySelector('.quiz-next').onclick = () => { state.quiz.index += 1; renderQuizView(); };
+  refs.flashcardList.append(panel);
 }
 
 function renderReviewView() {
   refs.flashcardList.innerHTML = '';
-  const reviewSet = flatPhrases.filter(item => state.hard.has(item.id) || !state.learned.has(item.id));
-  if (!reviewSet.length) {
-    refs.flashcardList.innerHTML = '<p class="empty">Bạn đã thuộc hết rồi! Tuyệt vời 🎉</p>';
+  const list = flatPhrases.filter(x => state.hard.has(x.id) || !state.learned.has(x.id)).slice(0, 100);
+  if (!list.length) {
+    refs.flashcardList.innerHTML = '<p class="empty">Bạn đã học hết phần ôn tập.</p>';
     return;
   }
-
-  const intro = document.createElement('p');
-  intro.className = 'empty';
-  intro.textContent = `Ôn tập: ${reviewSet.length} cụm từ (từ khó + chưa học).`;
-  refs.flashcardList.append(intro);
-
-  reviewSet.slice(0, 100).forEach(item => {
-    const line = document.createElement('article');
-    line.className = 'review-item';
-    line.innerHTML = `
-      <p class="review-ko">${item.ko}</p>
-      <p class="review-vi">${item.vi}</p>
-      <div class="review-actions">
-        <button type="button" class="quick-speak">🔊 Nghe</button>
-        <button type="button" class="quick-known">✔ Đã nhớ</button>
-      </div>
-    `;
-    line.querySelector('.quick-speak').addEventListener('click', () => speakKorean(item.ko, 0.85));
-    line.querySelector('.quick-known').addEventListener('click', () => {
-      state.learned.add(item.id);
-      state.hard.delete(item.id);
-      persistState();
-      renderReviewView();
-      updateProgress();
-    });
-    refs.flashcardList.append(line);
+  list.forEach(item => {
+    const node = document.createElement('article');
+    node.className = 'review-item';
+    node.innerHTML = `<p class="review-ko">${item.korean}</p><p class="review-vi">${item.vietnamese}</p><div class="review-actions"><button class="quick-speak">Nghe</button><button class="quick-known">Đã nhớ</button></div>`;
+    node.querySelector('.quick-speak').onclick = () => speakKorean(item.korean, 0.85);
+    node.querySelector('.quick-known').onclick = () => { state.learned.add(item.id); state.hard.delete(item.id); persistState(); renderReviewView(); updateProgress(); renderDashboard(); };
+    refs.flashcardList.append(node);
   });
 }
 
@@ -459,193 +435,17 @@ function renderStatsView() {
   refs.flashcardList.innerHTML = '';
   const panel = document.createElement('section');
   panel.className = 'stats-panel';
-  const rows = PHRASE_TOPICS.map(topic => {
-    const learned = topic.phrases.filter(p => state.learned.has(p.id)).length;
-    return `<tr><td>${topic.name}</td><td>${learned}/${topic.phrases.length}</td><td>${Math.round((learned / topic.phrases.length) * 100)}%</td></tr>`;
-  }).join('');
-
-  panel.innerHTML = `
-    <h3>Thống kê học tập</h3>
-    <p>Tổng đã học: ${state.learned.size}/${flatPhrases.length}</p>
-    <p>Yêu thích: ${state.favorites.size} · Từ khó: ${state.hard.size}</p>
-    <table class="stats-table">
-      <thead><tr><th>Chủ đề</th><th>Tiến độ</th><th>%</th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table>
-  `;
+  panel.innerHTML = `<h3>Thống kê</h3><p>Đã nhớ: ${state.learned.size}/${flatPhrases.length}</p>`;
   refs.flashcardList.append(panel);
 }
 
-function renderWordAnalysis(node, sentence) {
-  const container = node.querySelector('.word-analysis-list');
-  container.innerHTML = '';
-  const words = analyzeWords(sentence);
-
-  words.forEach(word => {
-    const chip = document.createElement('button');
-    chip.type = 'button';
-    chip.className = 'word-chip';
-    chip.innerHTML = `
-      <span class="word-ko">🔊 ${word.token}</span>
-      <span class="word-vi">${word.meaning}</span>
-      <span class="word-meta-row">
-        <span class="word-badge type">${word.type}</span>
-        ${word.root ? `<span class="word-badge root">Gốc: ${word.root}</span>` : '<span class="word-badge root">Gốc: —</span>'}
-      </span>
-    `;
-    chip.addEventListener('click', () => speakKorean(word.token, 0.8));
-    container.append(chip);
-  });
-}
-
-function analyzeWords(sentence) {
-  const normalized = sentence
-    .replace(/[.,!?]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-  if (!normalized) return [];
-
-  return normalized.split(' ').map(token => {
-    const dict = WORD_DICT[token];
-    if (dict) {
-      return {
-        token,
-        meaning: dict.vi,
-        type: dict.type,
-        root: dict.root || ''
-      };
-    }
-
-    const particleMatch = detectParticleToken(token);
-    if (particleMatch) {
-      return particleMatch;
-    }
-
-    const endingMatch = detectEnding(token);
-    if (endingMatch) {
-      return {
-        token,
-        meaning: endingMatch.meaning,
-        type: 'Động từ chia đuôi',
-        root: endingMatch.root
-      };
-    }
-
-    return {
-      token,
-      meaning: explainUnknownToken(token),
-      type: guessWordType(token),
-      root: inferRoot(token)
-    };
-  });
-}
-
-function explainUnknownToken(token) {
-  const parts = splitKnownParts(token);
-  if (parts.length) return parts.map(part => part.meaning).join(' + ');
-  return `Nghĩa theo ngữ cảnh của "${token}"`;
-}
-
-function inferRoot(token) {
-  const particle = detectParticleToken(token);
-  if (particle?.root) return particle.root;
-  const ending = detectEnding(token);
-  if (ending?.root) return ending.root;
-  return token;
-}
-
-function splitKnownParts(token) {
-  const keys = Object.keys(WORD_DICT).sort((a, b) => b.length - a.length);
-  const parts = [];
-  let rest = token;
-
-  while (rest.length > 0) {
-    const hit = keys.find(key => rest.startsWith(key));
-    if (!hit) break;
-    parts.push({ text: hit, meaning: WORD_DICT[hit].vi });
-    rest = rest.slice(hit.length);
-  }
-
-  if (parts.length && rest.length === 0) return parts;
-  return [];
-}
-
-function detectParticleToken(token) {
-  for (const particle of PARTICLE_RULES) {
-    if (!token.endsWith(particle.suffix) || token.length <= particle.suffix.length) continue;
-    const stem = token.slice(0, token.length - particle.suffix.length);
-    const baseInfo = WORD_DICT[stem];
-    if (!baseInfo) continue;
-
-    return {
-      token,
-      meaning: `${baseInfo.vi} + ${particle.meaning}`,
-      type: `${baseInfo.type} + ngữ pháp`,
-      root: baseInfo.root || stem
-    };
-  }
-  return null;
-}
-
-function detectEnding(token) {
-  for (const rule of ENDING_RULES) {
-    if (token.endsWith(rule.suffix)) {
-      const stem = token.slice(0, token.length - rule.suffix.length);
-      const root = stem ? `${stem}${rule.rootSuffix}` : rule.rootSuffix;
-      return { root, meaning: rule.meaning };
-    }
-  }
-  return null;
-}
-
-function guessWordType(token) {
-  if (/[A-Za-z]/.test(token) || token.includes('카') || token.includes('버스')) return 'Borrowed';
-  if (token.endsWith('합니다') || token.endsWith('하다') || token.endsWith('시간') || token.endsWith('권')) return 'Hán Hàn';
-  return 'Thuần Hàn / chưa gắn nhãn';
-}
-
-function bindOptionalText(root, rowSelector, textSelector, value) {
-  const row = root.querySelector(rowSelector);
-  if (!value) {
-    row.classList.add('hidden');
-    return;
-  }
-  row.classList.remove('hidden');
-  row.querySelector(textSelector).textContent = value;
-}
-
-function toggleSet(collection, value) {
-  if (collection.has(value)) collection.delete(value);
-  else collection.add(value);
-}
-
-function updateProgress() {
-  const total = flatPhrases.length;
-  const learned = state.learned.size;
-  const favorites = state.favorites.size;
-  const hard = state.hard.size;
-  const percent = total ? Math.round((learned / total) * 100) : 0;
-
-  refs.progressText.textContent = `${learned}/${total} đã học (${percent}%)`;
-  refs.progressBar.style.width = `${percent}%`;
-  refs.statsText.textContent = `Yêu thích: ${favorites} · Khó: ${hard}`;
-}
-
 function speakKorean(text, rate = 1) {
-  if (!('speechSynthesis' in window)) {
-    alert('Thiết bị chưa hỗ trợ Web Speech API.');
-    return;
-  }
-
+  if (!('speechSynthesis' in window)) return;
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = 'ko-KR';
   utterance.rate = rate;
-  utterance.pitch = 1;
-
-  const voices = speechSynthesis.getVoices();
-  const preferred = voices.find(voice => voice.lang.toLowerCase().startsWith('ko'));
-  if (preferred) utterance.voice = preferred;
-
+  const voice = speechSynthesis.getVoices().find(v => v.lang.toLowerCase().startsWith('ko'));
+  if (voice) utterance.voice = voice;
   speechSynthesis.cancel();
   speechSynthesis.speak(utterance);
 }
@@ -699,55 +499,45 @@ async function bindRecordingActions(node, phraseId) {
   const deleteBtn = node.querySelector('.delete-record-btn');
   const status = node.querySelector('.record-status');
 
-  const existingBlob = await getRecording(phraseId).catch(() => null);
-  status.textContent = existingBlob ? 'Đã có bản ghi âm cá nhân.' : 'Chưa có bản ghi âm cá nhân.';
+  const setDeleteState = blob => deleteBtn.classList.toggle('hidden', !blob);
+  const existing = await getRecording(phraseId).catch(() => null);
+  status.textContent = existing ? 'Đã có bản ghi âm cá nhân.' : 'Chưa có bản ghi âm cá nhân.';
+  setDeleteState(existing);
 
-  recordBtn.addEventListener('click', async () => {
-    if (!navigator.mediaDevices || !window.MediaRecorder) {
-      alert('Thiết bị chưa hỗ trợ ghi âm trên trình duyệt này.');
-      return;
-    }
-    if (state.recording.mediaRecorder) {
-      alert('Đang có một bản ghi khác. Hãy dừng trước khi ghi tiếp.');
-      return;
-    }
-
+  recordBtn.onclick = async e => {
+    e.stopPropagation();
+    if (!navigator.mediaDevices || !window.MediaRecorder || state.recording.mediaRecorder) return;
     try {
       state.recording.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       state.recording.mediaRecorder = new MediaRecorder(state.recording.stream);
-      state.recording.phraseId = phraseId;
       state.recording.chunks = [];
-
-      state.recording.mediaRecorder.ondataavailable = event => {
-        if (event.data.size > 0) state.recording.chunks.push(event.data);
-      };
-
+      state.recording.phraseId = phraseId;
+      state.recording.mediaRecorder.ondataavailable = ev => ev.data.size && state.recording.chunks.push(ev.data);
       state.recording.mediaRecorder.onstop = async () => {
         const blob = new Blob(state.recording.chunks, { type: 'audio/webm' });
         await saveRecording(phraseId, blob);
         status.textContent = 'Đã lưu bản ghi âm của bạn.';
+        setDeleteState(blob);
         cleanupRecorder();
-        stopBtn.disabled = true;
       };
-
       state.recording.mediaRecorder.start();
-      status.textContent = 'Đang ghi âm...';
       stopBtn.disabled = false;
-    } catch (error) {
-      alert('Không thể truy cập micro. Vui lòng cấp quyền micro cho trang.');
-      console.error(error);
+      status.textContent = 'Đang ghi âm...';
+    } catch (_error) {
       cleanupRecorder();
     }
-  });
+  };
 
-  stopBtn.addEventListener('click', () => {
+  stopBtn.onclick = e => {
+    e.stopPropagation();
     if (state.recording.mediaRecorder && state.recording.phraseId === phraseId) {
       state.recording.mediaRecorder.stop();
       stopBtn.disabled = true;
     }
-  });
+  };
 
-  playBtn.addEventListener('click', async () => {
+  playBtn.onclick = async e => {
+    e.stopPropagation();
     const blob = await getRecording(phraseId);
     if (!blob) {
       status.textContent = 'Chưa có bản ghi để phát.';
@@ -758,16 +548,18 @@ async function bindRecordingActions(node, phraseId) {
     audio.play();
     audio.onended = () => URL.revokeObjectURL(url);
     status.textContent = 'Đang phát bản ghi âm của bạn...';
-  });
+  };
 
-  deleteBtn.addEventListener('click', async () => {
+  deleteBtn.onclick = async e => {
+    e.stopPropagation();
     await deleteRecording(phraseId);
     status.textContent = 'Đã xóa bản ghi âm cá nhân.';
-  });
+    setDeleteState(null);
+  };
 }
 
 function cleanupRecorder() {
-  if (state.recording.stream) state.recording.stream.getTracks().forEach(track => track.stop());
+  if (state.recording.stream) state.recording.stream.getTracks().forEach(t => t.stop());
   state.recording.mediaRecorder = null;
   state.recording.stream = null;
   state.recording.phraseId = null;
@@ -776,11 +568,7 @@ function cleanupRecorder() {
 
 function registerServiceWorker() {
   if (!('serviceWorker' in navigator)) return;
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js').catch(error => {
-      console.warn('SW register fail:', error);
-    });
-  });
+  window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js').catch(() => {}));
 }
 
 window.addEventListener('DOMContentLoaded', init);
