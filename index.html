@@ -4,15 +4,43 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>K-Tour Guide v6</title>
+  <meta name="theme-color" content="#2563EB">
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <main class="app">
-    <header class="app-header">
-      <h1>K-Tour Guide v6</h1>
-      <p>Học phản xạ theo khung giờ trong ngày</p>
-    </header>
+    <section class="top-shell">
+      <div class="brand-row">
+        <div>
+          <p class="brand-title">한국어 HDV v6</p>
+          <p class="brand-sub">Học mỗi ngày · Nhớ nhanh · Dẫn tour tự tin</p>
+        </div>
+        <span class="clock-badge" id="clockBadge">--:--</span>
+      </div>
+      <nav class="top-tabs" aria-label="Điều hướng học">
+        <button class="tab active" type="button" data-view="learn">Học</button>
+        <button class="tab" type="button" data-view="quiz">Quiz</button>
+        <button class="tab" type="button" data-view="review">Ôn tập</button>
+        <button class="tab" type="button" data-view="stats">Thống kê</button>
+      </nav>
+    </section>
+
+    <section class="dashboard-card" aria-live="polite">
+      <h2>Hành trình hôm nay</h2>
+      <div class="dashboard-grid">
+        <article><p>Tiến độ hôm nay</p><strong id="todayLearned">0 từ</strong></article>
+        <article><p>Streak</p><strong id="streakCount">0 ngày</strong></article>
+        <article><p>Điểm tích lũy</p><strong id="totalPoints">0 điểm</strong></article>
+        <article><p>Mục tiêu ngày</p><strong id="dailyGoal">0%</strong></article>
+      </div>
+      <div class="goal-track"><div class="goal-bar" id="goalBar"></div></div>
+    </section>
+
+    <section class="schedule-card" aria-live="polite">
+      <h2>Khung giờ học</h2>
+      <div id="studySlots" class="study-slots"></div>
+    </section>
 
     <nav class="top-nav">
       <button class="nav-tab active" data-view="learn">Học</button>
@@ -22,11 +50,15 @@
       <button class="nav-tab" data-view="settings">Cài đặt</button>
     </nav>
 
-    <section id="controlPanel" class="controls">
-      <input id="searchInput" type="search" placeholder="Tìm cụm từ...">
-      <div class="control-row">
-        <select id="topicFilter"></select>
-        <button id="randomBtn">Ngẫu nhiên</button>
+      <div class="filter-row">
+        <select id="topicFilter" aria-label="Lọc theo chủ đề"></select>
+        <button id="randomBtn" class="btn ghost" type="button">Ngẫu nhiên</button>
+      </div>
+
+      <div class="quick-row">
+        <button id="allBtn" class="chip active" type="button">Tất cả</button>
+        <button id="favoriteBtn" class="chip" type="button">Yêu thích</button>
+        <button id="hardBtn" class="chip" type="button">Khó</button>
       </div>
     </section>
 
@@ -40,58 +72,55 @@
 
     <section id="viewRoot"></section>
 
-    <template id="flashcardTemplate">
-      <article class="FlashcardSentence">
-        <div class="card-inner">
-          <section class="FlashcardFront">
-            <div class="front-head">
-              <div class="SemanticImage" data-image>🧭</div>
-              <span class="topic-chip" data-topic></span>
-            </div>
-            <div class="korean-row">
-              <p class="korean" data-korean></p>
-              <button class="AudioButton" data-front-audio>🔊</button>
-            </div>
-            <p class="roman" data-roman></p>
-            <p class="vietnamese" data-vietnamese></p>
-
-            <div class="FrontPracticePanel">
-              <button data-action="listen">Nghe</button>
-              <button data-action="listenSlow">Nghe chậm</button>
-              <button data-action="record">Ghi âm</button>
-              <button data-action="selfPlay">Nghe giọng tôi</button>
-            </div>
-            <p class="record-status" data-record-status>Chưa có bản ghi âm.</p>
-
-            <div class="CompletionToggle">
-              <span data-completion-label>Chưa hoàn thành</span>
-              <button data-action="complete">Đã hoàn thành</button>
-            </div>
-
-            <button class="flip-zone" data-flip-zone>Chạm để lật xem phân tích</button>
-            <button class="flip-btn" data-flip-btn>Lật thẻ</button>
-          </section>
-
-          <section class="FlashcardBack">
-            <div class="back-top">
-              <strong data-korean-back></strong>
-              <button class="flip-btn" data-unflip>Quay lại</button>
-            </div>
-            <div class="tab-body" data-panel="analysis">
-              <div class="AnalysisList" data-analysis></div>
-              <div class="brief"><b>Nghĩa tự nhiên:</b> <span data-natural></span></div>
-            </div>
-          </section>
+    <template id="cardTemplate">
+      <article class="flashcard">
+        <div class="card-top">
+          <span class="topic-pill"></span>
+          <div class="card-status-badge"></div>
+          <button class="favorite-toggle" type="button" aria-label="Đánh dấu yêu thích">☆</button>
         </div>
-      </article>
-    </template>
 
-    <template id="quizTemplate">
-      <article class="QuizCard">
-        <p class="quiz-title">Nghe và chọn nghĩa đúng</p>
-        <div class="korean-row">
-          <p class="quiz-korean" data-quiz-korean></p>
-          <button class="AudioButton" data-quiz-audio>🔊</button>
+        <div class="flip-shell" role="button" tabindex="0" aria-label="Chạm để lật flashcard">
+          <section class="flashcard-face flashcard-front">
+            <div class="semantic-image" aria-hidden="true"></div>
+            <p class="ko"></p>
+            <p class="roman"></p>
+            <p class="vi"></p>
+
+            <div class="front-action-grid">
+              <button class="speak-btn btn-hear" data-rate="1" type="button">Nghe</button>
+              <button class="speak-btn btn-hear-slow" data-rate="0.75" type="button">Nghe chậm</button>
+              <button class="record-btn btn-record" type="button">Ghi âm</button>
+              <button class="play-record-btn btn-playmine" type="button">Nghe giọng tôi</button>
+            </div>
+
+            <button class="learned-btn complete-btn" type="button">✅ Hoàn thành thẻ</button>
+
+            <div class="flip-bar-wrap">
+              <button class="flip-btn flip-bar" type="button">Lật thẻ để xem phân tích</button>
+            </div>
+          </section>
+
+          <section class="flashcard-face flashcard-back">
+            <div class="back-head">
+              <button class="flip-btn" type="button">Quay lại mặt trước</button>
+            </div>
+
+            <div class="analysis-summary">
+              <p class="natural-meaning"></p>
+            </div>
+
+            <div class="analysis-list"></div>
+
+            <ul class="similar-list"></ul>
+
+            <div class="back-tools">
+              <button class="hard-btn" type="button">Đánh dấu khó</button>
+              <button class="stop-record-btn" type="button" disabled>Dừng ghi</button>
+              <button class="delete-record-btn" type="button">Xóa ghi âm</button>
+            </div>
+            <p class="record-status">Chưa có bản ghi âm cá nhân.</p>
+          </section>
         </div>
         <div class="quiz-options" data-quiz-options></div>
         <p class="quiz-result" data-quiz-result></p>
