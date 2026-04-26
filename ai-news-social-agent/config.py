@@ -4,12 +4,38 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # === AI Provider ===
-AI_PROVIDER = os.getenv("AI_PROVIDER", "openai")
+# Các lựa chọn FREE: "gemini" | "groq" | "ollama"
+# Trả phí:           "openai" | "deepseek"
+AI_PROVIDER = os.getenv("AI_PROVIDER", "gemini")
+
+# --- Google Gemini (FREE: 1,500 req/ngày, 1M tokens/ngày) ---
+# Lấy key miễn phí tại: aistudio.google.com (chỉ cần Google account)
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-1.5-flash")
+GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai/"
+
+# --- Groq (FREE: ~14,400 req/ngày, siêu nhanh) ---
+# Lấy key miễn phí tại: console.groq.com (Google/GitHub login)
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
+GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.1-8b-instant")
+GROQ_BASE_URL = "https://api.groq.com/openai/v1"
+
+# --- Ollama (FREE hoàn toàn, chạy local, không cần internet) ---
+# Cài tại: ollama.ai → chạy: ollama pull gemma2:2b
+OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434/v1")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "gemma2:2b")
+
+# --- OpenAI (trả phí) ---
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+
+# --- DeepSeek (trả phí, rẻ) ---
 DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY", "")
 DEEPSEEK_MODEL = os.getenv("DEEPSEEK_MODEL", "deepseek-chat")
 DEEPSEEK_BASE_URL = "https://api.deepseek.com"
+
+# Rate limit delay giữa các lần gọi AI (giây) - tránh bị block free tier
+AI_RATE_LIMIT_DELAY = float(os.getenv("AI_RATE_LIMIT_DELAY", "2"))
 
 # === Telegram ===
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")

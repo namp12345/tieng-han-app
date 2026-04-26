@@ -2,63 +2,82 @@
 
 Tự động quét tin tức AI mới nhất, tóm tắt tiếng Việt, tạo nội dung mạng xã hội và gửi nháp qua Telegram để duyệt.
 
+## Dùng hoàn toàn MIỄN PHÍ
+
+| Provider | Giới hạn free | Đăng ký |
+|----------|--------------|---------|
+| **Google Gemini** ⭐ | 1,500 req/ngày · 1M tokens/ngày | [aistudio.google.com](https://aistudio.google.com) — chỉ cần Google account |
+| **Groq** | ~14,400 req/ngày · siêu nhanh | [console.groq.com](https://console.groq.com) — Google/GitHub login |
+| **Ollama** | Không giới hạn · chạy offline | [ollama.ai](https://ollama.ai) — không cần internet sau khi cài |
+
+> **Khuyến nghị**: Dùng **Gemini** (đăng ký 1 phút, free rất nhiều, chất lượng tốt).
+
 ## Cấu trúc
 
 ```
 ai-news-social-agent/
-├── main.py              # Entry point
-├── config.py            # Cấu hình nguồn tin, từ khoá, lịch chạy
-├── .env.example         # Template biến môi trường
+├── main.py              # Entry point + CLI
+├── config.py            # Nguồn tin, từ khoá, lịch chạy, AI provider
+├── .env.example         # Template cấu hình (copy thành .env)
 ├── requirements.txt
-├── data/
-│   └── news.db          # SQLite database (tự tạo)
+├── data/news.db         # SQLite tự tạo khi chạy
 └── modules/
-    ├── collector.py     # Thu thập RSS
-    ├── filter.py        # Lọc & chấm điểm tin
-    ├── summarizer.py    # Tóm tắt tiếng Việt (OpenAI/DeepSeek)
+    ├── collector.py     # Thu thập RSS từ 10 nguồn
+    ├── filter.py        # Lọc & chấm điểm Cao/TB/Thấp
+    ├── summarizer.py    # Tóm tắt tiếng Việt (hỗ trợ 5 provider)
     ├── social_writer.py # Tạo Facebook/TikTok/LinkedIn/Telegram posts
-    ├── telegram_bot.py  # Bot nhận lệnh và gửi nháp
+    ├── telegram_bot.py  # Bot + nút duyệt bài inline
     ├── pipeline.py      # Orchestrate toàn bộ quy trình
     ├── publisher.py     # Đăng bài (Giai đoạn 2)
-    ├── scheduler.py     # Chạy định kỳ 7h/12h/20h
-    └── storage.py       # SQLite CRUD
+    ├── scheduler.py     # Tự chạy 7h/12h/20h giờ VN
+    └── storage.py       # SQLite CRUD + chống trùng
 ```
 
-## Cài đặt
+## Cài đặt nhanh
 
 ```bash
 cd ai-news-social-agent
 python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
+source venv/bin/activate      # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 cp .env.example .env
-# Chỉnh sửa .env với API keys của bạn
 ```
 
-## Cấu hình `.env`
+## Bước 1 — Lấy Gemini API key (miễn phí, 2 phút)
 
-| Biến | Mô tả |
-|------|-------|
-| `AI_PROVIDER` | `openai` hoặc `deepseek` |
-| `OPENAI_API_KEY` | API key từ platform.openai.com |
-| `DEEPSEEK_API_KEY` | API key từ platform.deepseek.com |
-| `TELEGRAM_BOT_TOKEN` | Token từ @BotFather |
-| `TELEGRAM_CHAT_ID` | Chat ID của bạn (dùng @userinfobot) |
+1. Vào [aistudio.google.com](https://aistudio.google.com)
+2. Đăng nhập bằng Google account
+3. Nhấn **"Get API key"** → **"Create API key"**
+4. Copy key, dán vào `.env`:
 
-## Chạy
+```env
+AI_PROVIDER=gemini
+GEMINI_API_KEY=AIza...key-của-bạn...
+```
+
+## Bước 2 — Tạo Telegram Bot (miễn phí, 3 phút)
+
+1. Mở Telegram, tìm **@BotFather** → `/newbot`
+2. Đặt tên bot → lấy **token** (dạng `123456:ABC-DEF...`)
+3. Tìm **@userinfobot** → gửi bất kỳ tin → lấy **chat ID** (số nguyên)
+4. Điền vào `.env`:
+
+```env
+TELEGRAM_BOT_TOKEN=123456:ABC-DEF...
+TELEGRAM_CHAT_ID=987654321
+```
+
+## Bước 3 — Chạy
 
 ```bash
-# Quét tin ngay một lần (test)
+# Test quét một lần
 python main.py --scan-now
 
-# Xem thống kê
+# Xem thống kê database
 python main.py --stats
 
-# Chạy đầy đủ: Scheduler 3 lần/ngày + Telegram Bot
+# Chạy đầy đủ: tự động 7h/12h/20h + Telegram Bot
 python main.py
-
-# Chỉ chạy Telegram Bot (nếu scheduler chạy riêng)
-python main.py --bot-only
 ```
 
 ## Lệnh Telegram
@@ -66,21 +85,38 @@ python main.py --bot-only
 | Lệnh | Chức năng |
 |------|-----------|
 | `/scan_ai_news` | Quét tin ngay lập tức |
-| `/drafts` | Xem 5 bài nháp mới nhất |
+| `/drafts` | Xem 5 bài nháp gần nhất |
 | `/stats` | Thống kê database |
 | `/help` | Hướng dẫn |
 
-## Quy trình duyệt bài
+## Nút duyệt bài trong Telegram
 
-1. Bot gửi tin nháp kèm nút bấm
-2. Nhấn **✅ Duyệt FB** → Xem Facebook post đầy đủ
-3. Nhấn **💼 Duyệt LI** → Xem LinkedIn post
-4. Nhấn **📢 Duyệt TG** → Đăng lên Telegram Channel
-5. Nhấn **🎬 Xem TikTok** → Xem script video
-6. Nhấn **❌ Bỏ qua** → Đánh dấu skipped
-7. Nhấn **🔁 Viết lại** → Tính năng sắp có
+Mỗi bài sẽ gửi kèm các nút:
 
-## Mở rộng thêm nguồn
+| Nút | Hành động |
+|-----|-----------|
+| ✅ Duyệt FB | Xem Facebook post đầy đủ |
+| 💼 Duyệt LI | Xem LinkedIn post |
+| 📢 Duyệt TG | Đăng lên Telegram channel |
+| 🎬 Xem TikTok | Xem script video |
+| ❌ Bỏ qua | Đánh dấu skipped |
+| 🔁 Viết lại | Tính năng giai đoạn 2 |
+
+## Chuyển provider
+
+Chỉnh `AI_PROVIDER` trong `.env`:
+
+```env
+# Dùng Groq (nhanh hơn, cũng free)
+AI_PROVIDER=groq
+GROQ_API_KEY=gsk_...
+
+# Dùng Ollama (offline hoàn toàn)
+AI_PROVIDER=ollama
+# Cài trước: ollama pull gemma2:2b
+```
+
+## Thêm nguồn RSS
 
 Thêm vào `RSS_SOURCES` trong `config.py`:
 
@@ -94,7 +130,8 @@ Thêm vào `RSS_SOURCES` trong `config.py`:
 
 ## Roadmap
 
-- [x] MVP: Quét RSS, tóm tắt VI, Facebook/TikTok/LinkedIn posts, Telegram duyệt bài
+- [x] MVP: Quét RSS, tóm tắt VI, Facebook/TikTok/LinkedIn/Telegram posts, duyệt bài
+- [x] Hỗ trợ AI free: Gemini, Groq, Ollama
 - [ ] Giai đoạn 2: Tự động đăng Facebook Page
 - [ ] Giai đoạn 3: Instagram, LinkedIn, TikTok API
 - [ ] Giai đoạn 4: YouTube Shorts tự động
