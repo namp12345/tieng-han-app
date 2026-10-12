@@ -1,11 +1,12 @@
 import logging
 import asyncio
+from html import escape
 from telegram import Bot, InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import (
     Application, CallbackQueryHandler, CommandHandler, ContextTypes
 )
 from telegram.error import TelegramError
-from config import TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
+from config import TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, TELEGRAM_CHANNEL_ID
 from modules import storage
 
 logger = logging.getLogger(__name__)
@@ -36,11 +37,11 @@ def _format_draft_message(article: dict) -> str:
     )
     tg_post = article.get("social_posts", {}).get("telegram", "")
     return (
-        f"📨 *BÀI BÁO MỚI* (ID: {article['id']})\n"
-        f"{level_emoji} Mức độ: *{article.get('importance_level', 'Thấp')}* "
+        f"📨 <b>BÀI BÁO MỚI</b> (ID: {article['id']})\n"
+        f"{level_emoji} Mức độ: <b>{escape(str(article.get('importance_level', 'Thấp')))}</b> "
         f"(điểm: {article.get('importance_score', 0)})\n"
-        f"📰 Nguồn: {article.get('source', '')}\n\n"
-        f"{tg_post}\n\n"
+        f"📰 Nguồn: {escape(str(article.get('source', '')))}\n\n"
+        f"{escape(tg_post)}\n\n"
         f"━━━━━━━━━━━━━━━━━━"
     )
 
@@ -59,7 +60,7 @@ async def send_draft_async(article: dict):
         await bot.send_message(
             chat_id=TELEGRAM_CHAT_ID,
             text=text,
-            parse_mode="Markdown",
+            parse_mode="HTML",
             reply_markup=_keyboard_for(article["id"]),
         )
         logger.info(f"Đã gửi nháp ID={article['id']} lên Telegram.")
@@ -133,12 +134,23 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
 
     elif action == "approve_tg":
-        storage.update_status(news_id, "approved_tg")
-        tg_post = article["social_posts"].get("telegram", "")
-        await query.edit_message_text(
-            f"📢 *Đã duyệt Telegram* (ID: {news_id})\n\n{tg_post}",
-            parse_mode="Markdown",
-        )
+        from modules.publisher import publish_to_telegram_channel_async
+        if article.get("status") == "posted_tg":
+            await query.edit_message_text(f"📢 Bài ID: {news_id} đã đăng Telegram.")
+            return
+        if not TELEGRAM_CHANNEL_ID:
+            await context.bot.send_message(
+                chat_id=query.message.chat_id,
+                text="❌ Chưa cấu hình TELEGRAM_CHANNEL_ID. Bài chưa được đăng.",
+            )
+            return
+        if not await publish_to_telegram_channel_async(news_id, context.bot):
+            await context.bot.send_message(
+                chat_id=query.message.chat_id,
+                text="❌ Đăng Telegram thất bại. Bài vẫn có thể duyệt lại.",
+            )
+            return
+        await query.edit_message_text(f"📢 Đã đăng Telegram (ID: {news_id})")
 
     elif action == "view_tiktok":
         tiktok_script = article["social_posts"].get("tiktok", "")
@@ -175,13 +187,13 @@ async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def cmd_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
     stats = storage.get_stats()
     by_status = "\n".join(
-        f"  • {k}: {v}" for k, v in stats.get("by_status", {}).items()
+        f"  • {escape(str(k))}: {v}" for k, v in stats.get("by_status", {}).items()
     )
     await update.message.reply_text(
-        f"📊 *Thống kê Database*\n\n"
+        f"📊 <b>Thống kê Database</b>\n\n"
         f"Tổng bài: {stats['total']}\n\n"
         f"Theo trạng thái:\n{by_status}",
-        parse_mode="Markdown",
+        parse_mode="HTML",
     )
 
 
@@ -194,7 +206,7 @@ async def cmd_drafts(update: Update, context: ContextTypes.DEFAULT_TYPE):
         text = _format_draft_message(article)
         await update.message.reply_text(
             text,
-            parse_mode="Markdown",
+            parse_mode="HTML",
             reply_markup=_keyboard_for(article["id"]),
         )
 

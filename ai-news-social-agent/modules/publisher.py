@@ -34,16 +34,41 @@ def publish_to_linkedin(news_id: int) -> bool:
     return True
 
 
-def publish_to_telegram_channel(news_id: int) -> bool:
-    """Đăng lên Telegram Channel (đã cấu hình)."""
-    from modules.telegram_bot import send_text
+async def publish_to_telegram_channel_async(news_id: int, bot) -> bool:
+    """Publish plain AI text; record posted only after Telegram accepts it."""
+    from config import TELEGRAM_CHANNEL_ID
+    from telegram.error import TelegramError
+
     article = get_news_by_id(news_id)
-    if not article:
+    if not article or not TELEGRAM_CHANNEL_ID:
         return False
-    tg_post = article["social_posts"].get("telegram", "")
-    if tg_post:
-        send_text(tg_post)
-        update_status(news_id, "posted_tg")
-        logger.info(f"Đã đăng Telegram ID={news_id}")
+    if article.get("status") == "posted_tg":
         return True
-    return False
+    tg_post = article.get("social_posts", {}).get("telegram", "")
+    if not tg_post or not tg_post.strip():
+        return False
+    try:
+        await bot.send_message(
+            chat_id=TELEGRAM_CHANNEL_ID, text=tg_post, parse_mode=None
+        )
+    except TelegramError:
+        logger.exception("Telegram channel publish failed for ID=%s", news_id)
+        return False
+    update_status(news_id, "posted_tg")
+    return True
+
+
+def publish_to_telegram_channel(news_id: int) -> bool:
+    """Synchronous entry point; async handlers must use the async function."""
+    import asyncio
+    from config import TELEGRAM_BOT_TOKEN
+    from telegram import Bot
+
+    if not TELEGRAM_BOT_TOKEN:
+        return False
+
+    async def publish():
+        async with Bot(token=TELEGRAM_BOT_TOKEN) as bot:
+            return await publish_to_telegram_channel_async(news_id, bot)
+
+    return asyncio.run(publish())

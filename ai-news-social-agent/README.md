@@ -65,7 +65,20 @@ GEMINI_API_KEY=AIza...key-của-bạn...
 ```env
 TELEGRAM_BOT_TOKEN=123456:ABC-DEF...
 TELEGRAM_CHAT_ID=987654321
+# Channel đích (username @channel hoặc ID -100...)
+TELEGRAM_CHANNEL_ID=@your-channel
 ```
+
+Thêm bot làm quản trị viên channel với quyền đăng bài. `TELEGRAM_CHAT_ID` chỉ nhận nháp; `TELEGRAM_CHANNEL_ID` nhận bài đã duyệt. Nút Duyệt TG chỉ ghi `posted_tg` sau khi gửi thành công; lỗi gửi giữ nguyên trạng thái và nút duyệt để thử lại. Nội dung AI đăng dưới dạng văn bản thuần.
+
+## Kiểm tra cục bộ
+
+```bash
+python -m unittest discover -s tests -v
+python -m compileall -q config.py modules tests
+```
+
+Không cần token/API key. Kiểm tra mock việc gửi Telegram, HTML escaping và trạng thái đăng bài. Nếu chưa cài SDK, tests dùng SDK doubles tối thiểu; vẫn cần kiểm tra với dependency thật và một channel thử nghiệm trước khi triển khai.
 
 ## Bước 3 — Chạy
 
