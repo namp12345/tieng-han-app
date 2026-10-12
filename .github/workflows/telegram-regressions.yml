@@ -1,0 +1,25 @@
+name: Telegram regressions
+on:
+  pull_request:
+    paths:
+      - 'ai-news-social-agent/**'
+      - '.github/workflows/telegram-regressions.yml'
+  push:
+    paths:
+      - 'ai-news-social-agent/**'
+      - '.github/workflows/telegram-regressions.yml'
+permissions:
+  contents: read
+jobs:
+  telegram:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install python-telegram-bot==20.7 python-dotenv==1.0.1
+      - run: python -m unittest discover -s tests -v
+        working-directory: ai-news-social-agent
+      - run: python -m compileall -q config.py modules tests
+        working-directory: ai-news-social-agent
